@@ -1,18 +1,15 @@
 import {
   FileText,
-  Home,
   ListChecks,
   MessagesSquare,
   PackageCheck,
-  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
 const navigation = [
-  { href: "/", label: "Dashboard", icon: Home },
-  { href: "/ofertas", label: "Ofertas", icon: PackageCheck },
-  { href: "/recomendador", label: "Recomendador", icon: Sparkles },
+  { href: "/", label: "Promociones", icon: PackageCheck },
+  { href: "/ofertas", label: "Catálogo", icon: PackageCheck },
   { href: "/guion", label: "Guion", icon: FileText },
   { href: "/objeciones", label: "Objeciones", icon: MessagesSquare },
   { href: "/validaciones", label: "Validaciones", icon: ListChecks },
@@ -46,7 +43,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
+                className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white"
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
