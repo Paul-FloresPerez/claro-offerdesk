@@ -13,18 +13,16 @@ export default async function OfertasPage({ searchParams }: PageProps) {
   return (
     <main className="relative">
       <section className="relative overflow-hidden border-b border-white/10">
-        <div className="pointer-events-none absolute right-0 top-0 h-64 w-64 rounded-full bg-[#DA291C]/[0.12] blur-3xl" />
-
-        <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:py-9">
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#FFB4AC]">
-            Catálogo comercial
+            Claro OfferDesk
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Promociones disponibles
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            Promociones Claro
           </h1>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-300">
-            Mismo flujo simple del inicio: buscar, filtrar y abrir una promoción
-            para revisar material oficial y condiciones.
+          <p className="mt-3 max-w-xl text-base leading-7 text-slate-300">
+            Catálogo visual para buscar, filtrar y abrir la ficha oficial de
+            cada promoción.
           </p>
         </div>
       </section>
@@ -33,7 +31,6 @@ export default async function OfertasPage({ searchParams }: PageProps) {
         <PromoCatalog
           activeFilter={getParam(params.tipo)}
           basePath="/ofertas"
-          compactHeader
           query={getParam(params.q)}
         />
       </div>

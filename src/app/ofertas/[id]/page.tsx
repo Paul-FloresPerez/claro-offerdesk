@@ -16,6 +16,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { StatusBadge, TechnologyBadge } from "@/components/common/StatusBadge";
 import { ImportantCondition } from "@/components/offers/ImportantCondition";
+import { OfferImageDialog } from "@/components/offers/OfferImageDialog";
 import { OfficialImage } from "@/components/offers/OfficialImage";
 import { PromoBadge } from "@/components/offers/PromoBadge";
 import { getOfertaById, ofertas, type Oferta } from "@/data/ofertas";
@@ -43,13 +44,10 @@ export default async function OfertaDetallePage({
   return (
     <main className="relative">
       <section className="relative overflow-hidden border-b border-white/10">
-        <div className="pointer-events-none absolute -left-20 top-8 h-72 w-72 rounded-full bg-[#DA291C]/[0.14] blur-3xl" />
-        <div className="pointer-events-none absolute right-12 top-12 h-44 w-44 rounded-full border border-[#DA291C]/20" />
-
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
           <Link
-            href="/ofertas"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.08] px-5 text-sm font-semibold text-white transition hover:bg-white/[0.13]"
+            href="/"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.08] px-5 text-sm font-semibold text-white transition hover:bg-white/[0.13]"
           >
             <ArrowLeft className="h-5 w-5" />
             Volver a promociones
@@ -73,9 +71,9 @@ export default async function OfertaDetallePage({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-[#172033] p-4 shadow-[0_18px_42px_rgba(0,0,0,0.26)]">
+            <div className="rounded-lg border border-white/10 bg-[#172033] p-4 shadow-[0_18px_42px_rgba(0,0,0,0.26)]">
               <p className="text-sm font-medium text-slate-300">
-                Precio / condición principal
+                Condición comercial
               </p>
               <p className="mt-1 text-3xl font-bold text-[#FFB4AC]">
                 {oferta.precio}
@@ -92,11 +90,17 @@ export default async function OfertaDetallePage({
         <section className="space-y-6">
           <Panel title="Imagen oficial" icon={FileText}>
             {hasMainImage ? (
-              <OfficialImage
-                item={oferta.media.principal}
-                title={oferta.nombre}
-                variant="hero"
-              />
+              <div className="space-y-4">
+                <OfficialImage
+                  item={oferta.media.principal}
+                  title={oferta.nombre}
+                  variant="hero"
+                />
+                <OfferImageDialog
+                  src={oferta.media.principal!}
+                  title={oferta.nombre}
+                />
+              </div>
             ) : (
               <OfficialImage variant="hero" />
             )}
@@ -110,17 +114,9 @@ export default async function OfertaDetallePage({
             </ImportantCondition>
           ) : null}
 
-          {oferta.id === "oferta-medio" ? (
-            <ImportantCondition title="Opción principal para ahorro" tone="success">
-              S/55 por 6 meses; luego S/89, según la información oficial
-              cargada.
-            </ImportantCondition>
-          ) : null}
-
           {oferta.id === "promo-1-sol" ? (
             <ImportantCondition title="Promoción especial" tone="warning">
-              Validar si el cliente califica. Aplica por 2 meses y luego retorna
-              al precio regular. No usar como recomendación automática de ahorro.
+              Validar calificación. Aplica por 2 meses y luego precio regular.
             </ImportantCondition>
           ) : null}
 
@@ -134,7 +130,7 @@ export default async function OfertaDetallePage({
             </Panel>
           ) : cityNote ? (
             <Panel title="Ciudades / zonas aplicables" icon={MapPinned}>
-              <p className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+              <p className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-700">
                 {cityNote}
               </p>
             </Panel>
@@ -159,9 +155,13 @@ export default async function OfertaDetallePage({
               <Fact
                 icon={Wifi}
                 label="Tecnología"
-                value={oferta.tecnologia.join(", ")}
+                value={formatDisplayValue(oferta.tecnologia.join(", "))}
               />
-              <Fact icon={Clock3} label="Vigencia" value={oferta.vigencia} />
+              <Fact
+                icon={Clock3}
+                label="Vigencia"
+                value={formatDisplayValue(oferta.vigencia)}
+              />
             </div>
           </Panel>
 
@@ -171,16 +171,18 @@ export default async function OfertaDetallePage({
                 {oferta.variantes.map((variante) => (
                   <div
                     key={`${variante.nombre}-${variante.precio}`}
-                    className="rounded-xl border border-slate-200 bg-slate-50 p-3"
+                    className="rounded-lg border border-slate-200 bg-slate-50 p-3"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-semibold text-[#111827]">
                           {variante.nombre}
                         </p>
-                        <p className="mt-1 text-sm text-slate-600">
-                          {variante.velocidad ?? "Por confirmar"}
-                        </p>
+                        {variante.velocidad ? (
+                          <p className="mt-1 text-sm text-slate-600">
+                            {variante.velocidad}
+                          </p>
+                        ) : null}
                       </div>
                       <p className="shrink-0 text-lg font-bold text-[#DA291C]">
                         {variante.precio}
@@ -197,8 +199,8 @@ export default async function OfertaDetallePage({
             </Panel>
           ) : null}
 
-          <Panel title="Condiciones importantes" icon={FileText}>
-            <p className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-medium leading-6 text-slate-800">
+          <Panel title="Condiciones comerciales" icon={FileText}>
+            <p className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm font-medium leading-6 text-slate-800">
               {oferta.detallePrecio}
             </p>
           </Panel>
@@ -211,12 +213,12 @@ export default async function OfertaDetallePage({
             <BulletList items={oferta.restricciones} icon="alert" />
           </Panel>
 
-          <Panel title="Validaciones antes de ofrecer" icon={CheckCircle2}>
+          <Panel title="Validar antes de ofrecer" icon={CheckCircle2}>
             <BulletList items={oferta.validaciones} icon="check" />
           </Panel>
 
           <Panel title="Frase sugerida de venta" icon={FileText}>
-            <p className="rounded-xl border border-red-100 bg-red-50 p-4 text-sm leading-6 text-[#7F1D1D]">
+            <p className="rounded-lg border border-red-100 bg-red-50 p-4 text-sm leading-6 text-[#7F1D1D]">
               {oferta.fraseVenta}
             </p>
           </Panel>
@@ -240,14 +242,14 @@ function Panel({
   return (
     <section
       className={cn(
-        "rounded-2xl border bg-white p-4 text-[#111827] shadow-[0_18px_42px_rgba(0,0,0,0.20)] sm:p-5",
+        "rounded-lg border bg-white p-4 text-[#111827] shadow-[0_18px_42px_rgba(0,0,0,0.20)] sm:p-5",
         tone === "warning" ? "border-yellow-200" : "border-white/70"
       )}
     >
       <div className="mb-4 flex items-center gap-3">
         <span
           className={cn(
-            "grid h-10 w-10 place-items-center rounded-xl",
+            "grid h-10 w-10 place-items-center rounded-md",
             tone === "warning"
               ? "bg-[#FEF3C7] text-yellow-700"
               : "bg-red-50 text-[#DA291C]"
@@ -273,24 +275,36 @@ function Fact({
   value: string;
   strong?: boolean;
 }) {
+  const isValidationBadge = value === "Validar";
+
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
       <div className="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500">
         <Icon className="h-4 w-4" />
         {label}
       </div>
-      <p
-        className={cn(
-          "leading-6",
-          strong
-            ? "text-lg font-bold text-[#DA291C]"
-            : "text-sm font-semibold text-[#111827]"
-        )}
-      >
-        {value}
-      </p>
+      {isValidationBadge ? (
+        <span className="inline-flex h-7 items-center rounded-md border border-yellow-200 bg-yellow-50 px-2 text-xs font-semibold text-yellow-800">
+          Validar
+        </span>
+      ) : (
+        <p
+          className={cn(
+            "leading-6",
+            strong
+              ? "text-lg font-bold text-[#DA291C]"
+              : "text-sm font-semibold text-[#111827]"
+          )}
+        >
+          {value}
+        </p>
+      )}
     </div>
   );
+}
+
+function formatDisplayValue(value: string) {
+  return value.replaceAll("Por confirmar", "Validar");
 }
 
 function BulletList({ items, icon }: { items: string[]; icon: "check" | "alert" }) {

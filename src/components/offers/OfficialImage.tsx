@@ -10,22 +10,52 @@ type OfficialImageProps = {
   title?: string;
   description?: string;
   className?: string;
-  variant?: "card" | "natural" | "wide" | "hero";
+  preload?: boolean;
+  variant?: "banner" | "card" | "natural" | "wide" | "hero";
 };
+
+const imageDimensions: Record<string, { width: number; height: number }> = {
+  "/ofertas/hfc-puro-ciudades.png": { width: 966, height: 390 },
+  "/ofertas/hfc-puro.png": { width: 965, height: 696 },
+  "/ofertas/linea-movil-MAX.png": { width: 1082, height: 650 },
+  "/ofertas/linea-movil-MAXILIMITADO.png": { width: 1085, height: 552 },
+  "/ofertas/oferta-basico.png": { width: 722, height: 552 },
+  "/ofertas/oferta-basicociudades.png": { width: 966, height: 495 },
+  "/ofertas/oferta-medio.png": { width: 962, height: 612 },
+  "/ofertas/oferta-mediociudades.png": { width: 962, height: 462 },
+  "/ofertas/Oferta-Regular.png": { width: 1085, height: 751 },
+  "/ofertas/oferta-relampago.png": { width: 725, height: 740 },
+  "/ofertas/promo-1-sol.png": { width: 721, height: 765 },
+  "/ofertas/promo-grande.png": { width: 965, height: 567 },
+  "/ofertas/promo-grandeciudades.png": { width: 965, height: 112 },
+};
+
+export function getOfficialImageDimensions(src: string) {
+  return imageDimensions[src] ?? { width: 1200, height: 800 };
+}
 
 export function OfficialImage({
   item,
   title,
   description,
   className,
+  preload,
   variant = "natural",
 }: OfficialImageProps) {
+  const frameClass = {
+    banner: "h-[220px] sm:h-[260px] lg:h-[300px]",
+    card: "h-[190px] sm:h-[240px] lg:h-[280px]",
+    natural: "min-h-72 aspect-[16/9]",
+    wide: "min-h-28 aspect-[4/1]",
+    hero: "min-h-[360px] aspect-[16/10] lg:min-h-[520px]",
+  }[variant];
+
   if (!item) {
     return (
       <div
         className={cn(
           "flex min-h-52 items-center justify-center rounded-lg border border-dashed border-neutral-300 bg-[linear-gradient(135deg,#fff,#f4f4f5)] text-neutral-500",
-          variant === "card" ? "aspect-[16/10]" : "aspect-[16/9]",
+          frameClass,
           className
         )}
       >
@@ -46,13 +76,23 @@ export function OfficialImage({
   const captionTitle = typeof item === "string" ? title : item.titulo;
   const captionDescription =
     typeof item === "string" ? description : item.descripcion ?? description;
+  const dimensions = getOfficialImageDimensions(src);
+  const shouldPreload = preload ?? variant === "hero";
+  const imageLoadProps = shouldPreload
+    ? { preload: true }
+    : { loading: variant === "hero" ? ("eager" as const) : ("lazy" as const) };
 
-  const frameClass = {
-    card: "aspect-[16/10]",
-    natural: "aspect-[16/9] min-h-72",
-    wide: "aspect-[4/1] min-h-28",
-    hero: "aspect-[16/10] min-h-[360px] lg:min-h-[520px]",
+  const imageSizes = {
+    banner: "(max-width: 1024px) 100vw, 50vw",
+    card: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw",
+    natural: "(max-width: 1024px) 100vw, 50vw",
+    wide: "100vw",
+    hero: "(max-width: 1024px) 100vw, 58vw",
   }[variant];
+  const showCaption =
+    variant !== "banner" &&
+    variant !== "card" &&
+    Boolean(captionTitle || captionDescription);
 
   return (
     <figure className={cn("space-y-2", className)}>
@@ -65,14 +105,17 @@ export function OfficialImage({
         <Image
           src={src}
           alt={captionTitle ?? "Imagen oficial de oferta Claro"}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-contain p-2"
-          loading={variant === "hero" ? "eager" : "lazy"}
-          unoptimized
+          width={dimensions.width}
+          height={dimensions.height}
+          sizes={imageSizes}
+          className={cn(
+            "h-full w-full object-contain",
+            variant === "card" || variant === "banner" ? "p-3" : "p-2 sm:p-3"
+          )}
+          {...imageLoadProps}
         />
       </div>
-      {captionTitle || captionDescription ? (
+      {showCaption ? (
         <figcaption className="text-xs leading-5 text-neutral-500">
           {captionTitle ? (
             <span className="font-semibold text-neutral-700">{captionTitle}</span>

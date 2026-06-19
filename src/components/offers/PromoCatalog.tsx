@@ -1,8 +1,6 @@
 import {
-  BadgeDollarSign,
   Database,
   Flame,
-  Gauge,
   Home,
   ListFilter,
   RotateCcw,
@@ -13,47 +11,43 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { PromoCard } from "@/components/offers/PromoCard";
+import { RegularOfferBanner } from "@/components/offers/RegularOfferBanner";
 import { ofertas, type Oferta } from "@/data/ofertas";
 import { cn } from "@/lib/utils";
 
 export type CatalogFilter =
   | "Todas"
-  | "Ahorro"
-  | "Hogar"
-  | "Alta velocidad"
+  | "Catálogo oficial"
+  | "Internet hogar"
   | "HFC"
-  | "Promoción especial"
-  | "Línea móvil"
-  | "Catálogo regular";
+  | "Especiales"
+  | "Línea móvil";
 
 type PromoCatalogProps = {
   activeFilter?: string;
   basePath?: "/" | "/ofertas";
-  compactHeader?: boolean;
   query?: string;
 };
 
 const filterOptions: { label: CatalogFilter; icon: LucideIcon }[] = [
   { label: "Todas", icon: ListFilter },
-  { label: "Ahorro", icon: BadgeDollarSign },
-  { label: "Hogar", icon: Home },
-  { label: "Alta velocidad", icon: Gauge },
+  { label: "Catálogo oficial", icon: Database },
+  { label: "Internet hogar", icon: Home },
   { label: "HFC", icon: Wifi },
-  { label: "Promoción especial", icon: Flame },
+  { label: "Especiales", icon: Flame },
   { label: "Línea móvil", icon: Smartphone },
-  { label: "Catálogo regular", icon: Database },
 ];
 
-const preferredOrder = [
-  "oferta-regular",
-  "oferta-medio",
-  "oferta-basico",
-  "promo-grande",
-  "hfc-puro",
-  "oferta-relampago",
-  "promo-1-sol",
-  "linea-movil",
-];
+const preferredOrderRank: Record<string, number> = {
+  "oferta-regular": 0,
+  "oferta-medio": 1,
+  "oferta-basico": 2,
+  "promo-grande": 3,
+  "hfc-puro": 4,
+  "oferta-relampago": 5,
+  "promo-1-sol": 6,
+  "linea-movil": 7,
+};
 
 const searchableText = (oferta: Oferta) =>
   [
@@ -80,52 +74,38 @@ function normalizeFilter(value?: string): CatalogFilter {
 
 function sortOffers(items: Oferta[]) {
   return [...items].sort((a, b) => {
-    const aIndex = preferredOrder.indexOf(a.id);
-    const bIndex = preferredOrder.indexOf(b.id);
-    return (aIndex === -1 ? 99 : aIndex) - (bIndex === -1 ? 99 : bIndex);
+    return (preferredOrderRank[a.id] ?? 99) - (preferredOrderRank[b.id] ?? 99);
   });
 }
 
 function matchesFilter(oferta: Oferta, filter: CatalogFilter) {
   if (filter === "Todas") return true;
-  if (filter === "Catálogo regular") return oferta.id === "oferta-regular";
+  if (filter === "Catálogo oficial") return oferta.id === "oferta-regular";
   if (filter === "Línea móvil") return oferta.id === "linea-movil";
-  if (filter === "Promoción especial") {
+  if (filter === "Especiales") {
     return oferta.categoria === "Promociones especiales";
   }
-  if (filter === "Hogar") return oferta.categoria === "Hogar";
+  if (filter === "Internet hogar") return oferta.categoria === "Hogar";
   if (filter === "HFC") {
     return (
-      oferta.id === "hfc-puro" ||
+      oferta.id !== "oferta-regular" &&
       oferta.tecnologia.some((item) => item.includes("HFC"))
     );
-  }
-  if (filter === "Alta velocidad") {
-    return ["oferta-medio", "promo-grande", "oferta-relampago"].includes(
-      oferta.id
-    );
-  }
-  if (filter === "Ahorro") {
-    return ["oferta-medio", "oferta-basico", "hfc-puro"].includes(oferta.id);
   }
 
   return true;
 }
 
 function getFilterHint(filter: CatalogFilter) {
-  if (filter === "Ahorro") {
-    return "Oferta Medio queda primero: S/55 por 6 meses y luego S/89. Promo 1 Sol no se recomienda automáticamente.";
-  }
-
-  if (filter === "Promoción especial") {
+  if (filter === "Especiales") {
     return "Promociones sujetas a validación antes de ofrecer.";
   }
 
-  if (filter === "Catálogo regular") {
-    return "Precios One Play, Two Play y Three Play en la imagen oficial.";
+  if (filter === "Catálogo oficial") {
+    return "Oferta Regular se revisa desde la imagen oficial; no es precio único.";
   }
 
-  return "Filtra y abre la ficha para confirmar imagen, vigencia, restricciones y validaciones.";
+  return "Selecciona una campaña para ver material oficial y condiciones.";
 }
 
 function catalogHref({
@@ -154,7 +134,6 @@ function catalogHref({
 export function PromoCatalog({
   activeFilter,
   basePath = "/",
-  compactHeader = false,
   query = "",
 }: PromoCatalogProps) {
   const selectedFilter = normalizeFilter(activeFilter);
@@ -169,17 +148,19 @@ export function PromoCatalog({
       return byFilter && byQuery;
     })
   );
-  const mainSavingsOffer = ofertas.find((oferta) => oferta.id === "oferta-medio");
+  const regularOffer = filteredOffers.find(
+    (oferta) => oferta.id === "oferta-regular"
+  );
+  const normalOffers = filteredOffers.filter(
+    (oferta) => oferta.id !== "oferta-regular"
+  );
 
   return (
     <section className="space-y-6">
-      <div className="rounded-3xl border border-white/10 bg-[#172033]/92 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-5">
+      <div className="rounded-lg border border-white/10 bg-[#172033]/92 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-5">
         <form
           action={basePath}
-          className={cn(
-            "grid gap-4",
-            compactHeader ? "lg:grid-cols-[1fr_auto_auto]" : "lg:grid-cols-[1fr_auto_auto]"
-          )}
+          className="grid gap-4 lg:grid-cols-[1fr_auto_auto]"
         >
           {selectedFilter !== "Todas" ? (
             <input type="hidden" name="tipo" value={selectedFilter} />
@@ -190,14 +171,14 @@ export function PromoCatalog({
             <input
               name="q"
               defaultValue={query}
-              placeholder="Buscar por oferta, precio, velocidad, tecnología o categoría"
-              className="h-16 w-full rounded-2xl border border-white/10 bg-white pl-14 pr-4 text-base font-medium text-[#111827] shadow-[0_16px_34px_rgba(0,0,0,0.20)] outline-none transition placeholder:text-slate-400 focus:border-[#DA291C] focus:ring-4 focus:ring-[#DA291C]/15"
+              placeholder="Buscar promoción, precio, velocidad o tecnología"
+              className="h-16 w-full rounded-lg border border-white/10 bg-white pl-14 pr-4 text-base font-medium text-[#111827] shadow-[0_16px_34px_rgba(0,0,0,0.20)] outline-none transition placeholder:text-slate-400 focus:border-[#DA291C] focus:ring-4 focus:ring-[#DA291C]/15"
             />
           </label>
 
           <button
             type="submit"
-            className="inline-flex h-16 items-center justify-center gap-2 rounded-2xl bg-[#DA291C] px-6 text-base font-semibold text-white shadow-[0_16px_32px_rgba(218,41,28,0.24)] transition hover:bg-[#B91C1C]"
+            className="inline-flex h-16 items-center justify-center gap-2 rounded-lg bg-[#DA291C] px-6 text-base font-semibold text-white shadow-[0_16px_32px_rgba(218,41,28,0.24)] transition hover:bg-[#B91C1C]"
           >
             <Search className="h-5 w-5" />
             Buscar
@@ -205,14 +186,14 @@ export function PromoCatalog({
 
           <Link
             href={basePath}
-            className="inline-flex h-16 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.08] px-5 text-base font-semibold text-white transition hover:border-white/20 hover:bg-white/[0.12]"
+            className="inline-flex h-16 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.08] px-5 text-base font-semibold text-white transition hover:border-white/20 hover:bg-white/[0.12]"
           >
             <RotateCcw className="h-5 w-5" />
             Limpiar
           </Link>
         </form>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
           {filterOptions.map((item) => {
             const active = selectedFilter === item.label;
 
@@ -225,7 +206,7 @@ export function PromoCatalog({
                   query,
                 })}
                 className={cn(
-                  "group flex min-h-16 items-center gap-3 rounded-2xl border px-4 text-left text-base font-semibold transition duration-200",
+                  "group flex min-h-14 items-center gap-3 rounded-lg border px-3 text-left text-sm font-semibold transition duration-200",
                   active
                     ? "border-[#DA291C] bg-[#DA291C] text-white shadow-[0_16px_32px_rgba(218,41,28,0.26)]"
                     : "border-white/10 bg-white/[0.07] text-slate-100 hover:border-[#DA291C]/40 hover:bg-white/[0.11]"
@@ -233,7 +214,7 @@ export function PromoCatalog({
               >
                 <span
                   className={cn(
-                    "grid h-10 w-10 shrink-0 place-items-center rounded-xl transition",
+                    "grid h-9 w-9 shrink-0 place-items-center rounded-md transition",
                     active
                       ? "bg-white/15 text-white"
                       : "bg-white text-[#DA291C] group-hover:scale-[1.03]"
@@ -254,33 +235,27 @@ export function PromoCatalog({
             {filteredOffers.length} promociones
           </p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight text-white">
-            Catálogo rápido
+            Promociones disponibles
           </h2>
           <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
             {getFilterHint(selectedFilter)}
           </p>
         </div>
-
-        {selectedFilter === "Ahorro" && mainSavingsOffer ? (
-          <div className="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-50">
-            <span className="font-semibold">Opción principal:</span>{" "}
-            {mainSavingsOffer.nombre} · {mainSavingsOffer.precio} ·{" "}
-            {mainSavingsOffer.detallePrecio}
-          </div>
-        ) : null}
       </div>
 
-      {filteredOffers.length ? (
+      {regularOffer ? <RegularOfferBanner oferta={regularOffer} /> : null}
+
+      {normalOffers.length ? (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filteredOffers.map((oferta, index) => (
-            <PromoCard key={oferta.id} oferta={oferta} index={index} />
+          {normalOffers.map((oferta) => (
+            <PromoCard key={oferta.id} oferta={oferta} />
           ))}
         </div>
-      ) : (
-        <div className="rounded-3xl border border-white/10 bg-[#172033] p-8 text-center text-slate-300">
+      ) : !regularOffer ? (
+        <div className="rounded-lg border border-white/10 bg-[#172033] p-8 text-center text-slate-300">
           No hay promociones que coincidan con la búsqueda actual.
         </div>
-      )}
+      ) : null}
     </section>
   );
 }

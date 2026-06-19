@@ -37,12 +37,14 @@ export function StatusBadge({ estado }: { estado: EstadoOferta }) {
 }
 
 export function TechnologyBadge({ tecnologia }: { tecnologia: TecnologiaOferta }) {
+  const label = tecnologia === "Por confirmar" ? "Validar" : tecnologia;
+
   return (
     <Badge
       variant="outline"
       className={cn("h-6 rounded-md", technologyClasses[tecnologia])}
     >
-      {tecnologia}
+      {label}
     </Badge>
   );
 }
