@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { TechnologyBadge } from "@/components/common/StatusBadge";
+import { StatusBadge, TechnologyBadge } from "@/components/common/StatusBadge";
 import { OfficialImage } from "@/components/offers/OfficialImage";
 import { PromoBadge } from "@/components/offers/PromoBadge";
 import type { Oferta } from "@/data/ofertas";
@@ -24,6 +24,9 @@ export function RegularOfferBanner({
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <PromoBadge tone="red">Oferta base</PromoBadge>
+            {oferta.estado === "material-oficial" ? (
+              <StatusBadge estado={oferta.estado} />
+            ) : null}
             {oferta.tecnologia.map((tecnologia) => (
               <TechnologyBadge key={tecnologia} tecnologia={tecnologia} />
             ))}
@@ -34,7 +37,10 @@ export function RegularOfferBanner({
               {oferta.nombre}
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-              Condición regular / estándar para One Play, Two Play y Three Play.
+              Condición regular / estándar
+            </p>
+            <p className="mt-1 text-sm font-semibold text-slate-800">
+              One Play · Two Play · Three Play
             </p>
           </div>
 

@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 
 export type CatalogFilter =
   | "Todas"
-  | "Catálogo oficial"
+  | "Oferta base"
   | "Internet hogar"
   | "HFC"
   | "Especiales"
@@ -37,7 +37,7 @@ type ScrollRequest =
 
 const filterOptions: { label: CatalogFilter; icon: LucideIcon }[] = [
   { label: "Todas", icon: ListFilter },
-  { label: "Catálogo oficial", icon: Database },
+  { label: "Oferta base", icon: Database },
   { label: "Internet hogar", icon: Home },
   { label: "HFC", icon: Wifi },
   { label: "Especiales", icon: Flame },
@@ -86,7 +86,7 @@ function sortOffers(items: Oferta[]) {
 
 function matchesFilter(oferta: Oferta, filter: CatalogFilter) {
   if (filter === "Todas") return true;
-  if (filter === "Catálogo oficial") return oferta.id === "oferta-regular";
+  if (filter === "Oferta base") return oferta.id === "oferta-regular";
   if (filter === "Línea móvil") return oferta.id === "linea-movil";
   if (filter === "Especiales") {
     return oferta.categoria === "Promociones especiales";
@@ -107,11 +107,11 @@ function getFilterHint(filter: CatalogFilter) {
     return "Promociones sujetas a validación antes de ofrecer.";
   }
 
-  if (filter === "Catálogo oficial") {
-    return "Oferta Regular se revisa desde la imagen oficial; no es precio único.";
+  if (filter === "Oferta base") {
+    return "Oferta Regular se revisa como condición regular / estándar.";
   }
 
-  return "Selecciona una campaña para ver material oficial y condiciones.";
+  return "Selecciona una campaña para ver material oficial, condiciones y zonas aplicables.";
 }
 
 export function PromoCatalog({

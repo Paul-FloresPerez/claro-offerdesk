@@ -21,6 +21,15 @@ const categoryTone: Record<string, "red" | "slate" | "yellow" | "blue" | "orange
 export function PromoCard({ oferta, highlighted = false }: PromoCardProps) {
   const cover = getOfertaCover(oferta);
   const isOneSol = oferta.id === "promo-1-sol";
+  const visibleTechnologies = oferta.tecnologia.filter(
+    (tecnologia) => tecnologia !== "Por confirmar"
+  );
+  const shouldValidateConditions =
+    visibleTechnologies.length !== oferta.tecnologia.length;
+  const showVelocity =
+    oferta.velocidad &&
+    oferta.velocidad !== "No aplica" &&
+    oferta.velocidad !== "Por confirmar";
 
   return (
     <article
@@ -55,24 +64,26 @@ export function PromoCard({ oferta, highlighted = false }: PromoCardProps) {
         </div>
 
         <div className="border-t border-slate-200 pt-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-            Condición comercial
-          </p>
           <p className="mt-1 text-2xl font-bold tracking-tight text-[#DA291C]">
             {oferta.precio}
           </p>
+          {showVelocity ? (
+            <p className="mt-1 text-sm font-semibold text-slate-700">
+              {oferta.velocidad}
+            </p>
+          ) : null}
         </div>
 
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-            Tecnología
-          </p>
+        {visibleTechnologies.length || shouldValidateConditions ? (
           <div className="flex flex-wrap gap-2">
-            {oferta.tecnologia.map((tecnologia) => (
+            {visibleTechnologies.map((tecnologia) => (
               <TechnologyBadge key={tecnologia} tecnologia={tecnologia} />
             ))}
+            {shouldValidateConditions ? (
+              <PromoBadge tone="yellow">Validar condiciones</PromoBadge>
+            ) : null}
           </div>
-        </div>
+        ) : null}
 
         {isOneSol ? (
           <div className="flex gap-2 rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-2 text-sm leading-5 text-yellow-950">
