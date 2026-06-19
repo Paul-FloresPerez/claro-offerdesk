@@ -18,13 +18,14 @@ const technologyClasses: Record<TecnologiaOferta, string> = {
   "HFC Plus": "border-indigo-200 bg-indigo-50 text-indigo-700",
   FTTH: "border-emerald-200 bg-emerald-50 text-emerald-700",
   Móvil: "border-sky-200 bg-sky-50 text-sky-700",
-  "Por confirmar": "border-neutral-200 bg-neutral-100 text-neutral-600",
+  "Validar tecnología": "border-yellow-200 bg-yellow-50 text-yellow-800",
 };
 
 const categoryClasses: Record<CategoriaOferta, string> = {
+  "Oferta base": "border-red-200 bg-red-50 text-[#B91C1C]",
   Hogar: "border-red-200 bg-red-50 text-[#B91C1C]",
-  HFC: "border-orange-200 bg-orange-50 text-orange-700",
-  "Promoción especial": "border-yellow-200 bg-yellow-50 text-yellow-800",
+  "Tecnología / HFC": "border-orange-200 bg-orange-50 text-orange-700",
+  "Promociones especiales": "border-yellow-200 bg-yellow-50 text-yellow-800",
   "Línea Móvil": "border-sky-200 bg-sky-50 text-sky-700",
 };
 
@@ -37,14 +38,12 @@ export function StatusBadge({ estado }: { estado: EstadoOferta }) {
 }
 
 export function TechnologyBadge({ tecnologia }: { tecnologia: TecnologiaOferta }) {
-  const label = tecnologia === "Por confirmar" ? "Validar" : tecnologia;
-
   return (
     <Badge
       variant="outline"
       className={cn("h-6 rounded-md", technologyClasses[tecnologia])}
     >
-      {label}
+      {tecnologia}
     </Badge>
   );
 }

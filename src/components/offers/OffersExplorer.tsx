@@ -83,7 +83,7 @@ export function OffersExplorer() {
             </div>
             <p className="text-sm leading-6 text-slate-600">
               Filtra por nombre, categoría, precio, velocidad, tecnología o
-              beneficio cargado en el catálogo estático.
+              beneficio cargado en las promociones.
             </p>
           </div>
           <Button variant="outline" onClick={resetFilters}>
@@ -166,7 +166,7 @@ export function OffersExplorer() {
               {filtered.length} ofertas encontradas
             </h2>
             <p className="text-sm text-slate-300">
-              Oferta Regular aparece primero como catálogo general oficial.
+              Oferta Regular aparece primero como oferta base / condición regular.
             </p>
           </div>
           {category !== allCategory ? (
@@ -180,7 +180,7 @@ export function OffersExplorer() {
           <div className="rounded-lg border border-[#DA291C]/25 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(255,245,244,0.95))] p-3 shadow-[0_18px_42px_rgba(0,0,0,0.22)]">
             <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#B91C1C]">
               <Database className="h-4 w-4" />
-              Catálogo regular destacado
+              Oferta base destacada
             </div>
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
               <OfferCard oferta={regular} featured />

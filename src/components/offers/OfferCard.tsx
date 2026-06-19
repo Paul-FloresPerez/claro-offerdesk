@@ -18,7 +18,7 @@ type Props = {
 };
 
 const categoryTone: Record<string, string> = {
-  "Catálogo general": "border-red-200 bg-red-50 text-[#B91C1C]",
+  "Oferta base": "border-red-200 bg-red-50 text-[#B91C1C]",
   Hogar: "border-slate-200 bg-slate-50 text-slate-700",
   "Tecnología / HFC": "border-orange-200 bg-orange-50 text-orange-700",
   "Promociones especiales": "border-yellow-200 bg-yellow-50 text-yellow-800",

@@ -155,13 +155,9 @@ export default async function OfertaDetallePage({
               <Fact
                 icon={Wifi}
                 label="Tecnología"
-                value={formatDisplayValue(oferta.tecnologia.join(", "))}
+                value={oferta.tecnologia.join(", ")}
               />
-              <Fact
-                icon={Clock3}
-                label="Vigencia"
-                value={formatDisplayValue(oferta.vigencia)}
-              />
+              <Fact icon={Clock3} label="Vigencia" value={oferta.vigencia} />
             </div>
           </Panel>
 
@@ -275,7 +271,7 @@ function Fact({
   value: string;
   strong?: boolean;
 }) {
-  const isValidationBadge = value === "Validar";
+  const isValidationBadge = value.startsWith("Validar");
 
   return (
     <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -285,7 +281,7 @@ function Fact({
       </div>
       {isValidationBadge ? (
         <span className="inline-flex h-7 items-center rounded-md border border-yellow-200 bg-yellow-50 px-2 text-xs font-semibold text-yellow-800">
-          Validar
+          {value}
         </span>
       ) : (
         <p
@@ -301,10 +297,6 @@ function Fact({
       )}
     </div>
   );
-}
-
-function formatDisplayValue(value: string) {
-  return value.replaceAll("Por confirmar", "Validar");
 }
 
 function BulletList({ items, icon }: { items: string[]; icon: "check" | "alert" }) {

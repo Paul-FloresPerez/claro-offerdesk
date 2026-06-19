@@ -7,7 +7,7 @@ export type TecnologiaOferta =
   | "HFC Plus"
   | "FTTH"
   | "Móvil"
-  | "Por confirmar";
+  | "Validar tecnología";
 
 export type OfertaMediaAdicional = {
   titulo: string;
@@ -50,7 +50,7 @@ export type Oferta = {
 };
 
 export const categoriasOferta = [
-  "Catálogo general",
+  "Oferta base",
   "Hogar",
   "Tecnología / HFC",
   "Promociones especiales",
@@ -62,7 +62,7 @@ export const tecnologiasOferta: TecnologiaOferta[] = [
   "HFC Plus",
   "FTTH",
   "Móvil",
-  "Por confirmar",
+  "Validar tecnología",
 ];
 
 export const estadosOferta: EstadoOferta[] = [
@@ -81,31 +81,31 @@ export const ofertas: Oferta[] = [
   {
     id: "oferta-regular",
     nombre: "Oferta Regular",
-    categoria: "Catálogo general",
-    precio: "Catálogo oficial",
+    categoria: "Oferta base",
+    precio: "Oferta base / condición regular",
     detallePrecio:
-      "Ver catálogo oficial de la imagen para precios One Play, Two Play y Three Play.",
+      "Ver material oficial de la imagen para precios One Play, Two Play y Three Play.",
     velocidad: "Según plan",
     tecnologia: ["HFC", "HFC Plus", "FTTH"],
     vigencia: "Junio 2026",
     estado: "material-oficial",
     resumen:
-      "Catálogo general con precios oficiales para One Play, Two Play y Three Play.",
+      "Oferta base con precios oficiales para One Play, Two Play y Three Play.",
     media: {
       principal: "/ofertas/Oferta-Regular.png",
     },
     beneficios: [
-      "Catálogo oficial para comparar One Play, Two Play y Three Play.",
+      "Material oficial para comparar One Play, Two Play y Three Play.",
       "Argumentos clave visibles en la imagen oficial.",
       "Material de uso interno para asesoría comercial.",
     ],
     aplicaPara: [
-      "Clientes que requieren comparar planes del catálogo regular.",
-      "One Play, Two Play y Three Play según catálogo oficial.",
+      "Clientes que requieren comparar planes de la oferta regular.",
+      "One Play, Two Play y Three Play según material oficial.",
     ],
     restricciones: [
       "Validar condiciones comerciales vigentes.",
-      "No transcribir ni modificar precios fuera del catálogo oficial.",
+      "No transcribir ni modificar precios fuera del material oficial.",
       "Material de uso interno.",
     ],
     validaciones: [
@@ -115,7 +115,7 @@ export const ofertas: Oferta[] = [
       "Validar tipo de plan: One Play, Two Play o Three Play.",
     ],
     fraseVenta:
-      "Podemos revisar el catálogo regular oficial y elegir el tipo de plan que mejor calce con su necesidad, validando cobertura y tecnología antes de avanzar.",
+      "Podemos revisar la oferta base y elegir el tipo de plan que mejor calce con su necesidad, validando cobertura y tecnología antes de avanzar.",
   },
   {
     id: "oferta-basico",
@@ -124,8 +124,8 @@ export const ofertas: Oferta[] = [
     precio: "S/39.50",
     detallePrecio: "Al mes x 4 meses. Precio regular: S/69.",
     velocidad: "200 Mbps",
-    tecnologia: ["Por confirmar"],
-    vigencia: "Por confirmar",
+    tecnologia: ["Validar tecnología"],
+    vigencia: "Validar vigencia",
     estado: "material-oficial",
     resumen:
       "1 Play de 200 Mbps con precio promocional y beneficios Full Claro visibles en la imagen oficial.",
@@ -155,8 +155,8 @@ export const ofertas: Oferta[] = [
     precio: "S/55",
     detallePrecio: "Al mes x 6 meses. Precio regular: S/89.",
     velocidad: "400 Mbps",
-    tecnologia: ["Por confirmar"],
-    vigencia: "Por confirmar",
+    tecnologia: ["Validar tecnología"],
+    vigencia: "Validar vigencia",
     estado: "material-oficial",
     resumen:
       "1 Play de 400 Mbps con repetidor y beneficios adicionales visibles en la imagen oficial.",
@@ -188,8 +188,8 @@ export const ofertas: Oferta[] = [
     detallePrecio:
       "850 Mbps: S/55 x 4 meses. 1000 Mbps: S/59.90 x 6 meses.",
     velocidad: "850 Mbps / 1000 Mbps",
-    tecnologia: ["Por confirmar"],
-    vigencia: "Por confirmar",
+    tecnologia: ["Validar tecnología"],
+    vigencia: "Validar vigencia",
     estado: "material-oficial",
     resumen:
       "Promoción de mayor velocidad con dos variantes y beneficios visibles en el material oficial.",
@@ -238,7 +238,7 @@ export const ofertas: Oferta[] = [
     detallePrecio: "Precio promocional por 12 meses según variante.",
     velocidad: "150 Mbps",
     tecnologia: ["HFC"],
-    vigencia: "Por confirmar",
+    vigencia: "Validar vigencia",
     estado: "material-oficial",
     resumen:
       "Oferta HFC con variantes de internet puro e internet más TV, ambas con beneficios Full Claro visibles.",
@@ -287,8 +287,8 @@ export const ofertas: Oferta[] = [
     precio: "Desde S/42",
     detallePrecio: "Precios promocionales x 3 primeros meses; luego según plan.",
     velocidad: "300 Mbps a 1500 Mbps Pro",
-    tecnologia: ["FTTH", "Por confirmar"],
-    vigencia: "Por confirmar",
+    tecnologia: ["FTTH", "Validar tecnología"],
+    vigencia: "Validar vigencia",
     estado: "validar",
     resumen:
       "Oferta 2 Play con varias velocidades, telefonía incluida y precios posteriores visibles en la imagen oficial.",
@@ -380,7 +380,7 @@ export const ofertas: Oferta[] = [
     detallePrecio: "x 2 meses. Precio regular: S/89.",
     velocidad: "Fibra 400 Mbps",
     tecnologia: ["FTTH"],
-    vigencia: "Por confirmar",
+    vigencia: "Validar vigencia",
     estado: "validar",
     resumen:
       "Promoción de fibra con ciudades incluidas dentro de la misma imagen oficial.",
@@ -420,7 +420,7 @@ export const ofertas: Oferta[] = [
     detallePrecio: "Planes Max y Max Ilimitados según imágenes oficiales.",
     velocidad: "No aplica",
     tecnologia: ["Móvil"],
-    vigencia: "Por confirmar",
+    vigencia: "Validar vigencia",
     estado: "material-oficial",
     resumen:
       "Planes móviles con material adicional para Planes Max y Planes Max Ilimitados.",

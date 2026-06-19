@@ -11,7 +11,7 @@ type PromoCardProps = {
 };
 
 const categoryTone: Record<string, "red" | "slate" | "yellow" | "blue" | "orange"> = {
-  "Catálogo general": "red",
+  "Oferta base": "red",
   Hogar: "slate",
   "Tecnología / HFC": "orange",
   "Promociones especiales": "yellow",
@@ -22,14 +22,14 @@ export function PromoCard({ oferta, highlighted = false }: PromoCardProps) {
   const cover = getOfertaCover(oferta);
   const isOneSol = oferta.id === "promo-1-sol";
   const visibleTechnologies = oferta.tecnologia.filter(
-    (tecnologia) => tecnologia !== "Por confirmar"
+    (tecnologia) => tecnologia !== "Validar tecnología"
   );
   const shouldValidateConditions =
     visibleTechnologies.length !== oferta.tecnologia.length;
   const showVelocity =
     oferta.velocidad &&
     oferta.velocidad !== "No aplica" &&
-    oferta.velocidad !== "Por confirmar";
+    !oferta.velocidad.startsWith("Validar");
 
   return (
     <article
