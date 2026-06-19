@@ -107,10 +107,10 @@ export default async function OfertaDetallePage({
           </Panel>
 
           {oferta.id === "oferta-regular" ? (
-            <ImportantCondition title="Catálogo oficial" tone="neutral">
+            <ImportantCondition title="Oferta base" tone="neutral">
               El detalle de precios para One Play, Two Play y Three Play está en
-              la imagen oficial. No manejar esta ficha como promoción de precio
-              único.
+              la imagen oficial. Manejarla como condición regular / estándar,
+              no como promoción de precio único.
             </ImportantCondition>
           ) : null}
 

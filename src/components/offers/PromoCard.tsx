@@ -7,6 +7,7 @@ import { getOfertaCover, type Oferta } from "@/data/ofertas";
 
 type PromoCardProps = {
   oferta: Oferta;
+  highlighted?: boolean;
 };
 
 const categoryTone: Record<string, "red" | "slate" | "yellow" | "blue" | "orange"> = {
@@ -17,13 +18,15 @@ const categoryTone: Record<string, "red" | "slate" | "yellow" | "blue" | "orange
   "Línea Móvil": "blue",
 };
 
-export function PromoCard({ oferta }: PromoCardProps) {
+export function PromoCard({ oferta, highlighted = false }: PromoCardProps) {
   const cover = getOfertaCover(oferta);
   const isOneSol = oferta.id === "promo-1-sol";
 
   return (
     <article
-      className="animate-fade-up group flex h-full flex-col overflow-hidden rounded-lg border border-white/70 bg-white text-[#111827] shadow-[0_18px_42px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(0,0,0,0.28)]"
+      id={`promo-${oferta.id}`}
+      className="animate-fade-up group flex h-full scroll-mt-32 flex-col overflow-hidden rounded-lg border border-white/70 bg-white text-[#111827] shadow-[0_18px_42px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1 hover:scale-[1.005] hover:shadow-[0_26px_60px_rgba(0,0,0,0.28)] data-[highlighted=true]:border-[#DA291C]/70 data-[highlighted=true]:shadow-[0_0_0_3px_rgba(218,41,28,0.16),0_24px_70px_rgba(0,0,0,0.28)]"
+      data-highlighted={highlighted}
     >
       <div className="p-3 pb-0">
         <div className="overflow-hidden rounded-lg bg-slate-50">
