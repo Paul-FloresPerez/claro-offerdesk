@@ -10,6 +10,7 @@ type OfficialImageProps = {
   title?: string;
   description?: string;
   className?: string;
+  interactive?: boolean;
   preload?: boolean;
   variant?: "banner" | "card" | "natural" | "wide" | "hero";
 };
@@ -39,6 +40,7 @@ export function OfficialImage({
   title,
   description,
   className,
+  interactive = false,
   preload,
   variant = "natural",
 }: OfficialImageProps) {
@@ -98,7 +100,9 @@ export function OfficialImage({
     <figure className={cn("space-y-2", className)}>
       <div
         className={cn(
-          "group/image relative overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-[0_12px_28px_rgba(15,23,42,0.08)]",
+          "group/image relative overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-[0_12px_28px_rgba(15,23,42,0.08)] transition duration-300",
+          interactive &&
+            "cursor-zoom-in border-[#DA291C]/25 group-hover:border-[#DA291C]/45 group-hover:shadow-[0_18px_44px_rgba(218,41,28,0.14)]",
           frameClass
         )}
       >
@@ -109,7 +113,7 @@ export function OfficialImage({
           height={dimensions.height}
           sizes={imageSizes}
           className={cn(
-            "h-full w-full object-contain transition duration-300 group-hover/image:scale-[1.015]",
+            "h-full w-full object-contain transition duration-300 group-hover/image:scale-[1.015] group-hover:scale-[1.015]",
             variant === "card" || variant === "banner" ? "p-3" : "p-2 sm:p-3"
           )}
           {...imageLoadProps}

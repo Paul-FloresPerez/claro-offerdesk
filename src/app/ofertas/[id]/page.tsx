@@ -90,17 +90,13 @@ export default async function OfertaDetallePage({
         <section className="space-y-6">
           <Panel title="Imagen oficial" icon={FileText}>
             {hasMainImage ? (
-              <div className="space-y-4">
-                <OfficialImage
-                  item={oferta.media.principal}
-                  title={oferta.nombre}
-                  variant="hero"
-                />
-                <OfferImageDialog
-                  src={oferta.media.principal!}
-                  title={oferta.nombre}
-                />
-              </div>
+              <OfferImageDialog
+                src={oferta.media.principal!}
+                title={oferta.nombre}
+                preview
+                preload
+                variant="hero"
+              />
             ) : (
               <OfficialImage variant="hero" />
             )}
@@ -122,9 +118,13 @@ export default async function OfertaDetallePage({
 
           {oferta.media.ciudades ? (
             <Panel title="Ciudades / zonas aplicables" icon={MapPinned}>
-              <OfficialImage
-                item={oferta.media.ciudades}
+              <OfferImageDialog
+                src={oferta.media.ciudades}
                 title={`Zonas aplicables - ${oferta.nombre}`}
+                description="Ciudades / zonas aplicables según material oficial."
+                hint="Toca para ampliar ciudades / zonas aplicables"
+                preview
+                showButton={false}
                 variant="natural"
               />
             </Panel>
@@ -140,7 +140,16 @@ export default async function OfertaDetallePage({
             <Panel title="Material adicional" icon={FileText}>
               <div className="grid gap-4">
                 {oferta.media.adicionales.map((item) => (
-                  <OfficialImage key={item.src} item={item} variant="natural" />
+                  <OfferImageDialog
+                    key={item.src}
+                    src={item.src}
+                    title={item.titulo}
+                    description={item.descripcion ?? "Material adicional oficial."}
+                    hint="Toca para ampliar material adicional"
+                    preview
+                    showButton={false}
+                    variant="natural"
+                  />
                 ))}
               </div>
             </Panel>
@@ -150,7 +159,12 @@ export default async function OfertaDetallePage({
         <aside className="space-y-6">
           <Panel title="Datos clave" icon={CheckCircle2}>
             <div className="grid gap-3 sm:grid-cols-2">
-              <Fact icon={BadgeDollarSign} label="Precio" value={oferta.precio} strong />
+              <Fact
+                icon={BadgeDollarSign}
+                label="Precio"
+                value={oferta.precio}
+                strong
+              />
               <Fact icon={Gauge} label="Velocidad" value={oferta.velocidad} />
               <Fact
                 icon={Wifi}
@@ -238,7 +252,7 @@ function Panel({
   return (
     <section
       className={cn(
-        "rounded-lg border bg-white p-4 text-[#111827] shadow-[0_18px_42px_rgba(0,0,0,0.20)] sm:p-5",
+        "animate-fade-up rounded-lg border bg-white p-4 text-[#111827] shadow-[0_18px_42px_rgba(0,0,0,0.20)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_56px_rgba(0,0,0,0.24)] sm:p-5",
         tone === "warning" ? "border-yellow-200" : "border-white/70"
       )}
     >
@@ -280,7 +294,7 @@ function Fact({
         {label}
       </div>
       {isValidationBadge ? (
-        <span className="inline-flex h-7 items-center rounded-md border border-yellow-200 bg-yellow-50 px-2 text-xs font-semibold text-yellow-800">
+        <span className="inline-flex min-h-7 items-center rounded-md border border-yellow-200 bg-yellow-50 px-2 py-1 text-xs font-semibold text-yellow-800">
           {value}
         </span>
       ) : (

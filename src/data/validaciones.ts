@@ -10,7 +10,7 @@ export const validaciones: ValidacionGrupo[] = [
     severidad: "critica",
     reglas: [
       "No ofrecer una promoción si falta precio, velocidad, cobertura o condición obligatoria.",
-      "No inventar vigencias. Si no está en el material o sistema, indicar Por confirmar.",
+      "No inventar vigencias. Si no está en el material o sistema, indicar Validar vigencia.",
       "No modificar ni reinterpretar el contenido de las imágenes oficiales.",
       "Informar precio posterior cuando la imagen lo muestre.",
     ],
@@ -31,7 +31,7 @@ export const validaciones: ValidacionGrupo[] = [
     reglas: [
       "Confirmar tecnología disponible antes de ofrecer HFC, HFC Plus, FTTH o móvil.",
       "HFC Puro debe tratarse como categoría específica.",
-      "Si la tecnología no está confirmada en datos locales, mantener Por confirmar.",
+      "Si la tecnología no está confirmada en datos locales, mantener Validar tecnología.",
     ],
   },
   {

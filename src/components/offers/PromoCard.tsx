@@ -34,14 +34,21 @@ export function PromoCard({ oferta, highlighted = false }: PromoCardProps) {
   return (
     <article
       id={`promo-${oferta.id}`}
-      className="animate-fade-up group flex h-full scroll-mt-32 flex-col overflow-hidden rounded-lg border border-white/70 bg-white text-[#111827] shadow-[0_18px_42px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1 hover:scale-[1.005] hover:shadow-[0_26px_60px_rgba(0,0,0,0.28)] data-[highlighted=true]:border-[#DA291C]/70 data-[highlighted=true]:shadow-[0_0_0_3px_rgba(218,41,28,0.16),0_24px_70px_rgba(0,0,0,0.28)]"
+      className="animate-fade-up group relative flex h-full scroll-mt-32 cursor-pointer flex-col overflow-hidden rounded-lg border border-white/70 bg-white text-[#111827] shadow-[0_18px_42px_rgba(0,0,0,0.22)] transition duration-300 hover:-translate-y-1 hover:scale-[1.005] hover:border-[#DA291C]/45 hover:shadow-[0_26px_60px_rgba(0,0,0,0.28)] data-[highlighted=true]:border-[#DA291C]/70 data-[highlighted=true]:shadow-[0_0_0_3px_rgba(218,41,28,0.16),0_24px_70px_rgba(0,0,0,0.28)]"
       data-highlighted={highlighted}
     >
+      <Link
+        href={`/ofertas/${oferta.id}`}
+        aria-label={`Abrir ficha de ${oferta.nombre}`}
+        className="absolute inset-0 z-10 block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+      />
+
       <div className="p-3 pb-0">
         <div className="overflow-hidden rounded-lg bg-slate-50">
           <OfficialImage
             item={cover}
             title={oferta.nombre}
+            interactive
             variant="card"
           />
         </div>
@@ -96,7 +103,8 @@ export function PromoCard({ oferta, highlighted = false }: PromoCardProps) {
 
         <Link
           href={`/ofertas/${oferta.id}`}
-          className="mt-auto inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-[#DA291C] px-5 text-base font-semibold text-white shadow-[0_14px_28px_rgba(218,41,28,0.26)] transition duration-200 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+          aria-label={`Ver promoción ${oferta.nombre}`}
+          className="relative z-20 mt-auto inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-[#DA291C] px-5 text-base font-semibold text-white shadow-[0_14px_28px_rgba(218,41,28,0.26)] transition duration-200 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
         >
           Ver promoción
           <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
