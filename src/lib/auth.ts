@@ -1,1 +1,1 @@
-export const authPlaceholder = "auth-pending";
+export { auth, authOptions } from "@/auth";
