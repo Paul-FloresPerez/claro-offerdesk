@@ -3,6 +3,7 @@ import "server-only";
 import bcrypt from "bcryptjs";
 import { getServerSession, type NextAuthOptions, type User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { missingAuthSecret } from "@/lib/auth-secret";
 import { prisma } from "@/lib/prisma";
 
 type ClaroAuthUser = User & {
@@ -11,7 +12,8 @@ type ClaroAuthUser = User & {
 };
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+  secret:
+    process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET ?? missingAuthSecret(),
   session: {
     strategy: "jwt",
   },

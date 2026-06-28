@@ -1,12 +1,14 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse, type NextRequest } from "next/server";
+import { missingAuthSecret } from "@/lib/auth-secret";
 
 const adminRoutePrefixes = ["/admin", "/db-test"];
 
 export async function proxy(request: NextRequest) {
   const token = await getToken({
     req: request,
-    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+    secret:
+      process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET ?? missingAuthSecret(),
   });
 
   if (!token) {
