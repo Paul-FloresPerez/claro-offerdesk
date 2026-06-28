@@ -24,7 +24,7 @@ export default function GuionPage() {
     <main>
       <PageHeader
         eyebrow="Atención comercial"
-        title="Guion de llamada"
+        title="Guion Comercial"
         description="Secuencia sugerida para abrir, diagnosticar, ofrecer y cerrar."
         tone="dark"
       />

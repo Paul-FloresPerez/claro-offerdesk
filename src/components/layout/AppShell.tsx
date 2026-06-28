@@ -1,17 +1,20 @@
 import {
   FileText,
-  ListChecks,
+  GraduationCap,
   MessagesSquare,
   PackageCheck,
+  Trophy,
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
 const navigation = [
-  { href: "/", label: "Promociones", icon: PackageCheck },
-  { href: "/guion", label: "Guion", icon: FileText },
+  { href: "/", label: "Inicio", icon: GraduationCap },
+  { href: "/ofertas", label: "Promociones", icon: PackageCheck },
+  { href: "/guion", label: "Guion Comercial", icon: FileText },
   { href: "/objeciones", label: "Objeciones", icon: MessagesSquare },
-  { href: "/validaciones", label: "Validaciones", icon: ListChecks },
+  { href: "/top-ventas", label: "Top ventas", icon: Trophy },
+  { href: "/capacitacion", label: "Entrenamiento", icon: GraduationCap },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {

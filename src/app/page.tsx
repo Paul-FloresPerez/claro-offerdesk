@@ -1,68 +1,43 @@
-import { PromoCatalog } from "@/components/offers/PromoCatalog";
-import { ofertas } from "@/data/ofertas";
+import { AudioComparisonPanel } from "@/components/training/AudioComparisonPanel";
+import { TrainingQuickActions } from "@/components/training/TrainingQuickActions";
+import { TrainingStudio } from "@/components/training/TrainingStudio";
+import { getTrainingMedia } from "@/lib/training-media";
 
-type PageProps = {
-  searchParams: Promise<{
-    q?: string | string[];
-    tipo?: string | string[];
-  }>;
-};
-
-export default async function HomePage({ searchParams }: PageProps) {
-  const params = await searchParams;
+export default function HomePage() {
+  const { featuredVideo, featuredAudios } = getTrainingMedia();
 
   return (
     <main className="relative">
-      <section className="relative overflow-hidden border-b border-white/10">
-        <div className="pointer-events-none absolute right-12 top-8 h-40 w-40 rounded-full border border-[#DA291C]/20" />
-        <div className="pointer-events-none absolute right-24 top-20 h-48 w-48 rounded-full bg-[#DA291C]/10 blur-3xl" />
-        <div className="pointer-events-none absolute right-0 top-1/2 h-px w-72 bg-gradient-to-l from-[#DA291C]/40 to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(17,24,39,0.98)_0%,rgba(29,37,53,0.94)_46%,rgba(64,17,22,0.72)_100%)]" />
 
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-7 sm:px-6 lg:grid-cols-[1fr_360px] lg:items-center lg:py-9">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#FFB4AC]">
+      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
+        <div className="mb-5 flex flex-col gap-3 border-b border-white/10 pb-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#FFB4AC]">
               Claro OfferDesk
             </p>
-            <h1 className="mt-2 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              Promociones Claro
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              Entrenamiento Comercial
             </h1>
-            <p className="mt-3 max-w-xl text-base leading-7 text-slate-300">
-              Herramienta interna para revisar campañas, condiciones y material
-              oficial antes de ofrecer.
+            <p className="mt-2 max-w-2xl text-base leading-7 text-slate-300">
+              Practica el discurso, escucha referencias y entra preparado a
+              vender.
             </p>
           </div>
+          <span className="inline-flex w-fit rounded-lg border border-[#DA291C]/30 bg-[#DA291C]/12 px-4 py-2 text-sm font-semibold text-[#FFB4AC] shadow-[0_0_34px_rgba(218,41,28,0.10)]">
+            Sesion de practica
+          </span>
+        </div>
 
-          <div className="relative rounded-lg border border-white/10 bg-white/[0.07] p-4 shadow-[0_20px_56px_rgba(0,0,0,0.24)] backdrop-blur">
-            <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full border border-[#DA291C]/30" />
-            <div className="grid gap-3">
-              <HeroSignal text={`${ofertas.length} promociones`} />
-              <HeroSignal text="Material oficial" />
-              <HeroSignal text="Validar antes de ofrecer" />
-            </div>
-          </div>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(330px,0.65fr)] lg:items-start">
+          <TrainingStudio video={featuredVideo} />
+          <AudioComparisonPanel audios={featuredAudios} />
+        </div>
+
+        <div className="mt-5">
+          <TrainingQuickActions />
         </div>
       </section>
-
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
-        <PromoCatalog
-          activeFilter={getParam(params.tipo)}
-          query={getParam(params.q)}
-        />
-      </div>
     </main>
-  );
-}
-
-function getParam(value?: string | string[]) {
-  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
-}
-
-function HeroSignal({ text }: { text: string }) {
-  return (
-    <div className="rounded-lg border border-white/10 bg-[#111827]/55 px-4 py-3">
-      <p className="text-base font-semibold tracking-tight text-white">
-        {text}
-      </p>
-    </div>
   );
 }
