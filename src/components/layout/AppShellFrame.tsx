@@ -13,11 +13,11 @@ export type AppShellUser = {
 
 const navigation = [
   { href: "/", label: "Inicio" },
-  { href: "/ofertas", label: "Promociones" },
+  { href: "/promociones", label: "Promociones" },
   { href: "/guion", label: "Guion Comercial" },
   { href: "/objeciones", label: "Objeciones" },
   { href: "/top-ventas", label: "Top ventas" },
-  { href: "/capacitacion", label: "Entrenamiento" },
+  { href: "/entrenamiento", label: "Entrenamiento" },
 ];
 
 export function AppShellFrame({

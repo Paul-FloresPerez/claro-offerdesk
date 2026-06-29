@@ -1,43 +1,248 @@
-import { AudioComparisonPanel } from "@/components/training/AudioComparisonPanel";
-import { TrainingQuickActions } from "@/components/training/TrainingQuickActions";
-import { TrainingStudio } from "@/components/training/TrainingStudio";
-import { getTrainingMedia } from "@/lib/training-media";
+import {
+  BookOpenText,
+  Headphones,
+  MessageSquareReply,
+  PackageCheck,
+  PlayCircle,
+  Trophy,
+  type LucideIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { ofertas } from "@/data/ofertas";
+import { rankingMock } from "@/data/ranking";
+import { getTrainingMedia, type TrainingMediaFile } from "@/lib/training-media";
+
+const quickLinks: Array<{
+  href: string;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+}> = [
+  {
+    href: "/promociones",
+    label: "Promociones",
+    description: "Revisa ofertas, condiciones y material oficial.",
+    icon: PackageCheck,
+  },
+  {
+    href: "/guion",
+    label: "Guion Comercial",
+    description: "Practica el flujo recomendado de venta.",
+    icon: BookOpenText,
+  },
+  {
+    href: "/objeciones",
+    label: "Objeciones",
+    description: "Responde dudas frecuentes con precisión.",
+    icon: MessageSquareReply,
+  },
+  {
+    href: "/top-ventas",
+    label: "Top ventas",
+    description: "Consulta el ranking visual del equipo.",
+    icon: Trophy,
+  },
+  {
+    href: "/entrenamiento",
+    label: "Entrenamiento",
+    description: "Accede a la biblioteca de video y audio.",
+    icon: PlayCircle,
+  },
+];
+
+const workflow = [
+  "Escucha o mira una referencia",
+  "Revisa promociones vigentes",
+  "Repasa el guion comercial",
+  "Practica objeciones antes de vender",
+];
 
 export default function HomePage() {
-  const { featuredVideo, featuredAudios } = getTrainingMedia();
+  const { featuredVideo, featuredAudios, videos, audios } = getTrainingMedia();
+  const topAdvisor = rankingMock[0];
 
   return (
     <main className="relative">
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(17,24,39,0.98)_0%,rgba(29,37,53,0.94)_46%,rgba(64,17,22,0.72)_100%)]" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(17,24,39,0.98)_0%,rgba(29,37,53,0.94)_48%,rgba(64,17,22,0.70)_100%)]" />
 
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
-        <div className="mb-5 flex flex-col gap-3 border-b border-white/10 pb-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#FFB4AC]">
               Claro OfferDesk
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              Entrenamiento Comercial
+              Inicio
             </h1>
             <p className="mt-2 max-w-2xl text-base leading-7 text-slate-300">
-              Practica el discurso, escucha referencias y entra preparado a
-              vender.
+              Consola interna para preparar la venta, consultar promociones y
+              practicar el discurso comercial.
             </p>
           </div>
-          <span className="inline-flex w-fit rounded-lg border border-[#DA291C]/30 bg-[#DA291C]/12 px-4 py-2 text-sm font-semibold text-[#FFB4AC] shadow-[0_0_34px_rgba(218,41,28,0.10)]">
-            Sesion de practica
-          </span>
+          <Link
+            href="/promociones"
+            className="inline-flex h-11 w-fit items-center gap-2 rounded-lg bg-[#DA291C] px-4 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(218,41,28,0.24)] transition hover:bg-[#B91F15]"
+          >
+            <PackageCheck className="h-4 w-4" />
+            Ver promociones
+          </Link>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(330px,0.65fr)] lg:items-start">
-          <TrainingStudio video={featuredVideo} />
-          <AudioComparisonPanel audios={featuredAudios} />
-        </div>
+        <section className="grid gap-4 lg:grid-cols-3">
+          <MetricCard
+            label="Promociones"
+            value={ofertas.length.toString()}
+            detail="Ofertas disponibles para consulta"
+          />
+          <MetricCard
+            label="Entrenamiento"
+            value={(videos.length + audios.length).toString()}
+            detail="Archivos detectados en la biblioteca"
+          />
+          <MetricCard
+            label="Top ventas"
+            value={topAdvisor ? topAdvisor.fullName : "Pendiente"}
+            detail={topAdvisor ? `${topAdvisor.salesCount} ventas registradas` : "Sin datos mock"}
+          />
+        </section>
 
-        <div className="mt-5">
-          <TrainingQuickActions />
-        </div>
+        <section className="mt-6 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="rounded-xl border border-white/10 bg-white/[0.07] p-4 shadow-[0_20px_62px_rgba(0,0,0,0.22)] backdrop-blur">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#FFB4AC]">
+              Ruta recomendada
+            </p>
+            <h2 className="mt-2 text-xl font-semibold tracking-tight text-white">
+              Preparación rápida
+            </h2>
+            <div className="mt-4 grid gap-3">
+              {workflow.map((step, index) => (
+                <div
+                  key={step}
+                  className="flex min-h-12 items-center gap-3 rounded-lg border border-white/10 bg-[#111827]/55 px-3 py-2"
+                >
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-[#DA291C] text-sm font-black text-white">
+                    {index + 1}
+                  </span>
+                  <span className="text-sm font-semibold leading-5 text-slate-100">
+                    {step}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <TrainingPreview video={featuredVideo} audio={featuredAudios[0]} />
+        </section>
+
+        <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {quickLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="group rounded-xl border border-white/10 bg-white/[0.07] p-4 shadow-[0_18px_54px_rgba(0,0,0,0.20)] transition hover:border-[#DA291C]/40 hover:bg-white/[0.10]"
+            >
+              <span className="grid h-11 w-11 place-items-center rounded-lg bg-[#DA291C]/18 text-[#FFB4AC] ring-1 ring-[#DA291C]/25 transition group-hover:scale-[1.03]">
+                <item.icon className="h-5 w-5" />
+              </span>
+              <h2 className="mt-4 text-lg font-semibold tracking-tight text-white">
+                {item.label}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-slate-400">
+                {item.description}
+              </p>
+            </Link>
+          ))}
+        </section>
       </section>
     </main>
+  );
+}
+
+function MetricCard({
+  detail,
+  label,
+  value,
+}: {
+  detail: string;
+  label: string;
+  value: string;
+}) {
+  return (
+    <article className="rounded-xl border border-white/10 bg-white/[0.07] p-4 shadow-[0_18px_54px_rgba(0,0,0,0.20)]">
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+        {label}
+      </p>
+      <p className="mt-2 truncate text-2xl font-bold tracking-tight text-white">
+        {value}
+      </p>
+      <p className="mt-2 text-sm leading-6 text-slate-400">{detail}</p>
+    </article>
+  );
+}
+
+function TrainingPreview({
+  audio,
+  video,
+}: {
+  audio?: TrainingMediaFile;
+  video?: TrainingMediaFile;
+}) {
+  return (
+    <section className="rounded-xl border border-white/10 bg-white/[0.07] p-4 shadow-[0_20px_62px_rgba(0,0,0,0.22)] backdrop-blur">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#FFB4AC]">
+            Entrenamiento destacado
+          </p>
+          <h2 className="mt-2 text-xl font-semibold tracking-tight text-white">
+            Video y audio base
+          </h2>
+        </div>
+        <Link
+          href="/entrenamiento"
+          className="inline-flex h-9 items-center rounded-md border border-white/10 px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
+        >
+          Abrir
+        </Link>
+      </div>
+
+      <div className="grid gap-3">
+        {video ? (
+          <video
+            controls
+            preload="metadata"
+            className="aspect-video w-full rounded-lg bg-black"
+            src={video.fileUrl}
+          >
+            Tu navegador no puede reproducir este video.
+          </video>
+        ) : (
+          <PendingMedia label="Video pendiente de cargar" path="/capacitacion/videos/" />
+        )}
+
+        {audio ? (
+          <div className="rounded-lg border border-white/10 bg-[#111827]/58 p-3">
+            <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-white">
+              <Headphones className="h-4 w-4 text-[#FFB4AC]" />
+              Audio de referencia
+            </div>
+            <audio controls preload="metadata" className="w-full" src={audio.fileUrl}>
+              Tu navegador no puede reproducir este audio.
+            </audio>
+          </div>
+        ) : (
+          <PendingMedia label="Audio pendiente de cargar" path="/capacitacion/audios/" />
+        )}
+      </div>
+    </section>
+  );
+}
+
+function PendingMedia({ label, path }: { label: string; path: string }) {
+  return (
+    <div className="rounded-lg border border-dashed border-white/15 bg-[#111827]/55 p-4">
+      <p className="text-sm font-semibold text-white">{label}</p>
+      <p className="mt-1 text-xs text-slate-500">{path}</p>
+    </div>
   );
 }
