@@ -21,11 +21,11 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") ?? "");
+    const identifier = String(formData.get("identifier") ?? "");
     const password = String(formData.get("password") ?? "");
 
     const result = await signIn("credentials", {
-      email,
+      identifier,
       password,
       redirect: false,
       callbackUrl,
@@ -34,7 +34,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
     setIsSubmitting(false);
 
     if (!result || result.error) {
-      setError("Correo o contraseña incorrectos, o usuario inactivo.");
+      setError("Usuario o contraseña incorrectos, o cuenta inactiva.");
       return;
     }
 
@@ -45,12 +45,12 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
   return (
     <form className="grid gap-4" onSubmit={handleSubmit}>
       <label className="grid gap-2 text-sm font-semibold text-slate-700">
-        Correo
+        Usuario o correo
         <Input
-          name="email"
-          type="email"
-          autoComplete="email"
-          placeholder="asesor@claro.pe"
+          name="identifier"
+          type="text"
+          autoComplete="username"
+          placeholder="juan, paul o correo registrado"
           required
           className="h-11 border-slate-200 bg-slate-50 text-[#111827]"
         />

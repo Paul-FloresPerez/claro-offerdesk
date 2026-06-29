@@ -15,6 +15,10 @@ const navigation = [
 export async function AppShell({ children }: { children: ReactNode }) {
   const session = await auth();
 
+  if (!session?.user) {
+    return children;
+  }
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#111827] text-[#F9FAFB]">
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#111827]/92 shadow-[0_12px_30px_rgba(0,0,0,0.22)] backdrop-blur">

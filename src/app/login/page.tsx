@@ -24,57 +24,39 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   );
 
   return (
-    <main className="mx-auto grid min-h-[calc(100vh-74px)] max-w-7xl place-items-center px-4 py-8 sm:px-6 lg:px-8">
-      <section className="grid w-full max-w-5xl overflow-hidden rounded-xl border border-white/10 bg-white shadow-[0_26px_78px_rgba(0,0,0,0.34)] lg:grid-cols-[1.05fr_0.95fr]">
-        <div className="relative min-h-[320px] overflow-hidden bg-[#111827] lg:min-h-[560px]">
-          {hasLoginImage ? (
-            <img
-              src="/login/empresa-login.jpg"
-              alt="Equipo Claro"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full min-h-[320px] items-center justify-center bg-[linear-gradient(135deg,#111827_0%,#1F2937_55%,#5A151B_100%)] p-8">
-              <div className="max-w-sm text-center">
-                <span className="mx-auto grid h-14 w-14 place-items-center rounded-lg bg-[#DA291C] text-xl font-black text-white shadow-[0_16px_34px_rgba(218,41,28,0.30)]">
-                  C
-                </span>
-                <p className="mt-5 text-sm font-semibold uppercase tracking-[0.16em] text-[#FFB4AC]">
-                  Claro OfferDesk
-                </p>
-                <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">
-                  Acceso interno
-                </h1>
-              </div>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(17,24,39,0.10),rgba(17,24,39,0.72))]" />
-          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#FFB4AC]">
-              Plataforma interna
-            </p>
-            <h1 className="mt-2 max-w-md text-3xl font-semibold tracking-tight">
-              Herramientas comerciales para asesores Claro
-            </h1>
-          </div>
-        </div>
+    <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#0B1120] px-4 py-8 text-[#111827] sm:px-6 lg:px-8">
+      {hasLoginImage ? (
+        <img
+          src="/login/empresa-login.jpg"
+          alt="WITLINK"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,#0B1120_0%,#111827_48%,#5A151B_100%)]" />
+      )}
 
-        <div className="flex flex-col justify-center bg-white p-6 text-[#111827] sm:p-8 lg:p-10">
-          <div className="mb-7">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#DA291C]">
-              Iniciar sesión
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(218,41,28,0.22),transparent_34%),linear-gradient(180deg,rgba(2,6,23,0.68),rgba(2,6,23,0.88))]" />
+
+      <section className="relative z-10 w-full max-w-md">
+        <div className="rounded-2xl border border-white/40 bg-white/90 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl sm:p-8">
+          <div className="mb-7 text-center">
+            <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-[#DA291C] text-lg font-black text-white shadow-[0_16px_34px_rgba(218,41,28,0.28)]">
+              C
+            </span>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[#DA291C]">
+              Claro OfferDesk
             </p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">
-              Bienvenido
-            </h2>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#111827]">
+              Acceso interno
+            </h1>
             <p className="mt-2 text-sm leading-6 text-slate-500">
               Acceso interno para asesores autorizados.
             </p>
-          </div>
+        </div>
 
           <LoginForm callbackUrl={callbackUrl} />
 
-          <p className="mt-6 text-xs leading-5 text-slate-400">
+          <p className="mt-6 text-center text-xs leading-5 text-slate-500">
             Recuperación de contraseña próximamente.
           </p>
         </div>
