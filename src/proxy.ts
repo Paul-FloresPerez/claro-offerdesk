@@ -2,6 +2,8 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse, type NextRequest } from "next/server";
 import { missingAuthSecret } from "@/lib/auth-secret";
 
+const canonicalHost = "claro-offerdesk.vercel.app";
+const canonicalOrigin = `https://${canonicalHost}`;
 const adminRoutePrefixes = ["/admin", "/db-test"];
 const publicFilePrefixes = [
   "/capacitacion/",
@@ -12,7 +14,17 @@ const publicFilePrefixes = [
 ];
 
 export async function proxy(request: NextRequest) {
+  const canonicalRedirect = getCanonicalRedirect(request);
+
+  if (canonicalRedirect) {
+    return canonicalRedirect;
+  }
+
   if (isPublicFile(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
+  if (request.nextUrl.pathname === "/login") {
     return NextResponse.next();
   }
 
@@ -38,6 +50,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
+    "/login",
     "/ofertas/:path*",
     "/promociones/:path*",
     "/guion/:path*",
@@ -62,6 +75,33 @@ function isPublicFile(pathname: string) {
   return (
     publicFilePrefixes.some((prefix) => pathname.startsWith(prefix)) &&
     /\.[a-z0-9]+$/i.test(pathname)
+  );
+}
+
+function getCanonicalRedirect(request: NextRequest) {
+  if (process.env.NODE_ENV !== "production") {
+    return null;
+  }
+
+  const host = request.headers.get("host")?.toLowerCase();
+
+  if (!host || host === canonicalHost || isLocalhost(host)) {
+    return null;
+  }
+
+  const url = new URL(
+    `${request.nextUrl.pathname}${request.nextUrl.search}`,
+    canonicalOrigin
+  );
+
+  return NextResponse.redirect(url, 308);
+}
+
+function isLocalhost(host: string) {
+  return (
+    host.startsWith("localhost") ||
+    host.startsWith("127.0.0.1") ||
+    host.startsWith("[::1]")
   );
 }
 

@@ -11,7 +11,8 @@ type ClaroAuthUser = User & {
   mustChangePassword: boolean;
 };
 
-const SESSION_MAX_AGE = 8 * 60 * 60;
+const SESSION_MAX_AGE = 30 * 60;
+const SESSION_UPDATE_AGE = 5 * 60;
 
 export const authOptions: NextAuthOptions = {
   secret:
@@ -19,6 +20,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
     maxAge: SESSION_MAX_AGE,
+    updateAge: SESSION_UPDATE_AGE,
   },
   jwt: {
     maxAge: SESSION_MAX_AGE,
