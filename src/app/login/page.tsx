@@ -50,14 +50,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               Acceso interno
             </h1>
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              Acceso interno para asesores autorizados.
+              Consola comercial para asesores autorizados
             </p>
         </div>
 
           <LoginForm />
 
           <p className="mt-6 text-center text-xs leading-5 text-slate-500">
-            Recuperación de contraseña próximamente.
+            Acceso exclusivo para personal autorizado.
           </p>
         </div>
       </section>

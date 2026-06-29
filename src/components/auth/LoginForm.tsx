@@ -23,7 +23,7 @@ export function LoginForm() {
     const password = String(formData.get("password") ?? "");
 
     if (!identifier) {
-      setError("Ingresa tu usuario o correo.");
+      setError("Ingresa tu usuario o DNI.");
       return;
     }
 
@@ -62,12 +62,12 @@ export function LoginForm() {
   return (
     <form className="grid gap-4" noValidate onSubmit={handleSubmit}>
       <label className="grid gap-2 text-sm font-semibold text-slate-700">
-        Usuario o correo
+        Usuario o DNI
         <Input
           name="identifier"
           type="text"
           autoComplete="username"
-          placeholder="juan, paul o correo registrado"
+          placeholder="Ingresa tu usuario o DNI"
           aria-invalid={Boolean(error)}
           disabled={isSubmitting}
           className="h-11 border-slate-200 bg-slate-50 text-[#111827]"

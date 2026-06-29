@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
       name: "Credenciales",
       credentials: {
         identifier: {
-          label: "Usuario o correo",
+          label: "Usuario o DNI",
           type: "text",
         },
         password: {
@@ -52,9 +52,6 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findFirst({
           where: {
             OR: [
-              {
-                email: identifier,
-              },
               {
                 username: identifier,
               },
