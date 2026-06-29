@@ -9,26 +9,27 @@ const DEBUG_USERNAME = "paul.flores";
 const DEBUG_PASSWORD = "Claro2026*";
 
 export async function GET() {
-  const user = await prisma.user.findUnique({
-    where: {
-      username: DEBUG_USERNAME,
-    },
-    select: {
-      email: true,
-      username: true,
-      dni: true,
-      isActive: true,
-      passwordHash: true,
-    },
-  });
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username: DEBUG_USERNAME,
+      },
+      select: {
+        email: true,
+        username: true,
+        dni: true,
+        isActive: true,
+        passwordHash: true,
+      },
+    });
 
-  const passwordHash = user?.passwordHash ?? "";
-  const passwordMatches = user
-    ? await bcrypt.compare(DEBUG_PASSWORD, passwordHash)
-    : false;
+    const passwordHash = user?.passwordHash ?? "";
+    const passwordMatches = user
+      ? await bcrypt.compare(DEBUG_PASSWORD, passwordHash)
+      : false;
 
-  return NextResponse.json(
-    {
+    return jsonNoStore({
+      ok: true,
       hasUser: Boolean(user),
       username: user?.username ?? null,
       email: user?.email ?? null,
@@ -39,11 +40,38 @@ export async function GET() {
       passwordMatches,
       databaseUrlExists: Boolean(process.env.DATABASE_URL),
       directUrlExists: Boolean(process.env.DIRECT_URL),
-    },
-    {
-      headers: {
-        "Cache-Control": "no-store",
+      nodeEnv: process.env.NODE_ENV,
+    });
+  } catch (error) {
+    const safeError =
+      error instanceof Error
+        ? {
+            errorName: error.name,
+            errorMessage: error.message,
+          }
+        : {
+            errorName: "UnknownError",
+            errorMessage: "Unknown error",
+          };
+
+    return jsonNoStore(
+      {
+        ok: false,
+        ...safeError,
+        databaseUrlExists: Boolean(process.env.DATABASE_URL),
+        directUrlExists: Boolean(process.env.DIRECT_URL),
+        nodeEnv: process.env.NODE_ENV,
       },
-    }
-  );
+      200
+    );
+  }
+}
+
+function jsonNoStore(body: Record<string, unknown>, status = 200) {
+  return NextResponse.json(body, {
+    status,
+    headers: {
+      "Cache-Control": "no-store",
+    },
+  });
 }
