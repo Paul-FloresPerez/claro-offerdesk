@@ -4,19 +4,11 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-type LoginPageProps = {
-  searchParams: Promise<{
-    callbackUrl?: string | string[];
-  }>;
-};
-
-export default async function LoginPage({ searchParams }: LoginPageProps) {
+export default async function LoginPage() {
   const session = await auth();
-  const params = await searchParams;
-  const callbackUrl = getSafeCallbackUrl(getParam(params.callbackUrl));
 
   if (session?.user) {
-    redirect(callbackUrl);
+    redirect("/");
   }
 
   const hasLoginImage = existsSync(
@@ -54,7 +46,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </p>
         </div>
 
-          <LoginForm callbackUrl={callbackUrl} />
+          <LoginForm />
 
           <p className="mt-6 text-center text-xs leading-5 text-slate-500">
             Recuperación de contraseña próximamente.
@@ -63,20 +55,4 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       </section>
     </main>
   );
-}
-
-function getParam(value?: string | string[]) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-function getSafeCallbackUrl(value?: string) {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) {
-    return "/";
-  }
-
-  if (value.startsWith("/login")) {
-    return "/";
-  }
-
-  return value;
 }

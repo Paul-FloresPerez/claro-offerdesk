@@ -6,11 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-type LoginFormProps = {
-  callbackUrl: string;
-};
-
-export function LoginForm({ callbackUrl }: LoginFormProps) {
+export function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,7 +24,6 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
       identifier,
       password,
       redirect: false,
-      callbackUrl,
     });
 
     setIsSubmitting(false);
@@ -38,8 +33,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
       return;
     }
 
-    router.replace(callbackUrl);
-    router.refresh();
+    router.replace("/");
   }
 
   return (

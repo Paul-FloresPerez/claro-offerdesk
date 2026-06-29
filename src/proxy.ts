@@ -3,8 +3,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import { missingAuthSecret } from "@/lib/auth-secret";
 
 const adminRoutePrefixes = ["/admin", "/db-test"];
+const publicFilePrefixes = [
+  "/capacitacion/",
+  "/login/",
+  "/ofertas/",
+  "/logos/",
+  "/usuarios/",
+];
 
 export async function proxy(request: NextRequest) {
+  if (isPublicFile(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
   const token = await getToken({
     req: request,
     secret:
@@ -37,6 +48,7 @@ export const config = {
     "/objeciones/:path*",
     "/top-ventas/:path*",
     "/capacitacion/:path*",
+    "/entrenamiento/:path*",
     "/recomendador/:path*",
     "/validaciones/:path*",
     "/admin/:path*",
@@ -47,5 +59,12 @@ export const config = {
 function isAdminRoute(pathname: string) {
   return adminRoutePrefixes.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
+function isPublicFile(pathname: string) {
+  return (
+    publicFilePrefixes.some((prefix) => pathname.startsWith(prefix)) &&
+    /\.[a-z0-9]+$/i.test(pathname)
   );
 }
