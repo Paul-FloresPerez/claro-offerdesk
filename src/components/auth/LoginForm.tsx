@@ -2,12 +2,10 @@
 
 import { useState, type FormEvent } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function LoginForm() {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -49,7 +47,7 @@ export function LoginForm() {
       }
 
       if (result?.ok) {
-        router.replace("/");
+        window.location.assign("/");
         return;
       }
 
