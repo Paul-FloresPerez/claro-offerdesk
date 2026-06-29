@@ -1,5 +1,12 @@
-import { redirect } from "next/navigation";
+import OfertasPage from "@/app/ofertas/page";
 
-export default function PromocionesPage() {
-  redirect("/ofertas");
+type PageProps = {
+  searchParams: Promise<{
+    q?: string | string[];
+    tipo?: string | string[];
+  }>;
+};
+
+export default function PromocionesPage(props: PageProps) {
+  return <OfertasPage {...props} />;
 }

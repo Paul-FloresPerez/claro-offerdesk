@@ -16,11 +16,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = await getToken({
-    req: request,
-    secret:
-      process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET ?? missingAuthSecret(),
-  });
+  const token = await getSessionToken(request);
 
   if (!token) {
     const loginUrl = new URL("/login", request.url);
@@ -66,5 +62,23 @@ function isPublicFile(pathname: string) {
   return (
     publicFilePrefixes.some((prefix) => pathname.startsWith(prefix)) &&
     /\.[a-z0-9]+$/i.test(pathname)
+  );
+}
+
+async function getSessionToken(request: NextRequest) {
+  const secret =
+    process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET ?? missingAuthSecret();
+
+  return (
+    (await getToken({
+      req: request,
+      secret,
+      secureCookie: true,
+    })) ??
+    (await getToken({
+      req: request,
+      secret,
+      secureCookie: false,
+    }))
   );
 }

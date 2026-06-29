@@ -4,10 +4,18 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-export default async function LoginPage() {
-  const session = await auth();
+type LoginPageProps = {
+  searchParams: Promise<{
+    callbackUrl?: string | string[];
+  }>;
+};
 
-  if (session?.user) {
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const session = await auth();
+  const params = await searchParams;
+  const hasCallbackUrl = Boolean(getParam(params.callbackUrl));
+
+  if (session?.user && !hasCallbackUrl) {
     redirect("/");
   }
 
@@ -55,4 +63,8 @@ export default async function LoginPage() {
       </section>
     </main>
   );
+}
+
+function getParam(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
 }

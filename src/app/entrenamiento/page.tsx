@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import CapacitacionPage from "@/app/capacitacion/page";
 
 export default function EntrenamientoPage() {
-  redirect("/capacitacion");
+  return <CapacitacionPage />;
 }
