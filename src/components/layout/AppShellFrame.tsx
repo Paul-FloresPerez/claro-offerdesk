@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { cn } from "@/lib/utils";
 
 export type AppShellUser = {
   name: string | null;
@@ -12,12 +13,16 @@ export type AppShellUser = {
 };
 
 const navigation = [
-  { href: "/", label: "Inicio" },
-  { href: "/promociones", label: "Promociones" },
-  { href: "/guion", label: "Guion Comercial" },
-  { href: "/objeciones", label: "Objeciones" },
-  { href: "/top-ventas", label: "Top ventas" },
-  { href: "/entrenamiento", label: "Entrenamiento" },
+  { href: "/", label: "Inicio", match: ["/"] },
+  { href: "/promociones", label: "Promociones", match: ["/promociones", "/ofertas"] },
+  { href: "/guion", label: "Guion Comercial", match: ["/guion"] },
+  { href: "/objeciones", label: "Objeciones", match: ["/objeciones"] },
+  { href: "/top-ventas", label: "Top ventas", match: ["/top-ventas"] },
+  {
+    href: "/entrenamiento",
+    label: "Entrenamiento",
+    match: ["/entrenamiento", "/capacitacion"],
+  },
 ];
 
 export function AppShellFrame({
@@ -56,15 +61,29 @@ export function AppShellFrame({
               className="flex gap-1 overflow-x-auto pb-1 xl:pb-0"
               aria-label="Principal"
             >
-              {navigation.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="inline-flex h-10 shrink-0 items-center rounded-lg px-3 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navigation.map((item) => {
+                const isActive = item.match.some((route) =>
+                  route === "/"
+                    ? pathname === "/"
+                    : pathname === route || pathname.startsWith(`${route}/`)
+                );
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "inline-flex h-10 shrink-0 items-center rounded-lg px-3 text-sm font-semibold transition hover:bg-white/10 hover:text-white",
+                      isActive
+                        ? "bg-white/10 text-white"
+                        : "text-slate-300"
+                    )}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="flex items-center gap-2">

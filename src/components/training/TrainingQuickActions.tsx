@@ -17,7 +17,7 @@ const routeSteps = [
 ];
 
 const quickActions = [
-  { href: "/ofertas", label: "Promociones", icon: PackageCheck },
+  { href: "/promociones", label: "Promociones", icon: PackageCheck },
   { href: "/top-ventas", label: "Top Ventas", icon: Trophy },
   { href: "/guion", label: "Guion Comercial", icon: FileText },
 ];

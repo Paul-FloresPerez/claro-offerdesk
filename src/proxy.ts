@@ -40,6 +40,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  const legacyRedirect = getLegacyRouteRedirect(request);
+
+  if (legacyRedirect) {
+    return legacyRedirect;
+  }
+
   if (isAdminRoute(request.nextUrl.pathname) && token.isAdmin !== true) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -76,6 +82,31 @@ function isPublicFile(pathname: string) {
     publicFilePrefixes.some((prefix) => pathname.startsWith(prefix)) &&
     /\.[a-z0-9]+$/i.test(pathname)
   );
+}
+
+function getLegacyRouteRedirect(request: NextRequest) {
+  const { pathname, search } = request.nextUrl;
+
+  if (pathname === "/ofertas") {
+    return redirectKeepingSearch(request, "/promociones", search);
+  }
+
+  if (pathname === "/validaciones" || pathname.startsWith("/validaciones/")) {
+    return redirectKeepingSearch(request, "/objeciones", search);
+  }
+
+  return null;
+}
+
+function redirectKeepingSearch(
+  request: NextRequest,
+  pathname: string,
+  search: string
+) {
+  const url = new URL(pathname, request.url);
+  url.search = search;
+
+  return NextResponse.redirect(url);
 }
 
 function getCanonicalRedirect(request: NextRequest) {

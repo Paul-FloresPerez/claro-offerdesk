@@ -27,7 +27,6 @@ export type CatalogFilter =
 
 type PromoCatalogProps = {
   activeFilter?: string;
-  basePath?: "/" | "/ofertas";
   query?: string;
 };
 

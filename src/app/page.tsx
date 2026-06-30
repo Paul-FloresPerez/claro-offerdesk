@@ -51,10 +51,10 @@ const quickLinks: Array<{
 ];
 
 const workflow = [
-  "Escucha o mira una referencia",
-  "Revisa promociones vigentes",
-  "Repasa el guion comercial",
-  "Practica objeciones antes de vender",
+  { href: "/entrenamiento", label: "Escucha o mira una referencia" },
+  { href: "/promociones", label: "Revisa promociones vigentes" },
+  { href: "/guion", label: "Repasa el guion comercial" },
+  { href: "/objeciones", label: "Practica objeciones antes de vender" },
 ];
 
 export default function HomePage() {
@@ -116,17 +116,18 @@ export default function HomePage() {
             </h2>
             <div className="mt-4 grid gap-3">
               {workflow.map((step, index) => (
-                <div
-                  key={step}
-                  className="flex min-h-12 items-center gap-3 rounded-lg border border-white/10 bg-[#111827]/55 px-3 py-2"
+                <Link
+                  key={step.href}
+                  href={step.href}
+                  className="flex min-h-12 items-center gap-3 rounded-lg border border-white/10 bg-[#111827]/55 px-3 py-2 transition hover:border-[#DA291C]/35 hover:bg-white/[0.08]"
                 >
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-[#DA291C] text-sm font-black text-white">
                     {index + 1}
                   </span>
                   <span className="text-sm font-semibold leading-5 text-slate-100">
-                    {step}
+                    {step.label}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

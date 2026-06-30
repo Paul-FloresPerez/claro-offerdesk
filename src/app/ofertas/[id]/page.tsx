@@ -46,7 +46,7 @@ export default async function OfertaDetallePage({
       <section className="relative overflow-hidden border-b border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
           <Link
-            href="/"
+            href="/promociones"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.08] px-5 text-sm font-semibold text-white transition hover:bg-white/[0.13]"
           >
             <ArrowLeft className="h-5 w-5" />
