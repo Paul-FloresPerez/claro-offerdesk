@@ -38,12 +38,14 @@ const adminLinks = [
 type AdminShellProps = {
   title: string;
   description: string;
+  statusBadge?: ReactNode;
   children: ReactNode;
 };
 
 export default function AdminShell({
   title,
   description,
+  statusBadge,
   children,
 }: AdminShellProps) {
   return (
@@ -60,7 +62,7 @@ export default function AdminShell({
             {description}
           </p>
         </div>
-        <PendingDatabaseBadge />
+        {statusBadge ?? <PendingDatabaseBadge />}
       </section>
 
       <nav
