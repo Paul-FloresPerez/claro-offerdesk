@@ -1,4 +1,7 @@
-import { Headphones, Video, type LucideIcon } from "lucide-react";
+"use client";
+
+import { useState, type ComponentType } from "react";
+import { AlertCircle, ExternalLink, Headphones, Play, Video } from "lucide-react";
 import type { TrainingMediaFile } from "@/lib/training-media";
 
 type TrainingLibraryProps = {
@@ -39,7 +42,7 @@ function LibrarySection({
 }: {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: ComponentType<{ className?: string }>;
   items: TrainingMediaFile[];
   type: "audio" | "video";
   emptyPath: string;
@@ -73,13 +76,9 @@ function LibrarySection({
                 : "grid gap-3"
           }
         >
-          {items.map((item) =>
-            type === "video" ? (
-              <VideoItem key={item.id} item={item} />
-            ) : (
-              <AudioItem key={item.id} item={item} />
-            )
-          )}
+          {items.map((item) => (
+            <MediaItem key={item.id} item={item} />
+          ))}
         </div>
       ) : (
         <PendingLibraryItem icon={Icon} path={emptyPath} />
@@ -88,41 +87,132 @@ function LibrarySection({
   );
 }
 
-function VideoItem({ item }: { item: TrainingMediaFile }) {
+function MediaItem({ item }: { item: TrainingMediaFile }) {
+  const [isMounted, setIsMounted] = useState(false);
+  const [hasPlaybackError, setHasPlaybackError] = useState(false);
+  const isVideo = item.mediaType === "video";
+
   return (
-    <article className="overflow-hidden rounded-lg border border-white/10 bg-[#111827]/58">
-      <video
-        controls
-        preload="metadata"
-        className="aspect-video w-full bg-black"
-        src={item.fileUrl}
-      >
-        Tu navegador no puede reproducir este video.
-      </video>
-      <div className="p-3">
-        <h3 className="text-base font-semibold text-white">{item.title}</h3>
-        <p className="mt-1 truncate text-xs text-slate-500">{item.fileName}</p>
+    <article
+      className={
+        isVideo
+          ? "overflow-hidden rounded-lg border border-white/10 bg-[#111827]/58"
+          : "rounded-lg border border-white/10 bg-[#111827]/58 p-3"
+      }
+    >
+      {isVideo ? (
+        <div className="aspect-video w-full bg-[#070B13]">
+          {isMounted ? (
+            <video
+              controls
+              playsInline
+              preload="none"
+              className="h-full w-full bg-black"
+              onError={() => setHasPlaybackError(true)}
+            >
+              <source src={item.fileUrl} type={item.mimeType} />
+              Tu navegador no puede reproducir este video.
+            </video>
+          ) : (
+            <MediaPlaceholder item={item} onPlay={() => setIsMounted(true)} />
+          )}
+        </div>
+      ) : (
+        <div className="mb-3 flex items-start gap-3">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-white/[0.06] text-[#FFB4AC] ring-1 ring-white/10">
+            <Headphones className="h-4 w-4" />
+          </span>
+          <div className="min-w-0">
+            <h3 className="text-sm font-semibold text-white">{item.title}</h3>
+            <p className="mt-1 truncate text-xs text-slate-500">{item.fileName}</p>
+          </div>
+        </div>
+      )}
+
+      <div className={isVideo ? "p-3" : "grid gap-3"}>
+        {isVideo ? (
+          <>
+            <h3 className="text-base font-semibold text-white">{item.title}</h3>
+            <p className="mt-1 truncate text-xs text-slate-500">{item.fileName}</p>
+          </>
+        ) : isMounted ? (
+          <audio
+            controls
+            preload="none"
+            className="w-full"
+            onError={() => setHasPlaybackError(true)}
+          >
+            <source src={item.fileUrl} type={item.mimeType} />
+            Tu navegador no puede reproducir este audio.
+          </audio>
+        ) : (
+          <MediaPlaceholder item={item} onPlay={() => setIsMounted(true)} compact />
+        )}
+
+        <MediaActions item={item} />
+        {hasPlaybackError ? <PlaybackError /> : null}
       </div>
     </article>
   );
 }
 
-function AudioItem({ item }: { item: TrainingMediaFile }) {
+function MediaPlaceholder({
+  compact = false,
+  item,
+  onPlay,
+}: {
+  compact?: boolean;
+  item: TrainingMediaFile;
+  onPlay: () => void;
+}) {
   return (
-    <article className="rounded-lg border border-white/10 bg-[#111827]/58 p-3">
-      <div className="mb-3 flex items-start gap-3">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-white/[0.06] text-[#FFB4AC] ring-1 ring-white/10">
-          <Headphones className="h-4 w-4" />
-        </span>
-        <div className="min-w-0">
-          <h3 className="text-sm font-semibold text-white">{item.title}</h3>
-          <p className="mt-1 truncate text-xs text-slate-500">{item.fileName}</p>
-        </div>
-      </div>
-      <audio controls preload="metadata" className="w-full" src={item.fileUrl}>
-        Tu navegador no puede reproducir este audio.
-      </audio>
-    </article>
+    <div
+      className={
+        compact
+          ? "rounded-lg border border-dashed border-white/15 bg-[#111827]/55 p-3"
+          : "grid h-full min-h-48 place-items-center p-5 text-center"
+      }
+    >
+      <button
+        type="button"
+        onClick={onPlay}
+        className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#DA291C] px-4 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(218,41,28,0.18)] transition hover:bg-[#B91F15]"
+      >
+        <Play className="h-4 w-4" />
+        Reproducir
+      </button>
+      <p className={compact ? "mt-2 text-xs text-slate-500" : "mt-3 text-xs text-slate-500"}>
+        {item.mimeType}
+      </p>
+    </div>
+  );
+}
+
+function MediaActions({ item }: { item: TrainingMediaFile }) {
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2">
+      <a
+        href={item.fileUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 bg-white/[0.06] px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/[0.1] hover:text-white"
+      >
+        <ExternalLink className="h-4 w-4" />
+        Abrir en nueva pestaña
+      </a>
+    </div>
+  );
+}
+
+function PlaybackError() {
+  return (
+    <div className="mt-3 flex gap-2 rounded-lg border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 py-2 text-sm font-semibold leading-5 text-[#FFB4AC]">
+      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+      <span>
+        Este navegador no pudo reproducir el archivo. Intenta abrirlo en nueva
+        pestaña.
+      </span>
+    </div>
   );
 }
 
@@ -130,7 +220,7 @@ function PendingLibraryItem({
   icon: Icon,
   path,
 }: {
-  icon: LucideIcon;
+  icon: ComponentType<{ className?: string }>;
   path: string;
 }) {
   return (

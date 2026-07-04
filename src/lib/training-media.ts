@@ -6,6 +6,7 @@ export type TrainingMediaFile = {
   title: string;
   fileName: string;
   fileUrl: string;
+  mimeType: string;
   mediaType: "audio" | "video";
 };
 
@@ -15,14 +16,24 @@ const mediaDirectories = {
   audio: {
     directory: join(trainingRoot, "audios"),
     publicSegments: ["capacitacion", "audios"],
-    extensions: new Set<string>([".mp3", ".wav", ".m4a", ".ogg"]),
+    extensions: new Set<string>([".mp3", ".m4a", ".ogg"]),
+    priority: [".mp3", ".m4a", ".ogg"],
   },
   video: {
     directory: join(trainingRoot, "videos"),
     publicSegments: ["capacitacion", "videos"],
-    extensions: new Set<string>([".mp4", ".webm", ".mov"]),
+    extensions: new Set<string>([".mp4", ".webm"]),
+    priority: [".mp4", ".webm"],
   },
 } as const;
+
+const mimeTypes: Record<string, string> = {
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
+  ".mp3": "audio/mpeg",
+  ".m4a": "audio/mp4",
+  ".ogg": "audio/ogg",
+};
 
 export function getTrainingMedia() {
   const videos = readMediaDirectory("video");
@@ -38,23 +49,57 @@ export function getTrainingMedia() {
 
 function readMediaDirectory(mediaType: "audio" | "video"): TrainingMediaFile[] {
   const config = mediaDirectories[mediaType];
+  const priority = config.priority as readonly string[];
 
   try {
-    return readdirSync(config.directory, { withFileTypes: true })
+    const entries = readdirSync(config.directory, { withFileTypes: true })
       .filter((entry) => entry.isFile())
       .filter((entry) => entry.name !== ".gitkeep")
-      .filter((entry) => config.extensions.has(extname(entry.name).toLowerCase()))
-      .sort((a, b) => a.name.localeCompare(b.name, "es", { sensitivity: "base" }))
+      .filter((entry) => config.extensions.has(getExtension(entry.name)));
+
+    const mp4BaseNames =
+      mediaType === "video"
+        ? new Set(
+            entries
+              .filter((entry) => getExtension(entry.name) === ".mp4")
+              .map((entry) => parse(entry.name).name.toLowerCase())
+          )
+        : null;
+
+    return entries
+      .filter((entry) => {
+        if (mediaType !== "video" || getExtension(entry.name) !== ".webm") {
+          return true;
+        }
+
+        return mp4BaseNames?.has(parse(entry.name).name.toLowerCase()) ?? false;
+      })
+      .sort((a, b) => {
+        const priorityDifference =
+          priority.indexOf(getExtension(a.name)) -
+          priority.indexOf(getExtension(b.name));
+
+        if (priorityDifference !== 0) {
+          return priorityDifference;
+        }
+
+        return a.name.localeCompare(b.name, "es", { sensitivity: "base" });
+      })
       .map((entry) => ({
         id: `${mediaType}-${entry.name}`,
         title: titleFromFileName(entry.name),
         fileName: entry.name,
         fileUrl: encodePublicPath([...config.publicSegments, entry.name]),
+        mimeType: mimeTypes[getExtension(entry.name)] ?? "application/octet-stream",
         mediaType,
       }));
   } catch {
     return [];
   }
+}
+
+function getExtension(fileName: string) {
+  return extname(fileName).toLowerCase();
 }
 
 function encodePublicPath(segments: string[]) {
