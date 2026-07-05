@@ -8,9 +8,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { connection } from "next/server";
 import { ofertas } from "@/data/ofertas";
-import { rankingMock } from "@/data/ranking";
+import { prisma } from "@/lib/prisma";
 import { getTrainingMedia, type TrainingMediaFile } from "@/lib/training-media";
+
+export const runtime = "nodejs";
 
 const quickLinks: Array<{
   href: string;
@@ -57,9 +60,41 @@ const workflow = [
   { href: "/objeciones", label: "Practica objeciones antes de vender" },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  await connection();
+
   const { featuredVideo, featuredAudios, videos, audios } = getTrainingMedia();
-  const topAdvisor = rankingMock[0];
+  const topRanking = await prisma.salesRanking.findMany({
+    where: {
+      isActive: true,
+      user: {
+        is: {
+          isActive: true,
+        },
+      },
+    },
+    orderBy: [
+      {
+        rankPosition: "asc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
+    select: {
+      rankPosition: true,
+      salesCount: true,
+      fullName: true,
+      user: {
+        select: {
+          fullName: true,
+        },
+      },
+    },
+    take: 3,
+  });
+  const topAdvisor = topRanking[0];
+  const topAdvisorName = topAdvisor?.user?.fullName ?? topAdvisor?.fullName;
 
   return (
     <main className="relative">
@@ -101,8 +136,12 @@ export default function HomePage() {
           />
           <MetricCard
             label="Top ventas"
-            value={topAdvisor ? topAdvisor.fullName : "Pendiente"}
-            detail={topAdvisor ? `${topAdvisor.salesCount} ventas registradas` : "Sin datos mock"}
+            value={topAdvisorName ?? "Pendiente"}
+            detail={
+              topAdvisor
+                ? `#${topAdvisor.rankPosition} con ${topAdvisor.salesCount} ventas`
+                : "Sin registros activos"
+            }
           />
         </section>
 

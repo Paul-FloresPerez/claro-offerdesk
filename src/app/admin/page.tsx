@@ -1,27 +1,72 @@
-import { BarChart3, FileVideo, UsersRound } from "lucide-react";
+import { BarChart3, FileVideo, UserCheck, UserX } from "lucide-react";
+import { connection } from "next/server";
 import AdminShell from "@/components/admin/AdminShell";
-import { rankingMock } from "@/data/ranking";
+import { prisma } from "@/lib/prisma";
 import { getTrainingMedia } from "@/lib/training-media";
 
-export default function AdminPage() {
+export const runtime = "nodejs";
+
+export default async function AdminPage() {
+  await connection();
+
   const { audios, videos } = getTrainingMedia();
+  const detectedMediaCount = audios.length + videos.length;
+  const [
+    activeUsers,
+    inactiveUsers,
+    activeRankingRecords,
+    activeTrainingMediaRecords,
+  ] = await Promise.all([
+    prisma.user.count({
+      where: {
+        isActive: true,
+      },
+    }),
+    prisma.user.count({
+      where: {
+        isActive: false,
+      },
+    }),
+    prisma.salesRanking.count({
+      where: {
+        isActive: true,
+      },
+    }),
+    prisma.trainingMedia.count({
+      where: {
+        isActive: true,
+      },
+    }),
+  ]);
+  const mediaMetricValue =
+    activeTrainingMediaRecords > 0 ? activeTrainingMediaRecords : detectedMediaCount;
+  const mediaMetricDetail =
+    activeTrainingMediaRecords > 0
+      ? "Registros activos en training_media"
+      : "Audios y videos detectados";
   const dashboardCards = [
     {
-      label: "Usuarios",
-      value: "3",
-      detail: "Asesores de ejemplo",
-      icon: UsersRound,
+      label: "Usuarios activos",
+      value: activeUsers.toString(),
+      detail: "Cuentas habilitadas para ingresar",
+      icon: UserCheck,
     },
     {
-      label: "Ventas destacadas",
-      value: `${rankingMock[0]?.salesCount ?? 0}`,
-      detail: "Mayor registro semanal",
+      label: "Usuarios inactivos",
+      value: inactiveUsers.toString(),
+      detail: "Cuentas deshabilitadas",
+      icon: UserX,
+    },
+    {
+      label: "Ranking activo",
+      value: activeRankingRecords.toString(),
+      detail: "Registros visibles en Top ventas",
       icon: BarChart3,
     },
     {
       label: "Materiales",
-      value: `${audios.length + videos.length}`,
-      detail: "Audios y videos detectados",
+      value: mediaMetricValue.toString(),
+      detail: mediaMetricDetail,
       icon: FileVideo,
     },
   ];
@@ -29,9 +74,9 @@ export default function AdminPage() {
   return (
     <AdminShell
       title="Resumen"
-      description="Vista visual del futuro panel operativo. Todavia no guarda ni consulta datos reales."
+      description="Vista operativa con indicadores reales del sistema."
     >
-      <section className="grid gap-4 lg:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {dashboardCards.map((card) => (
           <article
             key={card.label}
@@ -42,7 +87,7 @@ export default function AdminPage() {
                 <card.icon className="h-5 w-5" />
               </span>
               <span className="rounded-md border border-white/10 bg-[#111827]/55 px-2.5 py-1 text-xs font-semibold text-[#FFB4AC]">
-                Vista previa
+                Dato real
               </span>
             </div>
             <p className="mt-5 text-sm font-semibold uppercase tracking-[0.12em] text-slate-400">
@@ -61,8 +106,9 @@ export default function AdminPage() {
           Estado de la fase
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-          Panel preparado para la proxima conexion de usuarios, permisos,
-          ranking y biblioteca de capacitacion.
+          Usuarios y ranking ya consultan Neon mediante Prisma. La biblioteca de
+          capacitacion usa registros de base si existen; si no, muestra archivos
+          detectados en public.
         </p>
       </section>
     </AdminShell>
