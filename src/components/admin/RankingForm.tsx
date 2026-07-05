@@ -25,6 +25,7 @@ export type AdminRankingRow = {
   salesCount: number;
   note: string | null;
   isActive: boolean;
+  hasActiveUser: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -51,9 +52,6 @@ export default function RankingForm({
   const action = mode === "create" ? createRankingAction : updateRankingAction;
   const [state, formAction, isPending] = useActionState(action, initialState);
   const [selectedUserId, setSelectedUserId] = useState(ranking?.userId ?? "");
-  const [fullName, setFullName] = useState(ranking?.fullName ?? "");
-  const [branchName, setBranchName] = useState(ranking?.branchName ?? "");
-  const [photoUrl, setPhotoUrl] = useState(ranking?.photoUrl ?? "");
   const [previewFailed, setPreviewFailed] = useState(false);
   const isEdit = mode === "edit";
 
@@ -64,29 +62,17 @@ export default function RankingForm({
 
   useEffect(() => {
     setPreviewFailed(false);
-  }, [photoUrl]);
+  }, [selectedUserId]);
 
   useEffect(() => {
     if (mode === "create" && state.status === "success") {
       formRef.current?.reset();
       setSelectedUserId("");
-      setFullName("");
-      setBranchName("");
-      setPhotoUrl("");
     }
   }, [mode, state.status]);
 
   function handleUserChange(value: string) {
     setSelectedUserId(value);
-    const user = users.find((item) => item.id === value);
-
-    if (!user) {
-      return;
-    }
-
-    setFullName(user.fullName);
-    setBranchName(user.branchName ?? "");
-    setPhotoUrl(user.photoUrl ?? "");
   }
 
   return (
@@ -107,7 +93,7 @@ export default function RankingForm({
           </h2>
           <p className="text-sm text-slate-400">
             {isEdit
-              ? "Actualiza posicion, ventas, foto y periodo."
+              ? "Actualiza posicion, ventas, usuario y periodo."
               : "Crea un registro para el ranking comercial."}
           </p>
         </div>
@@ -124,7 +110,12 @@ export default function RankingForm({
             onChange={(event) => handleUserChange(event.target.value)}
             className="h-10 rounded-md border border-white/10 bg-[#111827]/55 px-2.5 text-sm text-white outline-none transition focus:border-[#DA291C] focus:ring-2 focus:ring-[#DA291C]/20"
           >
-            <option value="">Sin vincular / carga manual</option>
+            <option value="">Selecciona un usuario activo</option>
+            {selectedUserId && !selectedUser ? (
+              <option value={selectedUserId} disabled>
+                Usuario actual no disponible
+              </option>
+            ) : null}
             {users.map((user) => (
               <option key={user.id} value={user.id}>
                 {user.fullName}
@@ -137,33 +128,17 @@ export default function RankingForm({
             </span>
           ) : selectedUser ? (
             <span className="text-xs font-medium text-slate-500">
-              Se usaron los datos del usuario como base. Puedes editarlos manualmente.
+              El ranking usara nombre, sede y foto del usuario seleccionado.
             </span>
           ) : null}
         </label>
 
-        <AdminField
-          label="Nombre mostrado"
-          name="fullName"
-          value={fullName}
-          onChange={setFullName}
-          error={fieldError(state, "fullName")}
-          required
-        />
-        <AdminField
-          label="Sede"
-          name="branchName"
-          value={branchName}
-          onChange={setBranchName}
-          error={fieldError(state, "branchName")}
-        />
-        <AdminField
-          label="Foto / photoUrl"
-          name="photoUrl"
-          value={photoUrl}
-          onChange={setPhotoUrl}
-          error={fieldError(state, "photoUrl")}
-          placeholder="/usuarios/paul-flores.jpg"
+        <UserPreview
+          fallbackFullName={ranking?.fullName ?? ""}
+          fallbackPhotoUrl={ranking?.photoUrl ?? null}
+          previewFailed={previewFailed}
+          selectedUser={selectedUser}
+          onError={() => setPreviewFailed(true)}
         />
 
         <AdminField
@@ -208,13 +183,10 @@ export default function RankingForm({
           ) : null}
         </label>
 
-        <div className="grid gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
-          <PhotoPreview
-            fullName={fullName}
-            photoUrl={photoUrl}
-            previewFailed={previewFailed}
-            onError={() => setPreviewFailed(true)}
-          />
+        <div className="grid content-start gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
+          <p className="text-xs leading-5 text-slate-500">
+            Nombre, sede y foto se toman del perfil del usuario activo.
+          </p>
           <label className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-semibold text-slate-200">
             Activo
             <input
@@ -264,22 +236,18 @@ function AdminField({
   label,
   min,
   name,
-  onChange,
   placeholder,
   required,
   type = "text",
-  value,
 }: {
   defaultValue?: string;
   error?: string;
   label: string;
   min?: string;
   name: string;
-  onChange?: (value: string) => void;
   placeholder?: string;
   required?: boolean;
   type?: string;
-  value?: string;
 }) {
   return (
     <label className="grid gap-2 text-sm font-semibold text-slate-200">
@@ -289,15 +257,52 @@ function AdminField({
         type={type}
         min={min}
         required={required}
-        value={value}
-        defaultValue={value === undefined ? defaultValue : undefined}
-        onChange={onChange ? (event) => onChange(event.target.value) : undefined}
+        defaultValue={defaultValue}
         placeholder={placeholder}
         aria-invalid={Boolean(error)}
         className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
       />
       {error ? <span className="text-xs font-medium text-[#FFB4AC]">{error}</span> : null}
     </label>
+  );
+}
+
+function UserPreview({
+  fallbackFullName,
+  fallbackPhotoUrl,
+  onError,
+  previewFailed,
+  selectedUser,
+}: {
+  fallbackFullName: string;
+  fallbackPhotoUrl: string | null;
+  onError: () => void;
+  previewFailed: boolean;
+  selectedUser?: AdminRankingUser;
+}) {
+  const fullName = selectedUser?.fullName ?? fallbackFullName;
+  const branchName = selectedUser?.branchName ?? null;
+  const photoUrl = selectedUser?.photoUrl ?? fallbackPhotoUrl;
+
+  return (
+    <div className="grid gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3 lg:col-span-3">
+      <PhotoPreview
+        fullName={fullName}
+        photoUrl={photoUrl ?? ""}
+        previewFailed={previewFailed}
+        onError={onError}
+      />
+      <div className="grid gap-1 text-sm text-slate-300">
+        <p>
+          <span className="font-semibold text-white">Nombre:</span>{" "}
+          {fullName || "Selecciona un usuario"}
+        </p>
+        <p>
+          <span className="font-semibold text-white">Sede:</span>{" "}
+          {branchName || "Sin sede registrada"}
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -337,7 +342,7 @@ function PhotoPreview({
       <div>
         <p className="text-sm font-semibold text-white">Avatar por iniciales</p>
         <p className="mt-1 text-xs text-slate-500">
-          Usa /usuarios/foto.jpg o https://...
+          La foto viene del perfil del usuario.
         </p>
       </div>
     </div>

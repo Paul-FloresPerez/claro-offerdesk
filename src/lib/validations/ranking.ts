@@ -20,48 +20,9 @@ const optionalText = (max = 500) =>
     z.string().max(max, "El texto es demasiado largo.").nullable()
   );
 
-const optionalUuid = z.preprocess(
-  (value) => {
-    if (typeof value !== "string") {
-      return null;
-    }
-
-    const trimmed = value.trim();
-    return trimmed ? trimmed : null;
-  },
-  z.string().uuid("Usuario invalido.").nullable()
-);
-
 const checkbox = z.preprocess(
   (value) => value === true || value === "true" || value === "on",
   z.boolean()
-);
-
-const photoUrl = z.preprocess(
-  (value) => {
-    if (typeof value !== "string") {
-      return null;
-    }
-
-    const trimmed = value.trim();
-    return trimmed ? trimmed : null;
-  },
-  z
-    .string()
-    .max(500, "La URL de foto es demasiado larga.")
-    .refine((value) => !/^[a-zA-Z]:[\\/]/.test(value), {
-      message: "No uses rutas locales del equipo.",
-    })
-    .refine((value) => !value.startsWith("file:"), {
-      message: "No uses rutas locales del equipo.",
-    })
-    .refine((value) => !value.includes("\\"), {
-      message: "Usa rutas web con /, no rutas locales.",
-    })
-    .refine((value) => value.startsWith("/") || value.startsWith("https://"), {
-      message: "Usa una ruta /usuarios/foto.jpg o una URL https://.",
-    })
-    .nullable()
 );
 
 const rankingBaseSchema = z.object({
@@ -71,10 +32,10 @@ const rankingBaseSchema = z.object({
     .int("La posicion debe ser un numero entero.")
     .min(1, "La posicion debe ser mayor a 0.")
     .max(999, "La posicion es demasiado alta."),
-  userId: optionalUuid,
+  userId: z.string().uuid("Selecciona un usuario activo."),
   fullName: requiredText("El nombre mostrado", 120),
   branchName: optionalText(120),
-  photoUrl,
+  photoUrl: optionalText(500),
   salesCount: z.coerce
     .number()
     .int("Las ventas deben ser un numero entero.")

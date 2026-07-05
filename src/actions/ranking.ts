@@ -162,24 +162,30 @@ async function prepareRankingFormData(
   formData: FormData
 ): Promise<PrepareRankingFormResult> {
   const rawUserId = readText(formData.get("userId"));
-  const linkedUser = rawUserId
-    ? await prisma.user.findUnique({
-        where: {
-          id: rawUserId,
-        },
-        select: {
-          id: true,
-          fullName: true,
-          branchName: true,
-          photoUrl: true,
-        },
-      })
-    : null;
-
-  if (rawUserId && !linkedUser) {
+  if (!rawUserId) {
     return {
       ok: false,
-      state: fieldErrorState("userId", "El usuario vinculado no existe."),
+      state: fieldErrorState("userId", "Selecciona un usuario activo."),
+    };
+  }
+
+  const linkedUser = await prisma.user.findFirst({
+    where: {
+      id: rawUserId,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      fullName: true,
+      branchName: true,
+      photoUrl: true,
+    },
+  });
+
+  if (!linkedUser) {
+    return {
+      ok: false,
+      state: fieldErrorState("userId", "El usuario vinculado no existe o esta inactivo."),
     };
   }
 
@@ -189,10 +195,9 @@ async function prepareRankingFormData(
       periodLabel: formData.get("periodLabel"),
       rankPosition: formData.get("rankPosition"),
       userId: rawUserId,
-      fullName: readText(formData.get("fullName")) || linkedUser?.fullName || "",
-      branchName:
-        readText(formData.get("branchName")) || linkedUser?.branchName || "",
-      photoUrl: readText(formData.get("photoUrl")) || linkedUser?.photoUrl || "",
+      fullName: linkedUser.fullName,
+      branchName: linkedUser.branchName,
+      photoUrl: linkedUser.photoUrl,
       salesCount: formData.get("salesCount"),
       note: formData.get("note"),
       isActive: formData.get("isActive"),

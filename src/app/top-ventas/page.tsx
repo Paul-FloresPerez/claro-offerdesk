@@ -1,5 +1,18 @@
+import { connection } from "next/server";
 import { Award, Medal, TrendingUp, Trophy } from "lucide-react";
-import { rankingMock, type RankingAdvisor } from "@/data/ranking";
+import { prisma } from "@/lib/prisma";
+
+export const runtime = "nodejs";
+
+type RankingAdvisor = {
+  rankPosition: number;
+  fullName: string;
+  branchName: string;
+  salesCount: number;
+  periodLabel: string;
+  photoUrl: string | null;
+  note: string | null;
+};
 
 const medalStyles = [
   "border-yellow-300/50 bg-yellow-300/12 text-yellow-200",
@@ -7,9 +20,55 @@ const medalStyles = [
   "border-orange-300/50 bg-orange-300/12 text-orange-100",
 ];
 
-export default function TopVentasPage() {
-  const topThree = rankingMock.slice(0, 3);
-  const periodLabel = rankingMock[0]?.periodLabel ?? "Periodo actual";
+export default async function TopVentasPage() {
+  await connection();
+
+  const ranking = await prisma.salesRanking.findMany({
+    where: {
+      isActive: true,
+      user: {
+        is: {
+          isActive: true,
+        },
+      },
+    },
+    orderBy: [
+      {
+        rankPosition: "asc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
+    select: {
+      rankPosition: true,
+      salesCount: true,
+      periodLabel: true,
+      note: true,
+      fullName: true,
+      branchName: true,
+      photoUrl: true,
+      user: {
+        select: {
+          fullName: true,
+          branchName: true,
+          photoUrl: true,
+        },
+      },
+    },
+  });
+
+  const advisors: RankingAdvisor[] = ranking.map((advisor) => ({
+    rankPosition: advisor.rankPosition,
+    fullName: advisor.user?.fullName ?? advisor.fullName,
+    branchName: advisor.user?.branchName ?? advisor.branchName ?? "Sin sede",
+    photoUrl: advisor.user?.photoUrl ?? advisor.photoUrl,
+    salesCount: advisor.salesCount,
+    periodLabel: advisor.periodLabel,
+    note: advisor.note,
+  }));
+  const topThree = advisors.slice(0, 3);
+  const periodLabel = advisors[0]?.periodLabel ?? "Periodo actual";
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:py-9">
@@ -36,6 +95,11 @@ export default function TopVentasPage() {
         {topThree.map((advisor, index) => (
           <TopAdvisorCard key={advisor.rankPosition} advisor={advisor} index={index} />
         ))}
+        {topThree.length === 0 ? (
+          <div className="rounded-lg border border-white/10 bg-white/[0.07] p-5 text-sm text-slate-300 lg:col-span-3">
+            Todavia no hay registros activos en el ranking.
+          </div>
+        ) : null}
       </section>
 
       <section className="mt-7 overflow-hidden rounded-lg border border-white/10 bg-white/[0.07] shadow-[0_20px_56px_rgba(0,0,0,0.24)]">
@@ -59,7 +123,7 @@ export default function TopVentasPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
-              {rankingMock.map((advisor) => (
+              {advisors.map((advisor) => (
                 <tr key={advisor.rankPosition} className="text-slate-200">
                   <td className="px-5 py-4 font-semibold text-white">
                     #{advisor.rankPosition}
@@ -81,6 +145,13 @@ export default function TopVentasPage() {
                   <td className="px-5 py-4">{advisor.periodLabel}</td>
                 </tr>
               ))}
+              {advisors.length === 0 ? (
+                <tr>
+                  <td className="px-5 py-6 text-slate-300" colSpan={5}>
+                    No hay asesores activos en el ranking.
+                  </td>
+                </tr>
+              ) : null}
             </tbody>
           </table>
         </div>

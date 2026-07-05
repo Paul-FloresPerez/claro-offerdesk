@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
-import { Save, ShieldCheck, UserPlus } from "lucide-react";
+import { ImageIcon, Save, ShieldCheck, UserPlus } from "lucide-react";
 import { createUserAction, updateUserAction } from "@/actions/users";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,7 +77,12 @@ export default function UserForm({
         </div>
       </div>
 
-      <form ref={formRef} action={formAction} className="grid gap-4 sm:grid-cols-2">
+      <form
+        ref={formRef}
+        action={formAction}
+        encType="multipart/form-data"
+        className="grid gap-4 sm:grid-cols-2"
+      >
         {isEdit ? <input type="hidden" name="id" value={user?.id} /> : null}
 
         <AdminField
@@ -117,12 +122,11 @@ export default function UserForm({
           error={fieldError(state, "branchName")}
           placeholder="Sede comercial"
         />
-        <AdminField
-          label="Foto URL"
-          name="photoUrl"
-          defaultValue={user?.photoUrl ?? ""}
-          error={fieldError(state, "photoUrl")}
-          placeholder="/usuarios/foto.jpg"
+        <PhotoUploadField
+          currentFullName={user?.fullName ?? ""}
+          currentPhotoUrl={user?.photoUrl ?? null}
+          fileError={fieldError(state, "photoFile")}
+          urlError={fieldError(state, "photoUrl")}
         />
 
         {isEdit ? null : (
@@ -178,6 +182,68 @@ export default function UserForm({
         </div>
       </form>
     </section>
+  );
+}
+
+function PhotoUploadField({
+  currentFullName,
+  currentPhotoUrl,
+  fileError,
+  urlError,
+}: {
+  currentFullName: string;
+  currentPhotoUrl: string | null;
+  fileError?: string;
+  urlError?: string;
+}) {
+  return (
+    <div className="grid gap-2 text-sm font-semibold text-slate-200">
+      <span>Foto de usuario</span>
+      <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
+        {currentPhotoUrl ? (
+          <img
+            src={currentPhotoUrl}
+            alt={currentFullName || "Foto actual"}
+            className="h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
+          />
+        ) : (
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#DA291C] text-sm font-black text-white">
+            {currentFullName ? getInitials(currentFullName) : <ImageIcon className="h-5 w-5" />}
+          </span>
+        )}
+        <div className="min-w-0 flex-1">
+          <Input
+            name="photoFile"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            aria-invalid={Boolean(fileError)}
+            className="h-10 border-white/10 bg-[#111827]/55 text-white file:text-white"
+          />
+          <p className="mt-1 text-xs leading-5 text-slate-500">
+            JPG, JPEG, PNG o WEBP. Maximo 2 MB. Si Blob esta configurado, se sube automaticamente.
+          </p>
+        </div>
+      </div>
+      {fileError ? (
+        <span className="text-xs font-medium text-[#FFB4AC]">{fileError}</span>
+      ) : null}
+      <label className="grid gap-2 text-sm font-semibold text-slate-200">
+        PhotoUrl manual
+        <Input
+          name="photoUrl"
+          defaultValue={currentPhotoUrl ?? ""}
+          placeholder="/usuarios/foto.jpg o https://..."
+          aria-invalid={Boolean(urlError)}
+          className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
+        />
+        <span className="text-xs font-medium text-slate-500">
+          Respaldo para cuando Vercel Blob aun no tenga token configurado.
+        </span>
+        {urlError ? (
+          <span className="text-xs font-medium text-[#FFB4AC]">{urlError}</span>
+        ) : null}
+      </label>
+    </div>
   );
 }
 
@@ -242,4 +308,14 @@ function ToggleField({
 
 function fieldError(state: UserActionState, field: string) {
   return state.errors?.[field]?.[0];
+}
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
 }

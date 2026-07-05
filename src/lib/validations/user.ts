@@ -25,6 +25,42 @@ const checkbox = z.preprocess(
   z.boolean()
 );
 
+const photoUrl = z.preprocess(
+  (value) => {
+    if (typeof value !== "string") {
+      return null;
+    }
+
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  },
+  z
+    .string()
+    .max(500, "La URL de foto es demasiado larga.")
+    .refine((value) => !/^[a-zA-Z]:[\\/]/.test(value), {
+      message: "No uses rutas locales del equipo.",
+    })
+    .refine((value) => !value.startsWith("file:"), {
+      message: "No uses rutas locales del equipo.",
+    })
+    .refine((value) => !value.includes("\\"), {
+      message: "Usa rutas web con /, no rutas locales.",
+    })
+    .refine(
+      (value) =>
+        !/^(https:\/\/photos\.app\.goo\.gl|https:\/\/photos\.google\.com|https:\/\/lh3\.googleusercontent\.com|https:\/\/.*googleusercontent\.com)/i.test(
+          value
+        ),
+      {
+        message: "Usa una URL publica directa, no Google Photos.",
+      }
+    )
+    .refine((value) => value.startsWith("/") || value.startsWith("https://"), {
+      message: "Usa una ruta publica /usuarios/foto.jpg o una URL https://.",
+    })
+    .nullable()
+);
+
 const userBaseSchema = z.object({
   fullName: requiredText("El nombre completo", 120),
   username: requiredText("El usuario", 50)
@@ -39,7 +75,7 @@ const userBaseSchema = z.object({
   ),
   email: requiredText("El correo", 160).toLowerCase().email("Correo invalido."),
   branchName: optionalText(120),
-  photoUrl: optionalText(500),
+  photoUrl,
   isAdmin: checkbox,
   isActive: checkbox,
 });

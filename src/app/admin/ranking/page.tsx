@@ -33,13 +33,21 @@ export default async function AdminRankingPage() {
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        user: {
+          select: {
+            fullName: true,
+            branchName: true,
+            photoUrl: true,
+            isActive: true,
+          },
+        },
       },
     }),
     prisma.user.findMany({
+      where: {
+        isActive: true,
+      },
       orderBy: [
-        {
-          isActive: "desc",
-        },
         {
           fullName: "asc",
         },
@@ -64,7 +72,17 @@ export default async function AdminRankingPage() {
         <RankingTable
           users={users}
           rankings={rankings.map((ranking) => ({
-            ...ranking,
+            id: ranking.id,
+            periodLabel: ranking.periodLabel,
+            rankPosition: ranking.rankPosition,
+            userId: ranking.userId,
+            fullName: ranking.user?.fullName ?? ranking.fullName,
+            branchName: ranking.user?.branchName ?? ranking.branchName,
+            photoUrl: ranking.user?.photoUrl ?? ranking.photoUrl,
+            salesCount: ranking.salesCount,
+            note: ranking.note,
+            isActive: ranking.isActive,
+            hasActiveUser: Boolean(ranking.user?.isActive),
             createdAt: ranking.createdAt.toISOString(),
             updatedAt: ranking.updatedAt.toISOString(),
           }))}

@@ -89,10 +89,12 @@ function RankingRow({
             <RankingAvatar ranking={ranking} />
             <div className="min-w-0">
               <p className="font-semibold text-white">{ranking.fullName}</p>
-              {ranking.userId ? (
-                <p className="mt-1 text-xs text-slate-500">Vinculado a usuario</p>
+              {ranking.hasActiveUser ? (
+                <p className="mt-1 text-xs text-slate-500">Usuario activo vinculado</p>
               ) : (
-                <p className="mt-1 text-xs text-slate-500">Carga manual</p>
+                <p className="mt-1 text-xs text-[#FFB4AC]">
+                  Usuario no disponible
+                </p>
               )}
             </div>
           </div>
