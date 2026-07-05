@@ -9,6 +9,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
         name: session.user.name ?? null,
         email: session.user.email ?? null,
         isAdmin: session.user.isAdmin,
+        mustChangePassword: session.user.mustChangePassword,
       }
     : null;
 

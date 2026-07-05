@@ -10,6 +10,7 @@ export type AppShellUser = {
   name: string | null;
   email: string | null;
   isAdmin: boolean;
+  mustChangePassword: boolean;
 };
 
 const navigation = [
@@ -33,6 +34,8 @@ export function AppShellFrame({
   user: AppShellUser | null;
 }) {
   const pathname = usePathname();
+  const isPasswordChangeRoute = pathname === "/cambiar-contrasena";
+  const shouldLimitNavigation = user?.mustChangePassword || isPasswordChangeRoute;
 
   if (!user || pathname === "/login") {
     return <>{children}</>;
@@ -42,7 +45,10 @@ export function AppShellFrame({
     <div className="relative flex min-h-screen flex-col bg-[#111827] text-[#F9FAFB]">
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#111827]/92 shadow-[0_12px_30px_rgba(0,0,0,0.22)] backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
-          <Link href="/" className="flex items-center gap-3">
+          <Link
+            href={shouldLimitNavigation ? "/cambiar-contrasena" : "/"}
+            className="flex items-center gap-3"
+          >
             <span className="grid h-9 w-9 place-items-center rounded-md bg-[#DA291C] text-sm font-black text-white shadow-[0_10px_22px_rgba(218,41,28,0.35)] ring-1 ring-white/10">
               C
             </span>
@@ -57,37 +63,43 @@ export function AppShellFrame({
           </Link>
 
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
-            <nav
-              className="flex gap-1 overflow-x-auto pb-1 xl:pb-0"
-              aria-label="Principal"
-            >
-              {navigation.map((item) => {
-                const isActive = item.match.some((route) =>
-                  route === "/"
-                    ? pathname === "/"
-                    : pathname === route || pathname.startsWith(`${route}/`)
-                );
+            {shouldLimitNavigation ? (
+              <span className="inline-flex h-9 w-fit items-center rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 text-sm font-semibold text-[#FFB4AC]">
+                Cambio de contrasena requerido
+              </span>
+            ) : (
+              <nav
+                className="flex gap-1 overflow-x-auto pb-1 xl:pb-0"
+                aria-label="Principal"
+              >
+                {navigation.map((item) => {
+                  const isActive = item.match.some((route) =>
+                    route === "/"
+                      ? pathname === "/"
+                      : pathname === route || pathname.startsWith(`${route}/`)
+                  );
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "inline-flex h-10 shrink-0 items-center rounded-lg px-3 text-sm font-semibold transition hover:bg-white/10 hover:text-white",
-                      isActive
-                        ? "bg-white/10 text-white"
-                        : "text-slate-300"
-                    )}
-                    aria-current={isActive ? "page" : undefined}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "inline-flex h-10 shrink-0 items-center rounded-lg px-3 text-sm font-semibold transition hover:bg-white/10 hover:text-white",
+                        isActive
+                          ? "bg-white/10 text-white"
+                          : "text-slate-300"
+                      )}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            )}
 
             <div className="flex items-center gap-2">
-              {user.isAdmin ? (
+              {user.isAdmin && !shouldLimitNavigation ? (
                 <Link
                   href="/admin"
                   className="inline-flex h-9 items-center rounded-md border border-[#DA291C]/30 bg-[#DA291C]/12 px-3 text-sm font-semibold text-[#FFB4AC] transition hover:bg-[#DA291C]/18"

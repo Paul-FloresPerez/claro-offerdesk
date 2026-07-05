@@ -5,6 +5,7 @@ import { missingAuthSecret } from "@/lib/auth-secret";
 const canonicalHost = "claro-offerdesk.vercel.app";
 const canonicalOrigin = `https://${canonicalHost}`;
 const adminRoutePrefixes = ["/admin"];
+const passwordChangePath = "/cambiar-contrasena";
 const publicFilePrefixes = [
   "/capacitacion/",
   "/login/",
@@ -40,6 +41,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  if (token.mustChangePassword === true) {
+    if (request.nextUrl.pathname !== passwordChangePath) {
+      return NextResponse.redirect(new URL(passwordChangePath, request.url));
+    }
+
+    return NextResponse.next();
+  }
+
+  if (request.nextUrl.pathname === passwordChangePath) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   const legacyRedirect = getLegacyRouteRedirect(request);
 
   if (legacyRedirect) {
@@ -57,6 +70,7 @@ export const config = {
   matcher: [
     "/",
     "/login",
+    "/cambiar-contrasena",
     "/ofertas/:path*",
     "/promociones/:path*",
     "/guion/:path*",
