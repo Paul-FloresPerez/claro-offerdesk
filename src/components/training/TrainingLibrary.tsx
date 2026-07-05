@@ -91,6 +91,8 @@ function MediaItem({ item }: { item: TrainingMediaFile }) {
   const [isMounted, setIsMounted] = useState(false);
   const [hasPlaybackError, setHasPlaybackError] = useState(false);
   const isVideo = item.mediaType === "video";
+  const youtubeEmbedUrl =
+    isVideo && item.sourceType === "youtube" ? getYouTubeEmbedUrl(item.fileUrl) : null;
 
   return (
     <article
@@ -102,7 +104,15 @@ function MediaItem({ item }: { item: TrainingMediaFile }) {
     >
       {isVideo ? (
         <div className="aspect-video w-full bg-[#070B13]">
-          {isMounted ? (
+          {isMounted && youtubeEmbedUrl ? (
+            <iframe
+              src={youtubeEmbedUrl}
+              title={item.title}
+              className="h-full w-full bg-black"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          ) : isMounted ? (
             <video
               controls
               playsInline
@@ -125,6 +135,11 @@ function MediaItem({ item }: { item: TrainingMediaFile }) {
           <div className="min-w-0">
             <h3 className="text-sm font-semibold text-white">{item.title}</h3>
             <p className="mt-1 truncate text-xs text-slate-500">{item.fileName}</p>
+            {item.weekLabel ? (
+              <p className="mt-1 text-xs font-semibold text-[#FFB4AC]">
+                {item.weekLabel}
+              </p>
+            ) : null}
           </div>
         </div>
       )}
@@ -134,6 +149,16 @@ function MediaItem({ item }: { item: TrainingMediaFile }) {
           <>
             <h3 className="text-base font-semibold text-white">{item.title}</h3>
             <p className="mt-1 truncate text-xs text-slate-500">{item.fileName}</p>
+            {item.description ? (
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                {item.description}
+              </p>
+            ) : null}
+            {item.weekLabel ? (
+              <p className="mt-2 text-xs font-semibold text-[#FFB4AC]">
+                {item.weekLabel}
+              </p>
+            ) : null}
           </>
         ) : isMounted ? (
           <audio
@@ -154,6 +179,21 @@ function MediaItem({ item }: { item: TrainingMediaFile }) {
       </div>
     </article>
   );
+}
+
+function getYouTubeEmbedUrl(fileUrl: string) {
+  try {
+    const url = new URL(fileUrl);
+    const host = url.hostname.toLowerCase();
+    const videoId =
+      host === "youtu.be"
+        ? url.pathname.split("/").filter(Boolean)[0]
+        : url.searchParams.get("v") ?? getYouTubePathVideoId(url.pathname);
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  } catch {
+    return null;
+  }
 }
 
 function MediaPlaceholder({
@@ -198,7 +238,7 @@ function MediaActions({ item }: { item: TrainingMediaFile }) {
         className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 bg-white/[0.06] px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/[0.1] hover:text-white"
       >
         <ExternalLink className="h-4 w-4" />
-        Abrir en nueva pestaña
+        Abrir en nueva pestana
       </a>
     </div>
   );
@@ -210,10 +250,20 @@ function PlaybackError() {
       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
       <span>
         Este navegador no pudo reproducir el archivo. Intenta abrirlo en nueva
-        pestaña.
+        pestana.
       </span>
     </div>
   );
+}
+
+function getYouTubePathVideoId(pathname: string) {
+  const segments = pathname.split("/").filter(Boolean);
+
+  if (segments[0] === "shorts" || segments[0] === "embed") {
+    return segments[1] ?? null;
+  }
+
+  return null;
 }
 
 function PendingLibraryItem({

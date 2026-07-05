@@ -4,10 +4,24 @@ import { extname, join, parse } from "path";
 export type TrainingMediaFile = {
   id: string;
   title: string;
+  description?: string | null;
   fileName: string;
   fileUrl: string;
+  fileKey?: string | null;
   mimeType: string;
   mediaType: "audio" | "video";
+  sourceType?: "blob" | "file" | "youtube";
+  weekLabel?: string | null;
+};
+
+export type TrainingMediaRecord = {
+  id: string;
+  title: string;
+  description: string | null;
+  mediaType: string;
+  fileUrl: string;
+  fileKey: string | null;
+  weekLabel: string | null;
 };
 
 const trainingRoot = join(process.cwd(), "public", "capacitacion");
@@ -39,6 +53,24 @@ export function getTrainingMedia() {
   const videos = readMediaDirectory("video");
   const audios = readMediaDirectory("audio");
 
+  return buildTrainingMediaResult(videos, audios);
+}
+
+export function getTrainingMediaFromRecords(records: TrainingMediaRecord[]) {
+  const mappedRecords = records
+    .map(mapTrainingMediaRecord)
+    .filter((item): item is TrainingMediaFile => Boolean(item));
+
+  const videos = mappedRecords.filter((item) => item.mediaType === "video");
+  const audios = mappedRecords.filter((item) => item.mediaType === "audio");
+
+  return buildTrainingMediaResult(videos, audios);
+}
+
+function buildTrainingMediaResult(
+  videos: TrainingMediaFile[],
+  audios: TrainingMediaFile[]
+) {
   return {
     videos,
     audios,
@@ -88,14 +120,91 @@ function readMediaDirectory(mediaType: "audio" | "video"): TrainingMediaFile[] {
       .map((entry) => ({
         id: `${mediaType}-${entry.name}`,
         title: titleFromFileName(entry.name),
+        description: null,
         fileName: entry.name,
         fileUrl: encodePublicPath([...config.publicSegments, entry.name]),
+        fileKey: null,
         mimeType: mimeTypes[getExtension(entry.name)] ?? "application/octet-stream",
         mediaType,
+        sourceType: "file" as const,
+        weekLabel: null,
       }));
   } catch {
     return [];
   }
+}
+
+function mapTrainingMediaRecord(
+  record: TrainingMediaRecord
+): TrainingMediaFile | null {
+  if (record.mediaType !== "audio" && record.mediaType !== "video") {
+    return null;
+  }
+
+  const sourceType = getSourceType(record.fileUrl);
+  const extension = getExtensionFromUrl(record.fileUrl);
+
+  return {
+    id: record.id,
+    title: record.title,
+    description: record.description,
+    fileName: record.fileKey ?? fileNameFromUrl(record.fileUrl) ?? record.title,
+    fileUrl: record.fileUrl,
+    fileKey: record.fileKey,
+    mimeType:
+      sourceType === "youtube"
+        ? "video/youtube"
+        : mimeTypes[extension] ?? fallbackMimeType(record.mediaType),
+    mediaType: record.mediaType,
+    sourceType,
+    weekLabel: record.weekLabel,
+  };
+}
+
+function getSourceType(fileUrl: string): TrainingMediaFile["sourceType"] {
+  try {
+    const url = new URL(fileUrl);
+    const host = url.hostname.toLowerCase();
+
+    if (
+      host === "youtube.com" ||
+      host === "www.youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "youtu.be"
+    ) {
+      return "youtube";
+    }
+
+    if (host.endsWith(".blob.vercel-storage.com")) {
+      return "blob";
+    }
+  } catch {
+    return "file";
+  }
+
+  return "file";
+}
+
+function getExtensionFromUrl(fileUrl: string) {
+  try {
+    return getExtension(new URL(fileUrl).pathname);
+  } catch {
+    return getExtension(fileUrl);
+  }
+}
+
+function fileNameFromUrl(fileUrl: string) {
+  try {
+    const pathname = new URL(fileUrl).pathname;
+    const name = pathname.split("/").filter(Boolean).at(-1);
+    return name ? decodeURIComponent(name) : null;
+  } catch {
+    return fileUrl.split("/").filter(Boolean).at(-1) ?? null;
+  }
+}
+
+function fallbackMimeType(mediaType: "audio" | "video") {
+  return mediaType === "audio" ? "audio/mpeg" : "video/mp4";
 }
 
 function getExtension(fileName: string) {

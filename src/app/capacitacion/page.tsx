@@ -1,8 +1,34 @@
+import { connection } from "next/server";
 import { TrainingLibrary } from "@/components/training/TrainingLibrary";
-import { getTrainingMedia } from "@/lib/training-media";
+import { prisma } from "@/lib/prisma";
+import { getTrainingMedia, getTrainingMediaFromRecords } from "@/lib/training-media";
 
-export default function CapacitacionPage() {
-  const { videos, audios } = getTrainingMedia();
+export const runtime = "nodejs";
+
+export default async function CapacitacionPage() {
+  await connection();
+
+  const dbMedia = await prisma.trainingMedia.findMany({
+    where: {
+      isActive: true,
+    },
+    orderBy: [
+      {
+        createdAt: "desc",
+      },
+    ],
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      mediaType: true,
+      fileUrl: true,
+      fileKey: true,
+      weekLabel: true,
+    },
+  });
+  const { videos, audios } =
+    dbMedia.length > 0 ? getTrainingMediaFromRecords(dbMedia) : getTrainingMedia();
 
   return (
     <main className="relative">
