@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Oferta } from "@/data/ofertas";
+import type { Oferta } from "@/lib/offer-utils";
 import { cn } from "@/lib/utils";
 
 type OfferComparisonTableProps = {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { StatusBadge, TechnologyBadge } from "@/components/common/StatusBadge";
 import { OfficialImage } from "@/components/offers/OfficialImage";
 import { PromoBadge } from "@/components/offers/PromoBadge";
-import { getOfertaCover, type Oferta } from "@/data/ofertas";
+import { getOfertaCover, type Oferta } from "@/lib/offer-utils";
 
 type PromoCardProps = {
   oferta: Oferta;
@@ -13,16 +13,16 @@ type PromoCardProps = {
 const categoryTone: Record<string, "red" | "slate" | "yellow" | "blue" | "orange"> = {
   "Oferta base": "red",
   Hogar: "slate",
-  "Tecnología / HFC": "orange",
+  "Tecnologia / HFC": "orange",
   "Promociones especiales": "yellow",
-  "Línea Móvil": "blue",
+  "Linea Movil": "blue",
 };
 
 export function PromoCard({ oferta, highlighted = false }: PromoCardProps) {
   const cover = getOfertaCover(oferta);
   const isOneSol = oferta.id === "promo-1-sol";
   const visibleTechnologies = oferta.tecnologia.filter(
-    (tecnologia) => tecnologia !== "Validar tecnología"
+    (tecnologia) => tecnologia !== "Validar tecnologia"
   );
   const shouldValidateConditions =
     visibleTechnologies.length !== oferta.tecnologia.length;
@@ -96,17 +96,17 @@ export function PromoCard({ oferta, highlighted = false }: PromoCardProps) {
           <div className="flex gap-2 rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-2 text-sm leading-5 text-yellow-950">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-700" />
             <span>
-              Validar calificación. Aplica por 2 meses y luego precio regular.
+              Validar calificacion. Aplica por 2 meses y luego precio regular.
             </span>
           </div>
         ) : null}
 
         <Link
           href={`/ofertas/${oferta.id}`}
-          aria-label={`Ver promoción ${oferta.nombre}`}
+          aria-label={`Ver promocion ${oferta.nombre}`}
           className="relative z-20 mt-auto inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-[#DA291C] px-5 text-base font-semibold text-white shadow-[0_14px_28px_rgba(218,41,28,0.26)] transition duration-200 hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
         >
-          Ver promoción
+          Ver promocion
           <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
         </Link>
       </div>

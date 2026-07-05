@@ -43,6 +43,7 @@ export function OfferImageDialog({
 }: OfferImageDialogProps) {
   const dimensions = getOfficialImageDimensions(src);
   const hintText = hint ?? "Toca la imagen para ampliarla";
+  const isExternalImage = src.startsWith("https://");
 
   return (
     <Dialog>
@@ -93,15 +94,24 @@ export function OfferImageDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="max-h-[80vh] overflow-hidden rounded-lg bg-white p-2">
-          <Image
-            src={src}
-            alt={`Imagen ampliada - ${title}`}
-            width={dimensions.width}
-            height={dimensions.height}
-            sizes="96vw"
-            className="max-h-[76vh] w-full object-contain"
-            unoptimized
-          />
+          {isExternalImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={src}
+              alt={`Imagen ampliada - ${title}`}
+              className="max-h-[76vh] w-full object-contain"
+            />
+          ) : (
+            <Image
+              src={src}
+              alt={`Imagen ampliada - ${title}`}
+              width={dimensions.width}
+              height={dimensions.height}
+              sizes="96vw"
+              className="max-h-[76vh] w-full object-contain"
+              unoptimized
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>

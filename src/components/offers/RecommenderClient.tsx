@@ -6,18 +6,18 @@ import { useMemo, useState } from "react";
 import { TechnologyBadge } from "@/components/common/StatusBadge";
 import { OfferCard } from "@/components/offers/OfferCard";
 import { Button } from "@/components/ui/button";
-import { getOfertaById } from "@/data/ofertas";
 import { recomendaciones } from "@/data/recomendaciones";
+import type { Oferta } from "@/lib/offer-utils";
 import { cn } from "@/lib/utils";
 
-export function RecommenderClient() {
+export function RecommenderClient({ ofertas }: { ofertas: Oferta[] }) {
   const [selectedId, setSelectedId] = useState(recomendaciones[0].id);
 
   const selected = useMemo(
     () => recomendaciones.find((item) => item.id === selectedId) ?? recomendaciones[0],
     [selectedId]
   );
-  const oferta = getOfertaById(selected.ofertaId);
+  const oferta = ofertas.find((item) => item.id === selected.ofertaId);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
@@ -64,7 +64,7 @@ export function RecommenderClient() {
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-sm leading-6 text-yellow-900">
             <div className="mb-1 flex items-center gap-2 font-semibold">
               <AlertTriangle className="h-4 w-4" />
-              Validación crítica
+              Validacion critica
             </div>
             {selected.advertencia}
           </div>
@@ -103,13 +103,15 @@ export function RecommenderClient() {
           </div>
         ) : (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-            Oferta no encontrada en el catálogo local.
+            Oferta no encontrada o inactiva en el catalogo.
           </div>
         )}
 
-        <Button asChild className="bg-[#DA291C] text-white hover:bg-[#B91C1C]">
-          <Link href={`/ofertas/${selected.ofertaId}`}>Abrir ficha sugerida</Link>
-        </Button>
+        {oferta ? (
+          <Button asChild className="bg-[#DA291C] text-white hover:bg-[#B91C1C]">
+            <Link href={`/ofertas/${oferta.id}`}>Abrir ficha sugerida</Link>
+          </Button>
+        ) : null}
       </section>
     </div>
   );

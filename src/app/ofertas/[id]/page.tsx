@@ -13,26 +13,28 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import type { ReactNode } from "react";
 import { StatusBadge, TechnologyBadge } from "@/components/common/StatusBadge";
 import { ImportantCondition } from "@/components/offers/ImportantCondition";
 import { OfferImageDialog } from "@/components/offers/OfferImageDialog";
 import { OfficialImage } from "@/components/offers/OfficialImage";
 import { PromoBadge } from "@/components/offers/PromoBadge";
-import { getOfertaById, ofertas, type Oferta } from "@/data/ofertas";
+import type { Oferta } from "@/lib/offer-utils";
+import { getPromotionOfferByIdOrSlug } from "@/lib/promotions";
 import { cn } from "@/lib/utils";
 
-export async function generateStaticParams() {
-  return ofertas.map((oferta) => ({ id: oferta.id }));
-}
+export const runtime = "nodejs";
 
 export default async function OfertaDetallePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
+
   const { id } = await params;
-  const oferta = getOfertaById(id);
+  const oferta = await getPromotionOfferByIdOrSlug(id);
 
   if (!oferta) {
     notFound();

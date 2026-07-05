@@ -9,7 +9,7 @@ import { StatusBadge, TechnologyBadge } from "@/components/common/StatusBadge";
 import { OfficialImage } from "@/components/offers/OfficialImage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getOfertaCover, type Oferta } from "@/data/ofertas";
+import { getOfertaCover, type Oferta } from "@/lib/offer-utils";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -20,9 +20,9 @@ type Props = {
 const categoryTone: Record<string, string> = {
   "Oferta base": "border-red-200 bg-red-50 text-[#B91C1C]",
   Hogar: "border-slate-200 bg-slate-50 text-slate-700",
-  "Tecnología / HFC": "border-orange-200 bg-orange-50 text-orange-700",
+  "Tecnologia / HFC": "border-orange-200 bg-orange-50 text-orange-700",
   "Promociones especiales": "border-yellow-200 bg-yellow-50 text-yellow-800",
-  "Línea Móvil": "border-sky-200 bg-sky-50 text-sky-700",
+  "Linea Movil": "border-sky-200 bg-sky-50 text-sky-700",
 };
 
 export function OfferCard({ oferta, featured = false }: Props) {

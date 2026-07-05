@@ -1,5 +1,8 @@
 import { PromoCatalog } from "@/components/offers/PromoCatalog";
-import { ofertas } from "@/data/ofertas";
+import { connection } from "next/server";
+import { getActivePromotionOffers } from "@/lib/promotions";
+
+export const runtime = "nodejs";
 
 type PageProps = {
   searchParams: Promise<{
@@ -9,7 +12,9 @@ type PageProps = {
 };
 
 export default async function PromocionesPage({ searchParams }: PageProps) {
+  await connection();
   const params = await searchParams;
+  const ofertas = await getActivePromotionOffers();
 
   return (
     <main className="relative">
@@ -46,6 +51,7 @@ export default async function PromocionesPage({ searchParams }: PageProps) {
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
         <PromoCatalog
           activeFilter={getParam(params.tipo)}
+          ofertas={ofertas}
           query={getParam(params.q)}
         />
       </div>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { StatusBadge, TechnologyBadge } from "@/components/common/StatusBadge";
 import { OfficialImage } from "@/components/offers/OfficialImage";
 import { PromoBadge } from "@/components/offers/PromoBadge";
-import type { Oferta } from "@/data/ofertas";
+import type { Oferta } from "@/lib/offer-utils";
 
 type RegularOfferBannerProps = {
   oferta: Oferta;

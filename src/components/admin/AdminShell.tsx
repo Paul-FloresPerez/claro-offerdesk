@@ -3,6 +3,7 @@ import {
   Database,
   FileVideo,
   LayoutDashboard,
+  PackageCheck,
   UsersRound,
 } from "lucide-react";
 import Link from "next/link";
@@ -26,6 +27,12 @@ const adminLinks = [
     label: "Ranking",
     description: "Ventas destacadas",
     icon: BarChart3,
+  },
+  {
+    href: "/admin/promociones",
+    label: "Promociones",
+    description: "Catalogo comercial",
+    icon: PackageCheck,
   },
   {
     href: "/admin/media",
@@ -67,7 +74,7 @@ export default function AdminShell({
 
       <nav
         aria-label="Administración"
-        className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+        className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
       >
         {adminLinks.map((item) => (
           <Link

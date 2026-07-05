@@ -59,3 +59,34 @@ model TrainingMedia {
 
   @@map("training_media")
 }
+
+model Promotion {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  category        String
+  description     String
+  price           String
+  benefits        String[] @default([])
+  conditions      String[] @default([])
+  validity        String
+  imageUrl        String?  @map("image_url")
+  fileKey         String?  @map("file_key")
+  isActive        Boolean  @default(true) @map("is_active")
+  sortOrder       Int      @default(0) @map("sort_order")
+  status          String   @default("material-oficial")
+  detailPrice     String?  @map("detail_price")
+  speed           String?
+  technologies    String[] @default([])
+  appliesTo       String[] @default([]) @map("applies_to")
+  restrictions    String[] @default([])
+  validations     String[] @default([])
+  salesPhrase     String?  @map("sales_phrase")
+  cityImageUrl    String?  @map("city_image_url")
+  additionalMedia Json?    @map("additional_media")
+  variants        Json?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("promotions")
+}

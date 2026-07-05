@@ -11,18 +11,18 @@ import {
   categoriasOferta,
   estadoOfertaLabel,
   estadosOferta,
-  ofertas,
   tecnologiasOferta,
   type EstadoOferta,
+  type Oferta,
   type TecnologiaOferta,
-} from "@/data/ofertas";
+} from "@/lib/offer-utils";
 import { cn } from "@/lib/utils";
 
 const allCategory = "Todas";
 const allTechnology = "Todas";
 const allStatus = "Todos";
 
-export function OffersExplorer() {
+export function OffersExplorer({ ofertas }: { ofertas: Oferta[] }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>(allCategory);
   const [technology, setTechnology] = useState<

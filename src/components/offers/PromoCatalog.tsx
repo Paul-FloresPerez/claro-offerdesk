@@ -14,7 +14,7 @@ import {
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { PromoCard } from "@/components/offers/PromoCard";
 import { RegularOfferBanner } from "@/components/offers/RegularOfferBanner";
-import { ofertas, type Oferta } from "@/data/ofertas";
+import type { Oferta } from "@/lib/offer-utils";
 import { cn } from "@/lib/utils";
 
 export type CatalogFilter =
@@ -23,10 +23,11 @@ export type CatalogFilter =
   | "Internet hogar"
   | "HFC"
   | "Especiales"
-  | "Línea móvil";
+  | "Linea movil";
 
 type PromoCatalogProps = {
   activeFilter?: string;
+  ofertas: Oferta[];
   query?: string;
 };
 
@@ -40,7 +41,7 @@ const filterOptions: { label: CatalogFilter; icon: LucideIcon }[] = [
   { label: "Internet hogar", icon: Home },
   { label: "HFC", icon: Wifi },
   { label: "Especiales", icon: Flame },
-  { label: "Línea móvil", icon: Smartphone },
+  { label: "Linea movil", icon: Smartphone },
 ];
 
 const preferredOrderRank: Record<string, number> = {
@@ -86,7 +87,7 @@ function sortOffers(items: Oferta[]) {
 function matchesFilter(oferta: Oferta, filter: CatalogFilter) {
   if (filter === "Todas") return true;
   if (filter === "Oferta base") return oferta.id === "oferta-regular";
-  if (filter === "Línea móvil") return oferta.id === "linea-movil";
+  if (filter === "Linea movil") return oferta.id === "linea-movil";
   if (filter === "Especiales") {
     return oferta.categoria === "Promociones especiales";
   }
@@ -103,18 +104,19 @@ function matchesFilter(oferta: Oferta, filter: CatalogFilter) {
 
 function getFilterHint(filter: CatalogFilter) {
   if (filter === "Especiales") {
-    return "Promociones sujetas a validación antes de ofrecer.";
+    return "Promociones sujetas a validacion antes de ofrecer.";
   }
 
   if (filter === "Oferta base") {
-    return "Oferta Regular se revisa como condición regular / estándar.";
+    return "Oferta Regular se revisa como condicion regular / estandar.";
   }
 
-  return "Selecciona una campaña para ver material oficial, condiciones y zonas aplicables.";
+  return "Selecciona una campana para ver material oficial, condiciones y zonas aplicables.";
 }
 
 export function PromoCatalog({
   activeFilter,
+  ofertas,
   query = "",
 }: PromoCatalogProps) {
   const [selectedFilter, setSelectedFilter] = useState<CatalogFilter>(
@@ -127,7 +129,7 @@ export function PromoCatalog({
   const requestIdRef = useRef(0);
   const promotionsRef = useRef<HTMLElement>(null);
 
-  const quickAccessOffers = useMemo(() => sortOffers(ofertas), []);
+  const quickAccessOffers = useMemo(() => sortOffers(ofertas), [ofertas]);
   const filteredOffers = useMemo(() => {
     const normalizedQuery = searchValue.trim().toLowerCase();
 
@@ -141,7 +143,7 @@ export function PromoCatalog({
         return byFilter && byQuery;
       })
     );
-  }, [searchValue, selectedFilter]);
+  }, [ofertas, searchValue, selectedFilter]);
   const regularOffer = filteredOffers.find(
     (oferta) => oferta.id === "oferta-regular"
   );
@@ -236,7 +238,7 @@ export function PromoCatalog({
               name="q"
               value={searchValue}
               onChange={(event) => setSearchValue(event.target.value)}
-              placeholder="Buscar promoción, precio, velocidad o tecnología"
+              placeholder="Buscar promocion, precio, velocidad o tecnologia"
               className="h-16 w-full rounded-lg border border-white/10 bg-white pl-14 pr-4 text-base font-medium text-[#111827] shadow-[0_16px_34px_rgba(0,0,0,0.20)] outline-none transition placeholder:text-slate-400 focus:border-[#DA291C] focus:ring-4 focus:ring-[#DA291C]/15"
             />
           </label>
@@ -294,7 +296,7 @@ export function PromoCatalog({
 
         <div className="mt-5 border-t border-white/10 pt-4">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#FFB4AC]">
-            Accesos rápidos
+            Accesos rapidos
           </p>
           <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
             {quickAccessOffers.map((oferta) => (
@@ -358,7 +360,7 @@ export function PromoCatalog({
               Sin promociones visibles
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              Ajusta el filtro o limpia la búsqueda para revisar otras campañas.
+              Ajusta el filtro o limpia la busqueda para revisar otras campanas.
             </p>
           </div>
         ) : null}

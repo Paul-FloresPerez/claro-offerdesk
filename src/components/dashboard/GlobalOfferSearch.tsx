@@ -4,9 +4,9 @@ import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { ofertas } from "@/data/ofertas";
+import type { Oferta } from "@/lib/offer-utils";
 
-export function GlobalOfferSearch() {
+export function GlobalOfferSearch({ ofertas }: { ofertas: Oferta[] }) {
   const [query, setQuery] = useState("");
 
   const results = useMemo(() => {

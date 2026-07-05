@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { ofertas } from "@/data/ofertas";
 import { prisma } from "@/lib/prisma";
 import { getTrainingMedia, type TrainingMediaFile } from "@/lib/training-media";
 
@@ -64,35 +63,42 @@ export default async function HomePage() {
   await connection();
 
   const { featuredVideo, featuredAudios, videos, audios } = getTrainingMedia();
-  const topRanking = await prisma.salesRanking.findMany({
-    where: {
-      isActive: true,
-      user: {
-        is: {
-          isActive: true,
+  const [activePromotions, topRanking] = await Promise.all([
+    prisma.promotion.count({
+      where: {
+        isActive: true,
+      },
+    }),
+    prisma.salesRanking.findMany({
+      where: {
+        isActive: true,
+        user: {
+          is: {
+            isActive: true,
+          },
         },
       },
-    },
-    orderBy: [
-      {
-        rankPosition: "asc",
-      },
-      {
-        createdAt: "desc",
-      },
-    ],
-    select: {
-      rankPosition: true,
-      salesCount: true,
-      fullName: true,
-      user: {
-        select: {
-          fullName: true,
+      orderBy: [
+        {
+          rankPosition: "asc",
+        },
+        {
+          createdAt: "desc",
+        },
+      ],
+      select: {
+        rankPosition: true,
+        salesCount: true,
+        fullName: true,
+        user: {
+          select: {
+            fullName: true,
+          },
         },
       },
-    },
-    take: 3,
-  });
+      take: 3,
+    }),
+  ]);
   const topAdvisor = topRanking[0];
   const topAdvisorName = topAdvisor?.user?.fullName ?? topAdvisor?.fullName;
 
@@ -126,8 +132,8 @@ export default async function HomePage() {
         <section className="grid gap-4 lg:grid-cols-3">
           <MetricCard
             label="Promociones"
-            value={ofertas.length.toString()}
-            detail="Ofertas disponibles para consulta"
+            value={activePromotions.toString()}
+            detail="Promociones activas para consulta"
           />
           <MetricCard
             label="Entrenamiento"

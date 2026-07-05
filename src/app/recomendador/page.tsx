@@ -1,7 +1,14 @@
+import { connection } from "next/server";
 import { PageHeader } from "@/components/common/PageHeader";
 import { RecommenderClient } from "@/components/offers/RecommenderClient";
+import { getActivePromotionOffers } from "@/lib/promotions";
 
-export default function RecomendadorPage() {
+export const runtime = "nodejs";
+
+export default async function RecomendadorPage() {
+  await connection();
+  const ofertas = await getActivePromotionOffers();
+
   return (
     <main>
       <PageHeader
@@ -11,7 +18,7 @@ export default function RecomendadorPage() {
       />
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <RecommenderClient />
+        <RecommenderClient ofertas={ofertas} />
       </div>
     </main>
   );

@@ -1,6 +1,6 @@
 import { ImageIcon } from "lucide-react";
 import Image from "next/image";
-import type { OfertaMediaAdicional } from "@/data/ofertas";
+import type { OfertaMediaAdicional } from "@/lib/offer-utils";
 import { cn } from "@/lib/utils";
 
 type OfficialImageSource = string | OfertaMediaAdicional;
@@ -83,6 +83,7 @@ export function OfficialImage({
   const imageLoadProps = shouldPreload
     ? { preload: true }
     : { loading: variant === "hero" ? ("eager" as const) : ("lazy" as const) };
+  const isExternalImage = src.startsWith("https://");
 
   const imageSizes = {
     banner: "(max-width: 1024px) 100vw, 50vw",
@@ -106,18 +107,30 @@ export function OfficialImage({
           frameClass
         )}
       >
-        <Image
-          src={src}
-          alt={captionTitle ?? "Imagen oficial de oferta Claro"}
-          width={dimensions.width}
-          height={dimensions.height}
-          sizes={imageSizes}
-          className={cn(
-            "h-full w-full object-contain transition duration-300 group-hover/image:scale-[1.015] group-hover:scale-[1.015]",
-            variant === "card" || variant === "banner" ? "p-3" : "p-2 sm:p-3"
-          )}
-          {...imageLoadProps}
-        />
+        {isExternalImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src}
+            alt={captionTitle ?? "Imagen oficial de oferta Claro"}
+            className={cn(
+              "h-full w-full object-contain transition duration-300 group-hover/image:scale-[1.015] group-hover:scale-[1.015]",
+              variant === "card" || variant === "banner" ? "p-3" : "p-2 sm:p-3"
+            )}
+          />
+        ) : (
+          <Image
+            src={src}
+            alt={captionTitle ?? "Imagen oficial de oferta Claro"}
+            width={dimensions.width}
+            height={dimensions.height}
+            sizes={imageSizes}
+            className={cn(
+              "h-full w-full object-contain transition duration-300 group-hover/image:scale-[1.015] group-hover:scale-[1.015]",
+              variant === "card" || variant === "banner" ? "p-3" : "p-2 sm:p-3"
+            )}
+            {...imageLoadProps}
+          />
+        )}
       </div>
       {showCaption ? (
         <figcaption className="text-xs leading-5 text-neutral-500">
