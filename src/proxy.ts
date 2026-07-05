@@ -4,7 +4,7 @@ import { missingAuthSecret } from "@/lib/auth-secret";
 
 const canonicalHost = "claro-offerdesk.vercel.app";
 const canonicalOrigin = `https://${canonicalHost}`;
-const adminRoutePrefixes = ["/admin", "/db-test"];
+const adminRoutePrefixes = ["/admin"];
 const publicFilePrefixes = [
   "/capacitacion/",
   "/login/",
@@ -67,7 +67,6 @@ export const config = {
     "/recomendador/:path*",
     "/validaciones/:path*",
     "/admin/:path*",
-    "/db-test/:path*",
   ],
 };
 
