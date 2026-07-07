@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { connection } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getPromotionMetrics } from "@/lib/promotions";
 import {
   getTrainingMedia,
   getTrainingMediaFromRecords,
@@ -66,12 +67,8 @@ const workflow = [
 export default async function HomePage() {
   await connection();
 
-  const [activePromotions, topRanking, dbMedia] = await Promise.all([
-    prisma.promotion.count({
-      where: {
-        isActive: true,
-      },
-    }),
+  const promotionMetrics = getPromotionMetrics();
+  const [topRanking, dbMedia] = await Promise.all([
     prisma.salesRanking.findMany({
       where: {
         isActive: true,
@@ -156,8 +153,8 @@ export default async function HomePage() {
         <section className="grid gap-4 lg:grid-cols-3">
           <MetricCard
             label="Promociones"
-            value={activePromotions.toString()}
-            detail="Promociones activas para consulta"
+            value={promotionMetrics.active.toString()}
+            detail="Versionadas en codigo"
           />
           <MetricCard
             label="Entrenamiento"

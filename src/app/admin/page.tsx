@@ -14,19 +14,19 @@ import Link from "next/link";
 import { connection } from "next/server";
 import AdminShell from "@/components/admin/AdminShell";
 import { prisma } from "@/lib/prisma";
+import { getPromotionMetrics } from "@/lib/promotions";
 
 export const runtime = "nodejs";
 
 export default async function AdminPage() {
   await connection();
+  const promotionMetrics = getPromotionMetrics();
 
   const [
     activeUsers,
     inactiveUsers,
     advisors,
     admins,
-    activePromotions,
-    inactivePromotions,
     activeMedia,
     activeRankingRecords,
     topRanking,
@@ -49,16 +49,6 @@ export default async function AdminPage() {
     prisma.user.count({
       where: {
         isAdmin: true,
-      },
-    }),
-    prisma.promotion.count({
-      where: {
-        isActive: true,
-      },
-    }),
-    prisma.promotion.count({
-      where: {
-        isActive: false,
       },
     }),
     prisma.trainingMedia.count({
@@ -128,14 +118,14 @@ export default async function AdminPage() {
     },
     {
       label: "Promociones activas",
-      value: activePromotions.toString(),
-      detail: "Visibles en catalogo",
+      value: promotionMetrics.active.toString(),
+      detail: "Versionadas en codigo",
       icon: PackageCheck,
     },
     {
       label: "Promociones inactivas",
-      value: inactivePromotions.toString(),
-      detail: "Ocultas del catalogo",
+      value: promotionMetrics.inactive.toString(),
+      detail: "Sin estado inactivo en codigo",
       icon: PackageCheck,
     },
     {
