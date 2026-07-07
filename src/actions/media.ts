@@ -3,7 +3,6 @@
 import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
-import { put } from "@vercel/blob";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import {
@@ -17,14 +16,6 @@ import {
 const MEDIA_ADMIN_PATH = "/admin/media";
 const AUDIO_EXTENSIONS = new Set([".mp3", ".m4a", ".ogg"]);
 const VIDEO_EXTENSIONS = new Set([".mp4"]);
-const AUDIO_MIME_TYPES = new Set([
-  "audio/mpeg",
-  "audio/mp4",
-  "audio/m4a",
-  "audio/ogg",
-  "audio/x-m4a",
-]);
-const VIDEO_MIME_TYPES = new Set(["video/mp4"]);
 
 export async function createMediaAction(
   _previousState: MediaActionState,
@@ -42,15 +33,7 @@ export async function createMediaAction(
     return validationErrorState(parsed.error.flatten().fieldErrors);
   }
 
-  const prepared = await prepareMediaFile(formData, parsed.data.mediaType);
-
-  if (!prepared.ok) {
-    return prepared.state;
-  }
-
-  const fileUrl = prepared.fileUrl ?? parsed.data.fileUrl;
-  const fileKey = prepared.fileKey ?? parsed.data.fileKey;
-  const fileUrlError = validateFileUrl(parsed.data.mediaType, fileUrl);
+  const fileUrlError = validateFileUrl(parsed.data.mediaType, parsed.data.fileUrl);
 
   if (fileUrlError) {
     return fieldErrorState("fileUrl", fileUrlError);
@@ -65,8 +48,8 @@ export async function createMediaAction(
         title: parsed.data.title,
         description: parsed.data.description,
         mediaType: parsed.data.mediaType,
-        fileUrl: fileUrl!,
-        fileKey,
+        fileUrl: parsed.data.fileUrl!,
+        fileKey: null,
         weekLabel: parsed.data.weekLabel,
         isActive: parsed.data.isActive,
         createdAt: now,
@@ -100,15 +83,7 @@ export async function updateMediaAction(
     return validationErrorState(parsed.error.flatten().fieldErrors);
   }
 
-  const prepared = await prepareMediaFile(formData, parsed.data.mediaType);
-
-  if (!prepared.ok) {
-    return prepared.state;
-  }
-
-  const fileUrl = prepared.fileUrl ?? parsed.data.fileUrl;
-  const fileKey = prepared.fileKey ?? parsed.data.fileKey;
-  const fileUrlError = validateFileUrl(parsed.data.mediaType, fileUrl);
+  const fileUrlError = validateFileUrl(parsed.data.mediaType, parsed.data.fileUrl);
 
   if (fileUrlError) {
     return fieldErrorState("fileUrl", fileUrlError);
@@ -123,8 +98,8 @@ export async function updateMediaAction(
         title: parsed.data.title,
         description: parsed.data.description,
         mediaType: parsed.data.mediaType,
-        fileUrl: fileUrl!,
-        fileKey,
+        fileUrl: parsed.data.fileUrl!,
+        fileKey: null,
         weekLabel: parsed.data.weekLabel,
         isActive: parsed.data.isActive,
         updatedAt: new Date(),
@@ -188,109 +163,14 @@ function readMediaFormData(formData: FormData) {
     description: formData.get("description"),
     mediaType: formData.get("mediaType"),
     fileUrl: formData.get("fileUrl"),
-    fileKey: formData.get("fileKey"),
     weekLabel: formData.get("weekLabel"),
     isActive: formData.get("isActive"),
   };
 }
 
-async function prepareMediaFile(
-  formData: FormData,
-  mediaType: MediaType
-): Promise<MediaFileResult> {
-  const file = formData.get("mediaFile");
-
-  if (!(file instanceof File) || file.size === 0) {
-    return {
-      ok: true,
-      fileUrl: null,
-      fileKey: null,
-    };
-  }
-
-  const fileError = validateUploadedFile(file, mediaType);
-
-  if (fileError) {
-    return {
-      ok: false,
-      state: fieldErrorState("mediaFile", fileError),
-    };
-  }
-
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return {
-      ok: false,
-      state: fieldErrorState(
-        "mediaFile",
-        "Falta configurar BLOB_READ_WRITE_TOKEN. Usa una URL externa mientras tanto."
-      ),
-    };
-  }
-
-  try {
-    const safeName = sanitizeFileName(file.name);
-    const blob = await put(
-      `capacitacion/${mediaType}/${Date.now()}-${safeName}`,
-      file,
-      {
-        access: "public",
-        addRandomSuffix: true,
-      }
-    );
-
-    return {
-      ok: true,
-      fileUrl: blob.url,
-      fileKey: blob.pathname,
-    };
-  } catch {
-    return {
-      ok: false,
-      state: fieldErrorState("mediaFile", "No se pudo subir el archivo a Blob."),
-    };
-  }
-}
-
-type MediaFileResult =
-  | {
-      ok: true;
-      fileUrl: string | null;
-      fileKey: string | null;
-    }
-  | {
-      ok: false;
-      state: MediaActionState;
-    };
-
-function validateUploadedFile(file: File, mediaType: MediaType) {
-  const extension = getFileExtension(file.name);
-
-  if (mediaType === "audio") {
-    if (!AUDIO_EXTENSIONS.has(extension)) {
-      return "El audio debe ser MP3, M4A u OGG.";
-    }
-
-    if (file.type && !AUDIO_MIME_TYPES.has(file.type)) {
-      return "El tipo de audio no es compatible.";
-    }
-
-    return null;
-  }
-
-  if (!VIDEO_EXTENSIONS.has(extension)) {
-    return "El video debe ser MP4.";
-  }
-
-  if (file.type && !VIDEO_MIME_TYPES.has(file.type)) {
-    return "El tipo de video no es compatible.";
-  }
-
-  return null;
-}
-
 function validateFileUrl(mediaType: MediaType, fileUrl: string | null) {
   if (!fileUrl) {
-    return "Ingresa una URL o sube un archivo.";
+    return "Ingresa una URL publica.";
   }
 
   if (fileUrl.includes("\\") || fileUrl.startsWith("file:")) {
@@ -313,23 +193,17 @@ function validateFileUrl(mediaType: MediaType, fileUrl: string | null) {
     return null;
   }
 
-  if (isVercelBlobUrl(url)) {
-    const extension = getFileExtension(url.pathname);
-    const allowedExtensions =
-      mediaType === "audio" ? AUDIO_EXTENSIONS : VIDEO_EXTENSIONS;
+  const extension = getFileExtension(url.pathname);
+  const allowedExtensions =
+    mediaType === "audio" ? AUDIO_EXTENSIONS : VIDEO_EXTENSIONS;
 
-    if (!allowedExtensions.has(extension)) {
-      return mediaType === "audio"
-        ? "La URL de audio debe terminar en .mp3, .m4a u .ogg."
-        : "La URL de video debe terminar en .mp4.";
-    }
-
+  if (allowedExtensions.has(extension)) {
     return null;
   }
 
   return mediaType === "video"
-    ? "Usa una URL de YouTube o una URL de Vercel Blob."
-    : "Usa una URL de Vercel Blob para audio.";
+    ? "Usa YouTube o una URL https directa que termine en .mp4."
+    : "Usa una URL https directa que termine en .mp3, .m4a u .ogg.";
 }
 
 function isYouTubeUrl(url: URL) {
@@ -342,24 +216,6 @@ function isYouTubeUrl(url: URL) {
   );
 }
 
-function isVercelBlobUrl(url: URL) {
-  return url.hostname.toLowerCase().endsWith(".blob.vercel-storage.com");
-}
-
-function sanitizeFileName(fileName: string) {
-  const extension = getFileExtension(fileName);
-  const baseName = fileName
-    .slice(0, Math.max(0, fileName.length - extension.length))
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
-
-  return `${baseName || "material"}${extension}`;
-}
-
 function getFileExtension(fileName: string) {
   const match = fileName.toLowerCase().match(/\.[a-z0-9]+$/);
   return match?.[0] ?? "";
@@ -367,8 +223,14 @@ function getFileExtension(fileName: string) {
 
 function revalidateMedia() {
   revalidatePath(MEDIA_ADMIN_PATH);
+  revalidatePath("/admin");
+  revalidatePath("/admin/usuarios");
+  revalidatePath("/admin/ranking");
+  revalidatePath("/admin/promociones");
   revalidatePath("/capacitacion");
   revalidatePath("/entrenamiento");
+  revalidatePath("/promociones");
+  revalidatePath("/top-ventas");
   revalidatePath("/");
 }
 

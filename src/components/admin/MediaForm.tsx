@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { FileVideo, Save, Upload } from "lucide-react";
+import { FileVideo, Link2, Save } from "lucide-react";
 import { createMediaAction, updateMediaAction } from "@/actions/media";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,6 @@ export type AdminMediaRow = {
   description: string | null;
   mediaType: MediaType;
   fileUrl: string;
-  fileKey: string | null;
   weekLabel: string | null;
   isActive: boolean;
   createdAt: string;
@@ -59,7 +58,7 @@ export default function MediaForm({
     >
       <div className="mb-5 flex items-center gap-3">
         <span className="grid h-10 w-10 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
-          {isEdit ? <FileVideo className="h-5 w-5" /> : <Upload className="h-5 w-5" />}
+          {isEdit ? <FileVideo className="h-5 w-5" /> : <Link2 className="h-5 w-5" />}
         </span>
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-white">
@@ -76,7 +75,6 @@ export default function MediaForm({
       <form
         ref={formRef}
         action={formAction}
-        encType="multipart/form-data"
         className="grid gap-4 sm:grid-cols-2"
       >
         {isEdit ? <input type="hidden" name="id" value={media?.id} /> : null}
@@ -130,9 +128,10 @@ export default function MediaForm({
           error={fieldError(state, "fileUrl")}
           placeholder={
             mediaType === "video"
-              ? "YouTube o URL de Vercel Blob .mp4"
-              : "URL de Vercel Blob .mp3, .m4a u .ogg"
+              ? "YouTube o URL publica .mp4"
+              : "URL publica .mp3, .m4a u .ogg"
           }
+          required
         />
         <AdminField
           label="Semana / etiqueta"
@@ -141,33 +140,6 @@ export default function MediaForm({
           error={fieldError(state, "weekLabel")}
           placeholder="Semana 27 - 2026"
         />
-
-        <AdminField
-          label="File key"
-          name="fileKey"
-          defaultValue={media?.fileKey ?? ""}
-          error={fieldError(state, "fileKey")}
-          placeholder="Opcional; Blob lo completa al subir archivo"
-        />
-
-        <label className="grid gap-2 text-sm font-semibold text-slate-200">
-          Subir archivo a Blob
-          <Input
-            name="mediaFile"
-            type="file"
-            accept={mediaType === "video" ? "video/mp4" : "audio/mpeg,audio/mp4,audio/ogg,.m4a"}
-            aria-invalid={Boolean(fieldError(state, "mediaFile"))}
-            className="h-10 border-white/10 bg-[#111827]/55 text-white file:text-white"
-          />
-          <span className="text-xs font-medium text-slate-500">
-            {mediaType === "video" ? "Solo MP4." : "MP3, M4A u OGG."} Requiere BLOB_READ_WRITE_TOKEN.
-          </span>
-          {fieldError(state, "mediaFile") ? (
-            <span className="text-xs font-medium text-[#FFB4AC]">
-              {fieldError(state, "mediaFile")}
-            </span>
-          ) : null}
-        </label>
 
         <div className="grid content-end gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
           <label className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-semibold text-slate-200">

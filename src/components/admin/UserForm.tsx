@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
-import { ImageIcon, Save, ShieldCheck, UserPlus } from "lucide-react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { ExternalLink, ImageIcon, Save, ShieldCheck, UserPlus } from "lucide-react";
 import { createUserAction, updateUserAction } from "@/actions/users";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,11 +41,13 @@ export default function UserForm({
   const formRef = useRef<HTMLFormElement>(null);
   const action = mode === "create" ? createUserAction : updateUserAction;
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const [photoUrl, setPhotoUrl] = useState(user?.photoUrl ?? "");
   const isEdit = mode === "edit";
 
   useEffect(() => {
     if (mode === "create" && state.status === "success") {
       formRef.current?.reset();
+      setPhotoUrl("");
     }
   }, [mode, state.status]);
 
@@ -80,7 +82,6 @@ export default function UserForm({
       <form
         ref={formRef}
         action={formAction}
-        encType="multipart/form-data"
         className="grid gap-4 sm:grid-cols-2"
       >
         {isEdit ? <input type="hidden" name="id" value={user?.id} /> : null}
@@ -124,8 +125,8 @@ export default function UserForm({
         />
         <PhotoUploadField
           currentFullName={user?.fullName ?? ""}
-          currentPhotoUrl={user?.photoUrl ?? null}
-          fileError={fieldError(state, "photoFile")}
+          currentPhotoUrl={photoUrl}
+          onPhotoUrlChange={setPhotoUrl}
           urlError={fieldError(state, "photoUrl")}
         />
 
@@ -188,61 +189,68 @@ export default function UserForm({
 function PhotoUploadField({
   currentFullName,
   currentPhotoUrl,
-  fileError,
+  onPhotoUrlChange,
   urlError,
 }: {
   currentFullName: string;
-  currentPhotoUrl: string | null;
-  fileError?: string;
+  currentPhotoUrl: string;
+  onPhotoUrlChange: (value: string) => void;
   urlError?: string;
 }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const initials = currentFullName ? getInitials(currentFullName) : null;
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [currentPhotoUrl]);
+
   return (
     <div className="grid gap-2 text-sm font-semibold text-slate-200">
-      <span>Foto de usuario</span>
+      <span>URL de foto</span>
       <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
-        {currentPhotoUrl ? (
+        {currentPhotoUrl && !imageFailed ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={currentPhotoUrl}
             alt={currentFullName || "Foto actual"}
             className="h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
+            onError={() => setImageFailed(true)}
           />
         ) : (
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#DA291C] text-sm font-black text-white">
-            {currentFullName ? getInitials(currentFullName) : <ImageIcon className="h-5 w-5" />}
+            {initials ?? <ImageIcon className="h-5 w-5" />}
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <Input
-            name="photoFile"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            aria-invalid={Boolean(fileError)}
-            className="h-10 border-white/10 bg-[#111827]/55 text-white file:text-white"
-          />
+          <label className="grid gap-2">
+            <Input
+              name="photoUrl"
+              value={currentPhotoUrl}
+              onChange={(event) => onPhotoUrlChange(event.target.value)}
+              placeholder="Pega la URL publica de Vercel Blob"
+              aria-invalid={Boolean(urlError)}
+              className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
+            />
+          </label>
           <p className="mt-1 text-xs leading-5 text-slate-500">
-            JPG, JPEG, PNG o WEBP. Maximo 2 MB. Si Blob esta configurado, se sube automaticamente.
+            Acepta https://... o /usuarios/archivo.jpg como fallback legacy.
           </p>
         </div>
       </div>
-      {fileError ? (
-        <span className="text-xs font-medium text-[#FFB4AC]">{fileError}</span>
+      {currentPhotoUrl ? (
+        <a
+          href={currentPhotoUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-[#FFB4AC] underline-offset-4 hover:underline"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+          Abrir foto
+        </a>
       ) : null}
-      <label className="grid gap-2 text-sm font-semibold text-slate-200">
-        PhotoUrl manual
-        <Input
-          name="photoUrl"
-          defaultValue={currentPhotoUrl ?? ""}
-          placeholder="/usuarios/foto.jpg o https://..."
-          aria-invalid={Boolean(urlError)}
-          className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
-        />
-        <span className="text-xs font-medium text-slate-500">
-          Respaldo para cuando Vercel Blob aun no tenga token configurado.
-        </span>
-        {urlError ? (
-          <span className="text-xs font-medium text-[#FFB4AC]">{urlError}</span>
-        ) : null}
-      </label>
+      {urlError ? (
+        <span className="text-xs font-medium text-[#FFB4AC]">{urlError}</span>
+      ) : null}
     </div>
   );
 }

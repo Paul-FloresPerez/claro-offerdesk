@@ -1,6 +1,5 @@
 import {
   BarChart3,
-  Database,
   FileVideo,
   LayoutDashboard,
   PackageCheck,
@@ -69,7 +68,7 @@ export default function AdminShell({
             {description}
           </p>
         </div>
-        {statusBadge ?? <PendingDatabaseBadge />}
+        {statusBadge ?? <OperationalBadge />}
       </section>
 
       <nav
@@ -102,11 +101,10 @@ export default function AdminShell({
   );
 }
 
-export function PendingDatabaseBadge() {
+export function OperationalBadge() {
   return (
-    <span className="inline-flex w-fit items-center gap-2 rounded-lg border border-[#DA291C]/30 bg-[#DA291C]/12 px-4 py-3 text-sm font-semibold text-[#FFB4AC]">
-      <Database className="h-4 w-4" />
-      Pendiente de conectar a base de datos
+    <span className="inline-flex w-fit rounded-lg border border-emerald-400/25 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-200">
+      Datos reales
     </span>
   );
 }

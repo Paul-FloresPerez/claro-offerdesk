@@ -1,21 +1,35 @@
-import { BarChart3, FileVideo, UserCheck, UserX } from "lucide-react";
+import {
+  BarChart3,
+  FileVideo,
+  PackageCheck,
+  ShieldCheck,
+  Trophy,
+  UserCheck,
+  UserRound,
+  UserX,
+  UsersRound,
+  type LucideIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { connection } from "next/server";
 import AdminShell from "@/components/admin/AdminShell";
 import { prisma } from "@/lib/prisma";
-import { getTrainingMedia } from "@/lib/training-media";
 
 export const runtime = "nodejs";
 
 export default async function AdminPage() {
   await connection();
 
-  const { audios, videos } = getTrainingMedia();
-  const detectedMediaCount = audios.length + videos.length;
   const [
     activeUsers,
     inactiveUsers,
+    advisors,
+    admins,
+    activePromotions,
+    inactivePromotions,
+    activeMedia,
     activeRankingRecords,
-    activeTrainingMediaRecords,
+    topRanking,
   ] = await Promise.all([
     prisma.user.count({
       where: {
@@ -27,9 +41,24 @@ export default async function AdminPage() {
         isActive: false,
       },
     }),
-    prisma.salesRanking.count({
+    prisma.user.count({
+      where: {
+        isAdmin: false,
+      },
+    }),
+    prisma.user.count({
+      where: {
+        isAdmin: true,
+      },
+    }),
+    prisma.promotion.count({
       where: {
         isActive: true,
+      },
+    }),
+    prisma.promotion.count({
+      where: {
+        isActive: false,
       },
     }),
     prisma.trainingMedia.count({
@@ -37,18 +66,46 @@ export default async function AdminPage() {
         isActive: true,
       },
     }),
+    prisma.salesRanking.count({
+      where: {
+        isActive: true,
+      },
+    }),
+    prisma.salesRanking.findFirst({
+      where: {
+        isActive: true,
+        user: {
+          is: {
+            isActive: true,
+          },
+        },
+      },
+      orderBy: [
+        {
+          rankPosition: "asc",
+        },
+        {
+          salesCount: "desc",
+        },
+      ],
+      select: {
+        rankPosition: true,
+        salesCount: true,
+        fullName: true,
+        user: {
+          select: {
+            fullName: true,
+          },
+        },
+      },
+    }),
   ]);
-  const mediaMetricValue =
-    activeTrainingMediaRecords > 0 ? activeTrainingMediaRecords : detectedMediaCount;
-  const mediaMetricDetail =
-    activeTrainingMediaRecords > 0
-      ? "Registros activos en training_media"
-      : "Audios y videos detectados";
-  const dashboardCards = [
+
+  const cards: DashboardCard[] = [
     {
       label: "Usuarios activos",
       value: activeUsers.toString(),
-      detail: "Cuentas habilitadas para ingresar",
+      detail: "Cuentas habilitadas",
       icon: UserCheck,
     },
     {
@@ -58,15 +115,64 @@ export default async function AdminPage() {
       icon: UserX,
     },
     {
+      label: "Total asesores",
+      value: advisors.toString(),
+      detail: "Usuarios con rol asesor",
+      icon: UsersRound,
+    },
+    {
+      label: "Total admins",
+      value: admins.toString(),
+      detail: "Usuarios administradores",
+      icon: ShieldCheck,
+    },
+    {
+      label: "Promociones activas",
+      value: activePromotions.toString(),
+      detail: "Visibles en catalogo",
+      icon: PackageCheck,
+    },
+    {
+      label: "Promociones inactivas",
+      value: inactivePromotions.toString(),
+      detail: "Ocultas del catalogo",
+      icon: PackageCheck,
+    },
+    {
+      label: "Media activa",
+      value: activeMedia.toString(),
+      detail: "Visible en entrenamiento",
+      icon: FileVideo,
+    },
+    {
       label: "Ranking activo",
       value: activeRankingRecords.toString(),
-      detail: "Registros visibles en Top ventas",
+      detail: "Registros visibles",
+      icon: BarChart3,
+    },
+  ];
+
+  const topSellerName =
+    topRanking?.user?.fullName ?? topRanking?.fullName ?? "Sin registros";
+  const quickLinks = [
+    {
+      href: "/admin/usuarios",
+      label: "Usuarios",
+      icon: UserRound,
+    },
+    {
+      href: "/admin/promociones",
+      label: "Promociones",
+      icon: PackageCheck,
+    },
+    {
+      href: "/admin/ranking",
+      label: "Ranking",
       icon: BarChart3,
     },
     {
-      label: "Materiales",
-      value: mediaMetricValue.toString(),
-      detail: mediaMetricDetail,
+      href: "/admin/media",
+      label: "Entrenamiento",
       icon: FileVideo,
     },
   ];
@@ -74,43 +180,80 @@ export default async function AdminPage() {
   return (
     <AdminShell
       title="Resumen"
-      description="Vista operativa con indicadores reales del sistema."
+      description="Indicadores operativos reales de Claro OfferDesk."
     >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {dashboardCards.map((card) => (
-          <article
-            key={card.label}
-            className="rounded-lg border border-white/10 bg-white/[0.07] p-5 shadow-[0_20px_56px_rgba(0,0,0,0.18)]"
-          >
-            <div className="flex items-center justify-between gap-4">
-              <span className="grid h-11 w-11 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
-                <card.icon className="h-5 w-5" />
-              </span>
-              <span className="rounded-md border border-white/10 bg-[#111827]/55 px-2.5 py-1 text-xs font-semibold text-[#FFB4AC]">
-                Dato real
-              </span>
-            </div>
-            <p className="mt-5 text-sm font-semibold uppercase tracking-[0.12em] text-slate-400">
-              {card.label}
-            </p>
-            <p className="mt-2 text-4xl font-bold tracking-tight text-white">
-              {card.value}
-            </p>
-            <p className="mt-2 text-sm text-slate-400">{card.detail}</p>
-          </article>
+        {cards.map((card) => (
+          <MetricCard key={card.label} card={card} />
         ))}
       </section>
 
-      <section className="mt-6 rounded-lg border border-white/10 bg-white/[0.07] p-5">
-        <h2 className="text-xl font-semibold tracking-tight text-white">
-          Estado de la fase
-        </h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-          Usuarios y ranking ya consultan Neon mediante Prisma. La biblioteca de
-          capacitacion usa registros de base si existen; si no, muestra archivos
-          detectados en public.
-        </p>
+      <section className="mt-6 grid gap-5 lg:grid-cols-[1fr_1.2fr]">
+        <article className="rounded-lg border border-white/10 bg-white/[0.07] p-5 shadow-[0_20px_56px_rgba(0,0,0,0.18)]">
+          <div className="flex items-center gap-3">
+            <span className="grid h-11 w-11 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
+              <Trophy className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-400">
+                Top vendedor actual
+              </p>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight text-white">
+                {topSellerName}
+              </h2>
+            </div>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-slate-400">
+            {topRanking
+              ? `#${topRanking.rankPosition} con ${topRanking.salesCount} ventas registradas.`
+              : "Aun no hay registros activos en el ranking."}
+          </p>
+        </article>
+
+        <article className="rounded-lg border border-white/10 bg-white/[0.07] p-5 shadow-[0_20px_56px_rgba(0,0,0,0.18)]">
+          <h2 className="text-xl font-semibold tracking-tight text-white">
+            Accesos rapidos
+          </h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {quickLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-4 text-sm font-semibold text-white transition hover:border-[#DA291C]/40 hover:bg-white/[0.08]"
+              >
+                <span className="grid h-10 w-10 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
+                  <item.icon className="h-5 w-5" />
+                </span>
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </article>
       </section>
     </AdminShell>
+  );
+}
+
+type DashboardCard = {
+  detail: string;
+  icon: LucideIcon;
+  label: string;
+  value: string;
+};
+
+function MetricCard({ card }: { card: DashboardCard }) {
+  return (
+    <article className="rounded-lg border border-white/10 bg-white/[0.07] p-5 shadow-[0_20px_56px_rgba(0,0,0,0.18)]">
+      <span className="grid h-11 w-11 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
+        <card.icon className="h-5 w-5" />
+      </span>
+      <p className="mt-5 text-sm font-semibold uppercase tracking-[0.12em] text-slate-400">
+        {card.label}
+      </p>
+      <p className="mt-2 text-4xl font-bold tracking-tight text-white">
+        {card.value}
+      </p>
+      <p className="mt-2 text-sm text-slate-400">{card.detail}</p>
+    </article>
   );
 }

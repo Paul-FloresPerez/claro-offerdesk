@@ -35,7 +35,6 @@ const mediaBaseSchema = z.object({
     message: "Selecciona audio o video.",
   }),
   fileUrl: optionalText(700),
-  fileKey: optionalText(300),
   weekLabel: optionalText(80),
   isActive: checkbox,
 });

@@ -96,11 +96,7 @@ function MediaRow({ item }: { item: AdminMediaRow }) {
             <ExternalLink className="h-4 w-4 shrink-0" />
             <span className="truncate">{item.fileUrl}</span>
           </a>
-          {item.fileKey ? (
-            <p className="mt-1 max-w-xs truncate text-xs text-slate-500">
-              {item.fileKey}
-            </p>
-          ) : null}
+          {item.isActive ? <MediaPreview item={item} /> : null}
         </td>
         <td className="px-5 py-4">
           <StatusPill tone={item.isActive ? "active" : "inactive"}>
@@ -125,6 +121,84 @@ function MediaRow({ item }: { item: AdminMediaRow }) {
       </tr>
     </>
   );
+}
+
+function MediaPreview({ item }: { item: AdminMediaRow }) {
+  const youtubeEmbedUrl =
+    item.mediaType === "video" ? getYouTubeEmbedUrl(item.fileUrl) : null;
+
+  if (youtubeEmbedUrl) {
+    return (
+      <iframe
+        src={youtubeEmbedUrl}
+        title={item.title}
+        className="mt-3 aspect-video w-full max-w-xs rounded-md bg-black"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+      />
+    );
+  }
+
+  if (item.mediaType === "video") {
+    return (
+      <video
+        controls
+        playsInline
+        preload="none"
+        className="mt-3 aspect-video w-full max-w-xs rounded-md bg-black"
+      >
+        <source src={item.fileUrl} type="video/mp4" />
+      </video>
+    );
+  }
+
+  return (
+    <audio controls preload="none" className="mt-3 w-full max-w-xs">
+      <source src={item.fileUrl} type={getAudioMimeType(item.fileUrl)} />
+    </audio>
+  );
+}
+
+function getYouTubeEmbedUrl(fileUrl: string) {
+  try {
+    const url = new URL(fileUrl);
+    const host = url.hostname.toLowerCase();
+    const videoId =
+      host === "youtu.be"
+        ? url.pathname.split("/").filter(Boolean)[0]
+        : url.searchParams.get("v") ?? getYouTubePathVideoId(url.pathname);
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  } catch {
+    return null;
+  }
+}
+
+function getYouTubePathVideoId(pathname: string) {
+  const segments = pathname.split("/").filter(Boolean);
+
+  if (segments[0] === "shorts" || segments[0] === "embed") {
+    return segments[1] ?? null;
+  }
+
+  return null;
+}
+
+function getAudioMimeType(fileUrl: string) {
+  const pathname = safePathname(fileUrl).toLowerCase();
+
+  if (pathname.endsWith(".m4a")) return "audio/mp4";
+  if (pathname.endsWith(".ogg")) return "audio/ogg";
+
+  return "audio/mpeg";
+}
+
+function safePathname(fileUrl: string) {
+  try {
+    return new URL(fileUrl).pathname;
+  } catch {
+    return fileUrl;
+  }
 }
 
 function StatusAction({ item }: { item: AdminMediaRow }) {

@@ -221,7 +221,14 @@ function readText(value: FormDataEntryValue | null) {
 
 function revalidateRanking() {
   revalidatePath(RANKING_ADMIN_PATH);
+  revalidatePath("/admin");
+  revalidatePath("/admin/usuarios");
+  revalidatePath("/admin/media");
+  revalidatePath("/admin/promociones");
+  revalidatePath("/promociones");
   revalidatePath("/top-ventas");
+  revalidatePath("/entrenamiento");
+  revalidatePath("/");
 }
 
 function validationErrorState(

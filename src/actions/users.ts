@@ -3,7 +3,6 @@
 import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
-import { put } from "@vercel/blob";
 import bcrypt from "bcryptjs";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -17,9 +16,6 @@ import {
 } from "@/lib/validations/user";
 
 const USERS_ADMIN_PATH = "/admin/usuarios";
-const MAX_PHOTO_SIZE_BYTES = 2 * 1024 * 1024;
-const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-const ALLOWED_PHOTO_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 
 export async function createUserAction(
   _previousState: UserActionState,
@@ -47,11 +43,6 @@ export async function createUserAction(
     const now = new Date();
     const userId = randomUUID();
     const passwordHash = await bcrypt.hash(parsed.data.password, 12);
-    const photoUpload = await uploadUserPhoto(formData, userId);
-
-    if (!photoUpload.ok) {
-      return photoUpload.state;
-    }
 
     await prisma.user.create({
       data: {
@@ -62,7 +53,7 @@ export async function createUserAction(
         passwordHash,
         fullName: parsed.data.fullName,
         branchName: parsed.data.branchName,
-        photoUrl: photoUpload.photoUrl ?? parsed.data.photoUrl,
+        photoUrl: parsed.data.photoUrl,
         isAdmin: parsed.data.isAdmin,
         isActive: parsed.data.isActive,
         mustChangePassword: true,
@@ -71,8 +62,7 @@ export async function createUserAction(
       },
     });
 
-    revalidatePath(USERS_ADMIN_PATH);
-    revalidatePath("/admin/ranking");
+    revalidateUsers();
     return successState("Usuario creado correctamente.");
   } catch (error) {
     return databaseErrorState(error, "No se pudo crear el usuario.");
@@ -106,12 +96,6 @@ export async function updateUserAction(
   }
 
   try {
-    const photoUpload = await uploadUserPhoto(formData, parsed.data.id);
-
-    if (!photoUpload.ok) {
-      return photoUpload.state;
-    }
-
     await prisma.user.update({
       where: {
         id: parsed.data.id,
@@ -122,16 +106,14 @@ export async function updateUserAction(
         dni: parsed.data.dni,
         fullName: parsed.data.fullName,
         branchName: parsed.data.branchName,
-        photoUrl: photoUpload.photoUrl ?? parsed.data.photoUrl,
+        photoUrl: parsed.data.photoUrl,
         isAdmin: parsed.data.isAdmin,
         isActive: parsed.data.isActive,
         updatedAt: new Date(),
       },
     });
 
-    revalidatePath(USERS_ADMIN_PATH);
-    revalidatePath("/admin/ranking");
-    revalidatePath("/top-ventas");
+    revalidateUsers();
     return successState("Usuario actualizado correctamente.");
   } catch (error) {
     return databaseErrorState(error, "No se pudo actualizar el usuario.");
@@ -172,9 +154,7 @@ export async function setUserStatusAction(
       },
     });
 
-    revalidatePath(USERS_ADMIN_PATH);
-    revalidatePath("/admin/ranking");
-    revalidatePath("/top-ventas");
+    revalidateUsers();
     return successState(
       parsed.data.isActive ? "Usuario activado." : "Usuario desactivado."
     );
@@ -217,7 +197,7 @@ export async function setUserRoleAction(
       },
     });
 
-    revalidatePath(USERS_ADMIN_PATH);
+    revalidateUsers();
     return successState(
       parsed.data.isAdmin ? "Usuario marcado como admin." : "Usuario marcado como asesor."
     );
@@ -259,7 +239,7 @@ export async function resetUserPasswordAction(
       },
     });
 
-    revalidatePath(USERS_ADMIN_PATH);
+    revalidateUsers();
     return successState("Contrasena reiniciada correctamente.");
   } catch (error) {
     return databaseErrorState(error, "No se pudo reiniciar la contrasena.");
@@ -289,93 +269,6 @@ function readUserFormData(formData: FormData, includePassword: boolean) {
     isActive: formData.get("isActive"),
     password: includePassword ? formData.get("password") : undefined,
   };
-}
-
-async function uploadUserPhoto(
-  formData: FormData,
-  userId: string
-): Promise<PhotoUploadResult> {
-  const file = formData.get("photoFile");
-
-  if (!(file instanceof File) || file.size === 0) {
-    return {
-      ok: true,
-      photoUrl: null,
-    };
-  }
-
-  const extension = getFileExtension(file.name);
-
-  if (!ALLOWED_PHOTO_TYPES.has(file.type) || !ALLOWED_PHOTO_EXTENSIONS.has(extension)) {
-    return {
-      ok: false,
-      state: fieldErrorState(
-        "photoFile",
-        "La foto debe ser JPG, JPEG, PNG o WEBP."
-      ),
-    };
-  }
-
-  if (file.size > MAX_PHOTO_SIZE_BYTES) {
-    return {
-      ok: false,
-      state: fieldErrorState("photoFile", "La foto no debe superar 2 MB."),
-    };
-  }
-
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return {
-      ok: true,
-      photoUrl: null,
-    };
-  }
-
-  try {
-    const safeName = sanitizeFileName(file.name);
-    const blob = await put(`usuarios/${userId}/${Date.now()}-${safeName}`, file, {
-      access: "public",
-      addRandomSuffix: true,
-    });
-
-    return {
-      ok: true,
-      photoUrl: blob.url,
-    };
-  } catch {
-    return {
-      ok: false,
-      state: fieldErrorState("photoFile", "No se pudo subir la foto."),
-    };
-  }
-}
-
-type PhotoUploadResult =
-  | {
-      ok: true;
-      photoUrl: string | null;
-    }
-  | {
-      ok: false;
-      state: UserActionState;
-    };
-
-function sanitizeFileName(fileName: string) {
-  const extension = getFileExtension(fileName);
-  const baseName = fileName
-    .slice(0, Math.max(0, fileName.length - extension.length))
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
-
-  return `${baseName || "foto"}${extension}`;
-}
-
-function getFileExtension(fileName: string) {
-  const match = fileName.toLowerCase().match(/\.[a-z0-9]+$/);
-  return match?.[0] ?? "";
 }
 
 async function getUniqueError(
@@ -431,6 +324,18 @@ async function getUniqueError(
   }
 
   return fieldErrorState("email", "El correo ya existe.");
+}
+
+function revalidateUsers() {
+  revalidatePath(USERS_ADMIN_PATH);
+  revalidatePath("/admin");
+  revalidatePath("/admin/media");
+  revalidatePath("/admin/promociones");
+  revalidatePath("/admin/ranking");
+  revalidatePath("/promociones");
+  revalidatePath("/top-ventas");
+  revalidatePath("/entrenamiento");
+  revalidatePath("/");
 }
 
 function validationErrorState(

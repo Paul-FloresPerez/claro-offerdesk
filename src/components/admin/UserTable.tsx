@@ -1,8 +1,15 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { ReactNode } from "react";
-import { KeyRound, Shield, ShieldOff, UserCheck, UserX } from "lucide-react";
+import {
+  ExternalLink,
+  KeyRound,
+  Shield,
+  ShieldOff,
+  UserCheck,
+  UserX,
+} from "lucide-react";
 import {
   resetUserPasswordAction,
   setUserRoleAction,
@@ -91,6 +98,17 @@ function UserRow({
             <div className="min-w-0">
               <p className="font-semibold text-white">{user.fullName}</p>
               <p className="mt-1 text-xs text-slate-500">@{user.username}</p>
+              {user.photoUrl ? (
+                <a
+                  href={user.photoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-[#FFB4AC] underline-offset-4 hover:underline"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  Abrir foto
+                </a>
+              ) : null}
               {isCurrentUser ? (
                 <span className="mt-2 inline-flex rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-2 py-1 text-[11px] font-semibold text-[#FFB4AC]">
                   Tu cuenta
@@ -264,12 +282,16 @@ function ActionMessage({ state }: { state: UserActionState }) {
 }
 
 function UserAvatar({ user }: { user: AdminUserRow }) {
-  if (user.photoUrl) {
+  const [failed, setFailed] = useState(false);
+
+  if (user.photoUrl && !failed) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={user.photoUrl}
         alt={user.fullName}
         className="h-10 w-10 rounded-full object-cover ring-2 ring-white/10"
+        onError={() => setFailed(true)}
       />
     );
   }

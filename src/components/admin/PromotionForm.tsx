@@ -97,7 +97,6 @@ export default function PromotionForm({
       <form
         ref={formRef}
         action={formAction}
-        encType="multipart/form-data"
         className="grid gap-4 lg:grid-cols-3"
       >
         {isEdit ? <input type="hidden" name="id" value={promotion?.id} /> : null}
@@ -227,21 +226,6 @@ export default function PromotionForm({
           ) : null}
         </label>
 
-        <label className="grid gap-2 text-sm font-semibold text-slate-200">
-          Subir imagen
-          <input
-            name="imageFile"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            className="h-10 rounded-md border border-white/10 bg-[#111827]/55 px-2.5 py-2 text-sm text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-[#DA291C] file:px-3 file:py-1 file:text-xs file:font-semibold file:text-white"
-          />
-          {fieldError(state, "imageFile") ? (
-            <span className="text-xs font-medium text-[#FFB4AC]">
-              {fieldError(state, "imageFile")}
-            </span>
-          ) : null}
-        </label>
-
         <ImagePreview
           imageUrl={imageUrl}
           previewFailed={previewFailed}
@@ -341,8 +325,7 @@ function ImagePreview({
         <div>
           <p className="text-sm font-semibold text-white">Preview de imagen</p>
           <p className="mt-1 text-xs text-slate-500">
-            Si subes un archivo con Blob configurado, esa URL reemplazara la ruta
-            manual.
+            Usa una URL publica de Blob o una ruta legacy dentro de public.
           </p>
         </div>
       </div>

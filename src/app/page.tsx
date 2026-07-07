@@ -10,7 +10,11 @@ import {
 import Link from "next/link";
 import { connection } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getTrainingMedia, type TrainingMediaFile } from "@/lib/training-media";
+import {
+  getTrainingMedia,
+  getTrainingMediaFromRecords,
+  type TrainingMediaFile,
+} from "@/lib/training-media";
 
 export const runtime = "nodejs";
 
@@ -62,8 +66,7 @@ const workflow = [
 export default async function HomePage() {
   await connection();
 
-  const { featuredVideo, featuredAudios, videos, audios } = getTrainingMedia();
-  const [activePromotions, topRanking] = await Promise.all([
+  const [activePromotions, topRanking, dbMedia] = await Promise.all([
     prisma.promotion.count({
       where: {
         isActive: true,
@@ -98,7 +101,28 @@ export default async function HomePage() {
       },
       take: 3,
     }),
+    prisma.trainingMedia.findMany({
+      where: {
+        isActive: true,
+      },
+      orderBy: [
+        {
+          createdAt: "desc",
+        },
+      ],
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        mediaType: true,
+        fileUrl: true,
+        fileKey: true,
+        weekLabel: true,
+      },
+    }),
   ]);
+  const { featuredVideo, featuredAudios, videos, audios } =
+    dbMedia.length > 0 ? getTrainingMediaFromRecords(dbMedia) : getTrainingMedia();
   const topAdvisor = topRanking[0];
   const topAdvisorName = topAdvisor?.user?.fullName ?? topAdvisor?.fullName;
 
@@ -254,14 +278,24 @@ function TrainingPreview({
 
       <div className="grid gap-3">
         {video ? (
-          <video
-            controls
-            preload="metadata"
-            className="aspect-video w-full rounded-lg bg-black"
-            src={video.fileUrl}
-          >
-            Tu navegador no puede reproducir este video.
-          </video>
+          video.sourceType === "youtube" ? (
+            <iframe
+              src={getYouTubeEmbedUrl(video.fileUrl) ?? video.fileUrl}
+              title={video.title}
+              className="aspect-video w-full rounded-lg bg-black"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          ) : (
+            <video
+              controls
+              preload="metadata"
+              className="aspect-video w-full rounded-lg bg-black"
+              src={video.fileUrl}
+            >
+              Tu navegador no puede reproducir este video.
+            </video>
+          )
         ) : (
           <PendingMedia label="Video pendiente de cargar" path="/capacitacion/videos/" />
         )}
@@ -282,6 +316,31 @@ function TrainingPreview({
       </div>
     </section>
   );
+}
+
+function getYouTubeEmbedUrl(fileUrl: string) {
+  try {
+    const url = new URL(fileUrl);
+    const host = url.hostname.toLowerCase();
+    const videoId =
+      host === "youtu.be"
+        ? url.pathname.split("/").filter(Boolean)[0]
+        : url.searchParams.get("v") ?? getYouTubePathVideoId(url.pathname);
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  } catch {
+    return null;
+  }
+}
+
+function getYouTubePathVideoId(pathname: string) {
+  const segments = pathname.split("/").filter(Boolean);
+
+  if (segments[0] === "shorts" || segments[0] === "embed") {
+    return segments[1] ?? null;
+  }
+
+  return null;
 }
 
 function PendingMedia({ label, path }: { label: string; path: string }) {
