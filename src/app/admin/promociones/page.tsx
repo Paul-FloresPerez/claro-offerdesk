@@ -5,6 +5,7 @@ import PromotionForm, {
 } from "@/components/admin/PromotionForm";
 import PromotionTable from "@/components/admin/PromotionTable";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 export const runtime = "nodejs";
 
@@ -39,7 +40,19 @@ export default async function AdminPromocionesPage() {
   });
 
   const rows: AdminPromotionRow[] = promotions.map((promotion) => ({
-    ...promotion,
+    id: promotion.id,
+    slug: promotion.slug,
+    title: promotion.title,
+    category: promotion.category ?? "Hogar",
+    description:
+      promotion.description ?? "Promocion disponible para revision comercial.",
+    price: promotion.price ?? "Validar precio",
+    benefits: jsonStringList(promotion.benefits),
+    conditions: jsonStringList(promotion.conditions),
+    validity: promotion.validity ?? "Validar vigencia",
+    imageUrl: promotion.imageUrl,
+    isActive: promotion.isActive,
+    sortOrder: promotion.sortOrder,
     createdAt: promotion.createdAt.toISOString(),
     updatedAt: promotion.updatedAt.toISOString(),
   }));
@@ -60,4 +73,12 @@ export default async function AdminPromocionesPage() {
       </div>
     </AdminShell>
   );
+}
+
+function jsonStringList(value: Prisma.JsonValue | null): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter((item): item is string => typeof item === "string");
 }

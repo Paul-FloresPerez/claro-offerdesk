@@ -61,15 +61,15 @@ model TrainingMedia {
 }
 
 model Promotion {
-  id              String   @id @default(cuid())
+  id              String   @id @default(uuid()) @db.Uuid
   slug            String   @unique
   title           String
-  category        String
-  description     String
-  price           String
-  benefits        String[] @default([])
-  conditions      String[] @default([])
-  validity        String
+  category        String?
+  description     String?
+  price           String?
+  benefits        Json?
+  conditions      Json?
+  validity        String?
   imageUrl        String?  @map("image_url")
   fileKey         String?  @map("file_key")
   isActive        Boolean  @default(true) @map("is_active")

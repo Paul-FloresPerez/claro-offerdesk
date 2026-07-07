@@ -12,7 +12,6 @@ async function main() {
         slug: oferta.id,
       },
       create: {
-        id: oferta.id,
         slug: oferta.id,
         title: oferta.nombre,
         category: oferta.categoria,

@@ -79,7 +79,9 @@ export async function getPromotionOfferByIdOrSlug(identifier: string) {
 }
 
 export function promotionToOferta(promotion: PromotionRecord): Oferta {
-  const restrictions = nonEmptyList(promotion.restrictions, promotion.conditions);
+  const benefits = jsonStringList(promotion.benefits);
+  const conditions = jsonStringList(promotion.conditions);
+  const restrictions = nonEmptyList(promotion.restrictions, conditions);
   const validations = nonEmptyList(promotion.validations, [
     "Validar cobertura y condiciones vigentes antes de ofrecer.",
   ]);
@@ -87,7 +89,10 @@ export function promotionToOferta(promotion: PromotionRecord): Oferta {
     "Clientes segun evaluacion comercial y cobertura.",
   ]);
   const detailPrice =
-    promotion.detailPrice ?? promotion.conditions[0] ?? promotion.description;
+    promotion.detailPrice ??
+    conditions[0] ??
+    promotion.description ??
+    "Validar condiciones vigentes.";
   const technologies = nonEmptyList(promotion.technologies, [
     "Validar tecnologia",
   ]).map(normalizeTecnologia);
@@ -95,21 +100,21 @@ export function promotionToOferta(promotion: PromotionRecord): Oferta {
   return {
     id: promotion.slug || promotion.id,
     nombre: promotion.title,
-    categoria: normalizeCategory(promotion.category),
-    precio: promotion.price,
+    categoria: normalizeCategory(promotion.category ?? "Hogar"),
+    precio: promotion.price ?? "Validar precio",
     detallePrecio: detailPrice,
     velocidad: promotion.speed ?? "Validar velocidad",
     tecnologia: technologies,
-    vigencia: promotion.validity,
+    vigencia: promotion.validity ?? "Validar vigencia",
     estado: normalizeEstadoOferta(promotion.status),
-    resumen: promotion.description,
+    resumen: promotion.description ?? "Promocion disponible para revision comercial.",
     media: {
       principal: promotion.imageUrl ?? undefined,
       ciudades: promotion.cityImageUrl ?? undefined,
       adicionales: parseAdditionalMedia(promotion.additionalMedia),
     },
     variantes: parseVariants(promotion.variants),
-    beneficios: nonEmptyList(promotion.benefits, [
+    beneficios: nonEmptyList(benefits, [
       "Beneficio pendiente de detallar.",
     ]),
     aplicaPara: appliesTo,
@@ -140,6 +145,14 @@ function normalizeCategory(value: string) {
 
 function nonEmptyList(primary: string[], fallback: string[]) {
   return primary.length ? primary : fallback;
+}
+
+function jsonStringList(value: Prisma.JsonValue | null): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter((item): item is string => typeof item === "string");
 }
 
 function parseAdditionalMedia(

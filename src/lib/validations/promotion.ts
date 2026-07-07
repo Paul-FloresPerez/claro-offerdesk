@@ -63,11 +63,11 @@ const promotionBaseSchema = z.object({
 export const createPromotionSchema = promotionBaseSchema;
 
 export const updatePromotionSchema = promotionBaseSchema.extend({
-  id: z.string().min(1, "Promocion invalida."),
+  id: z.string().uuid("Promocion invalida."),
 });
 
 export const promotionStatusSchema = z.object({
-  id: z.string().min(1, "Promocion invalida."),
+  id: z.string().uuid("Promocion invalida."),
   isActive: checkbox,
 });
 
