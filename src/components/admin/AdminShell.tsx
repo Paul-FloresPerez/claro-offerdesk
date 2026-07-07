@@ -79,10 +79,10 @@ export default function AdminShell({
           <Link
             key={item.href}
             href={item.href}
-            className="rounded-lg border border-white/10 bg-white/[0.06] p-4 transition hover:border-[#DA291C]/40 hover:bg-white/[0.09]"
+            className="group rounded-lg border border-white/10 bg-white/[0.06] p-4 shadow-[0_14px_34px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:border-[#DA291C]/40 hover:bg-white/[0.09] hover:shadow-[0_18px_42px_rgba(0,0,0,0.18)]"
           >
             <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
+              <span className="grid h-10 w-10 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC] ring-1 ring-[#DA291C]/15 transition group-hover:scale-[1.03]">
                 <item.icon className="h-5 w-5" />
               </span>
               <div>
