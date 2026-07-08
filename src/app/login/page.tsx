@@ -37,7 +37,7 @@ export default async function LoginPage() {
       <section className="relative z-10 w-full max-w-[440px]">
         <div className="rounded-2xl border border-white/[0.62] bg-white/[0.92] p-6 shadow-[0_30px_88px_rgba(0,0,0,0.42)] ring-1 ring-white/[0.42] backdrop-blur-xl sm:p-8">
           <div className="mb-7 text-center">
-            <div className="relative mx-auto mb-6 grid h-20 w-72 max-w-full place-items-center overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_18px_38px_rgba(15,23,42,0.14)]">
+            <div className="relative mx-auto mb-6 grid h-24 w-full max-w-[320px] place-items-center rounded-2xl border border-slate-200/80 bg-white px-3 py-2 shadow-[0_18px_38px_rgba(15,23,42,0.14)]">
               <span className="absolute inset-0 grid place-items-center text-xl font-black tracking-[0.18em] text-slate-500">
                 WITLINK
               </span>
@@ -45,7 +45,7 @@ export default async function LoginPage() {
                 <img
                   src="/login/empresa-login.jpg"
                   alt="WITLINK"
-                  className="relative z-10 h-full w-full scale-[3.15] object-contain"
+                  className="relative z-10 h-full w-full object-contain"
                 />
               ) : null}
             </div>
