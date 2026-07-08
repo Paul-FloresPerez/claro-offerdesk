@@ -233,13 +233,17 @@ function WitlinkPartnerBadge() {
     <div className="w-fit rounded-xl border border-white/10 bg-white/[0.07] px-3 py-2 shadow-[0_18px_46px_rgba(0,0,0,0.18)] backdrop-blur">
       <div className="flex items-center gap-3">
         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
-          Respaldo
+          Distribuidor autorizado
         </span>
-        <span className="grid h-10 w-40 place-items-center overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-white/15">
+        <span className="relative grid h-11 w-44 place-items-center overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-white/15">
+          <span className="absolute inset-0 grid place-items-center text-sm font-black tracking-[0.16em] text-slate-500">
+            WITLINK
+          </span>
           <img
             src="/login/empresa-login.jpg"
             alt="WITLINK"
-            className="h-full w-full object-cover object-center"
+            className="relative z-10 h-full w-full scale-[1.14] object-cover"
+            style={{ objectPosition: "50% 53%" }}
           />
         </span>
       </div>

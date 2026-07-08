@@ -37,18 +37,18 @@ export default async function LoginPage() {
       <section className="relative z-10 w-full max-w-[440px]">
         <div className="rounded-2xl border border-white/[0.62] bg-white/[0.92] p-6 shadow-[0_30px_88px_rgba(0,0,0,0.42)] ring-1 ring-white/[0.42] backdrop-blur-xl sm:p-8">
           <div className="mb-7 text-center">
-            <div className="mx-auto mb-6 grid h-20 w-72 max-w-full place-items-center overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_18px_38px_rgba(15,23,42,0.14)]">
+            <div className="relative mx-auto mb-6 grid h-20 w-72 max-w-full place-items-center overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_18px_38px_rgba(15,23,42,0.14)]">
+              <span className="absolute inset-0 grid place-items-center text-xl font-black tracking-[0.18em] text-slate-500">
+                WITLINK
+              </span>
               {hasWitlinkLogo ? (
                 <img
                   src="/login/empresa-login.jpg"
                   alt="WITLINK"
-                  className="h-full w-full object-cover object-center"
+                  className="relative z-10 h-full w-full scale-[1.16] object-cover"
+                  style={{ objectPosition: "50% 53%" }}
                 />
-              ) : (
-                <span className="text-lg font-black tracking-[0.18em] text-slate-700">
-                  WITLINK
-                </span>
-              )}
+              ) : null}
             </div>
             <p className="inline-flex rounded-full border border-[#DA291C]/20 bg-[#DA291C]/[0.08] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#B91F15]">
               Claro OfferDesk
