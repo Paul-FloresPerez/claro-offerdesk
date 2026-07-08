@@ -116,16 +116,16 @@ export function AppShellFrame({
       </header>
 
       <main className="relative z-10 flex-1">{children}</main>
-      <footer className="border-t border-white/10 bg-[#0B1120]/70">
-        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <footer className="border-t border-white/10 bg-[#0B1120]/72">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>Claro OfferDesk</span>
-          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-slate-400">
+          <span className="inline-flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/[0.055] px-3 py-2 text-slate-400 shadow-[0_12px_28px_rgba(0,0,0,0.16)]">
             <span>Distribuidor / soporte</span>
-            <span className="grid h-6 w-20 place-items-center overflow-hidden rounded-full bg-white px-2">
+            <span className="grid h-8 w-32 place-items-center overflow-hidden rounded-full bg-white px-3 shadow-sm">
               <img
                 src="/login/empresa-login.jpg"
                 alt="WITLINK"
-                className="max-h-4 w-full object-contain"
+                className="max-h-6 w-full object-contain"
               />
             </span>
           </span>
@@ -137,11 +137,11 @@ export function AppShellFrame({
 
 function ClaroLogoMark() {
   return (
-    <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-xl border border-white/[0.15] bg-white p-1 shadow-[0_12px_26px_rgba(218,41,28,0.26)] ring-1 ring-[#DA291C]/20">
+    <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-xl border border-white/[0.18] bg-white p-0.5 shadow-[0_12px_26px_rgba(218,41,28,0.24)] ring-1 ring-[#DA291C]/20">
       <img
         src="/login/claro-login.jpg"
         alt="Claro"
-        className="h-full w-full rounded-lg object-contain"
+        className="h-full w-full rounded-[0.6rem] object-contain"
       />
     </span>
   );

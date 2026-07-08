@@ -19,29 +19,32 @@ export default async function LoginPage() {
   );
 
   return (
-    <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#090D18] px-4 py-8 text-[#111827] sm:px-6 lg:px-8">
+    <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#F8FAFC] px-4 py-8 text-[#111827] sm:px-6 lg:px-8">
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,#FFFFFF_0%,#FFF7F6_46%,#F1F5F9_100%)]" />
       {hasClaroImage ? (
-        <img
-          src="/login/claro-login.jpg"
-          alt="Claro"
-          className="absolute inset-0 h-full w-full scale-110 object-contain opacity-95"
-        />
+        <div className="absolute inset-0 flex items-center justify-center px-6 py-10 sm:px-10">
+          <img
+            src="/login/claro-login.jpg"
+            alt="Claro"
+            className="h-auto max-h-[68vh] w-[86vw] max-w-[680px] object-contain opacity-95 drop-shadow-[0_26px_60px_rgba(218,41,28,0.16)]"
+          />
+        </div>
       ) : (
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,#090D18_0%,#111827_46%,#5A151B_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,#FFFFFF_0%,#FFF1EF_46%,#F1F5F9_100%)]" />
       )}
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_16%,rgba(218,41,28,0.30),transparent_34%),linear-gradient(135deg,rgba(2,6,23,0.54),rgba(91,15,20,0.50)_42%,rgba(2,6,23,0.86))]" />
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#090D18] to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(218,41,28,0.16),transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.36),rgba(255,247,246,0.32)_46%,rgba(15,23,42,0.18))]" />
+      <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-white/70 to-transparent" />
 
       <section className="relative z-10 w-full max-w-[440px]">
-        <div className="rounded-2xl border border-white/[0.55] bg-white/[0.92] p-6 shadow-[0_32px_95px_rgba(0,0,0,0.48)] ring-1 ring-white/[0.45] backdrop-blur-xl sm:p-8">
+        <div className="rounded-2xl border border-white/[0.72] bg-white/[0.94] p-6 shadow-[0_28px_80px_rgba(15,23,42,0.26)] ring-1 ring-slate-900/[0.04] backdrop-blur-xl sm:p-8">
           <div className="mb-7 text-center">
-            <div className="mx-auto mb-5 grid h-16 w-52 place-items-center rounded-xl border border-slate-200/80 bg-white px-4 shadow-sm">
+            <div className="mx-auto mb-6 grid h-20 w-64 max-w-full place-items-center rounded-2xl border border-slate-200/80 bg-white px-5 shadow-[0_16px_34px_rgba(15,23,42,0.10)]">
               {hasWitlinkLogo ? (
                 <img
                   src="/login/empresa-login.jpg"
                   alt="WITLINK"
-                  className="max-h-11 w-full object-contain"
+                  className="max-h-14 w-full object-contain"
                 />
               ) : (
                 <span className="text-lg font-black tracking-[0.18em] text-slate-700">
