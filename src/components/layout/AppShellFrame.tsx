@@ -128,8 +128,7 @@ export function AppShellFrame({
               <img
                 src="/login/empresa-login.jpg"
                 alt="WITLINK"
-                className="relative z-10 h-full w-full scale-[1.14] object-cover"
-                style={{ objectPosition: "50% 53%" }}
+                className="relative z-10 h-full w-full scale-[3.1] object-contain"
               />
             </span>
           </span>
