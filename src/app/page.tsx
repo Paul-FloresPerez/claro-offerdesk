@@ -235,14 +235,11 @@ function WitlinkPartnerBadge() {
         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
           Distribuidor autorizado
         </span>
-        <span className="relative grid h-14 w-[220px] place-items-center rounded-lg bg-white px-2 py-1 shadow-sm ring-1 ring-white/15">
-          <span className="absolute inset-0 grid place-items-center text-sm font-black tracking-[0.16em] text-slate-500">
-            WITLINK
-          </span>
+        <span className="flex h-12 w-full max-w-[220px] items-center justify-center overflow-hidden rounded-xl bg-white px-4 py-2 ring-1 ring-white/10">
           <img
             src="/login/empresa-login.jpg"
             alt="WITLINK"
-            className="relative z-10 h-full w-full object-contain"
+            className="block h-auto max-h-full w-auto max-w-full object-contain"
           />
         </span>
       </div>
