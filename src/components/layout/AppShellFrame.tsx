@@ -119,13 +119,13 @@ export function AppShellFrame({
       <footer className="border-t border-white/10 bg-[#0B1120]/72">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>Claro OfferDesk</span>
-          <span className="inline-flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/[0.055] px-3 py-2 text-slate-400 shadow-[0_12px_28px_rgba(0,0,0,0.16)]">
+          <span className="inline-flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-slate-400 shadow-[0_12px_28px_rgba(0,0,0,0.16)]">
             <span>Distribuidor / soporte</span>
-            <span className="grid h-8 w-32 place-items-center overflow-hidden rounded-full bg-white px-3 shadow-sm">
+            <span className="grid h-9 w-40 place-items-center overflow-hidden rounded-full bg-white shadow-sm">
               <img
                 src="/login/empresa-login.jpg"
                 alt="WITLINK"
-                className="max-h-6 w-full object-contain"
+                className="h-full w-full object-cover object-center"
               />
             </span>
           </span>

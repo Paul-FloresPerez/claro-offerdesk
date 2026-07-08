@@ -141,13 +141,16 @@ export default async function HomePage() {
               practicar el discurso comercial.
             </p>
           </div>
-          <Link
-            href="/promociones"
-            className="inline-flex h-11 w-fit items-center gap-2 rounded-lg bg-[#DA291C] px-4 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(218,41,28,0.24)] transition hover:bg-[#B91F15]"
-          >
-            <PackageCheck className="h-4 w-4" />
-            Ver promociones
-          </Link>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:flex-col lg:items-end">
+            <WitlinkPartnerBadge />
+            <Link
+              href="/promociones"
+              className="inline-flex h-11 w-fit items-center gap-2 rounded-lg bg-[#DA291C] px-4 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(218,41,28,0.24)] transition hover:bg-[#B91F15]"
+            >
+              <PackageCheck className="h-4 w-4" />
+              Ver promociones
+            </Link>
+          </div>
         </div>
 
         <section className="grid gap-4 lg:grid-cols-3">
@@ -222,6 +225,25 @@ export default async function HomePage() {
         </section>
       </section>
     </main>
+  );
+}
+
+function WitlinkPartnerBadge() {
+  return (
+    <div className="w-fit rounded-xl border border-white/10 bg-white/[0.07] px-3 py-2 shadow-[0_18px_46px_rgba(0,0,0,0.18)] backdrop-blur">
+      <div className="flex items-center gap-3">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+          Respaldo
+        </span>
+        <span className="grid h-10 w-40 place-items-center overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-white/15">
+          <img
+            src="/login/empresa-login.jpg"
+            alt="WITLINK"
+            className="h-full w-full object-cover object-center"
+          />
+        </span>
+      </div>
+    </div>
   );
 }
 
