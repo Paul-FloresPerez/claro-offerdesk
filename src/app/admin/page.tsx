@@ -15,6 +15,7 @@ import { connection } from "next/server";
 import AdminShell from "@/components/admin/AdminShell";
 import { prisma } from "@/lib/prisma";
 import { getPromotionMetrics } from "@/lib/promotions";
+import { rankingOrder } from "@/lib/ranking";
 
 export const runtime = "nodejs";
 
@@ -70,16 +71,8 @@ export default async function AdminPage() {
           },
         },
       },
-      orderBy: [
-        {
-          rankPosition: "asc",
-        },
-        {
-          salesCount: "desc",
-        },
-      ],
+      orderBy: rankingOrder,
       select: {
-        rankPosition: true,
         salesCount: true,
         fullName: true,
         user: {
@@ -195,7 +188,7 @@ export default async function AdminPage() {
           </div>
           <p className="mt-4 text-sm leading-6 text-slate-400">
             {topRanking
-              ? `#${topRanking.rankPosition} con ${topRanking.salesCount} ventas registradas.`
+              ? `#1 con ${topRanking.salesCount} ventas concretadas.`
               : "Aun no hay registros activos en el ranking."}
           </p>
         </article>

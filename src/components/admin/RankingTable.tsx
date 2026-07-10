@@ -30,7 +30,7 @@ export default function RankingTable({ rankings, users }: RankingTableProps) {
             Ranking
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            Registros ordenados por posicion. No se eliminan registros.
+            Orden automático: concretadas, rechazadas, pendientes y asesor. No se eliminan registros.
           </p>
         </div>
         <span className="inline-flex w-fit rounded-md border border-white/10 bg-[#111827]/55 px-3 py-2 text-xs font-semibold text-slate-300">
@@ -45,19 +45,26 @@ export default function RankingTable({ rankings, users }: RankingTableProps) {
               <th className="px-5 py-3">Puesto</th>
               <th className="px-5 py-3">Asesor</th>
               <th className="px-5 py-3">Sede</th>
-              <th className="px-5 py-3">Ventas</th>
+              <th className="px-5 py-3">Concretadas</th>
+              <th className="px-5 py-3">Pendientes</th>
+              <th className="px-5 py-3">Rechazadas</th>
               <th className="px-5 py-3">Periodo</th>
               <th className="px-5 py-3">Estado</th>
               <th className="px-5 py-3">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
-            {rankings.map((ranking) => (
-              <RankingRow key={ranking.id} ranking={ranking} users={users} />
+            {rankings.map((ranking, index) => (
+              <RankingRow
+                key={ranking.id}
+                position={index + 1}
+                ranking={ranking}
+                users={users}
+              />
             ))}
             {rankings.length === 0 ? (
               <tr>
-                <td className="px-5 py-6 text-slate-300" colSpan={7}>
+                <td className="px-5 py-6 text-slate-300" colSpan={9}>
                   No hay registros de ranking.
                 </td>
               </tr>
@@ -70,9 +77,11 @@ export default function RankingTable({ rankings, users }: RankingTableProps) {
 }
 
 function RankingRow({
+  position,
   ranking,
   users,
 }: {
+  position: number;
   ranking: AdminRankingRow;
   users: AdminRankingUser[];
 }) {
@@ -81,7 +90,7 @@ function RankingRow({
       <tr className="align-top text-slate-200">
         <td className="px-5 py-4">
           <span className="inline-flex h-8 items-center gap-2 rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 font-bold text-[#FFB4AC]">
-            <Trophy className="h-4 w-4" />#{ranking.rankPosition}
+            <Trophy className="h-4 w-4" />#{position}
           </span>
         </td>
         <td className="px-5 py-4">
@@ -105,6 +114,8 @@ function RankingRow({
             {ranking.salesCount}
           </span>
         </td>
+        <td className="px-5 py-4">{ranking.pendingSales}</td>
+        <td className="px-5 py-4">{ranking.rejectedSales}</td>
         <td className="px-5 py-4">{ranking.periodLabel}</td>
         <td className="px-5 py-4">
           <StatusPill active={ranking.isActive}>
@@ -123,7 +134,7 @@ function RankingRow({
         </td>
       </tr>
       <tr className="bg-[#111827]/35">
-        <td colSpan={7} className="px-5 pb-5">
+        <td colSpan={9} className="px-5 pb-5">
           <details className="rounded-lg border border-white/10 bg-white/[0.035]">
             <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-[#FFB4AC] transition hover:text-white">
               Editar registro de ranking

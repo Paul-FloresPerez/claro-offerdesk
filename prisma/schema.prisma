@@ -36,6 +36,8 @@ model SalesRanking {
   branchName   String?  @map("branch_name")
   photoUrl     String?  @map("photo_url")
   salesCount   Int      @map("sales_count")
+  pendingSales Int      @default(0) @map("pending_sales")
+  rejectedSales Int     @default(0) @map("rejected_sales")
   note         String?
   isActive     Boolean  @map("is_active")
   createdAt    DateTime @map("created_at")

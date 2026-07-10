@@ -4,6 +4,7 @@ import AdminShell from "@/components/admin/AdminShell";
 import RankingForm from "@/components/admin/RankingForm";
 import RankingTable from "@/components/admin/RankingTable";
 import { prisma } from "@/lib/prisma";
+import { rankingOrder } from "@/lib/ranking";
 
 export const runtime = "nodejs";
 
@@ -12,23 +13,17 @@ export default async function AdminRankingPage() {
 
   const [rankings, users] = await Promise.all([
     prisma.salesRanking.findMany({
-      orderBy: [
-        {
-          rankPosition: "asc",
-        },
-        {
-          createdAt: "desc",
-        },
-      ],
+      orderBy: rankingOrder,
       select: {
         id: true,
         periodLabel: true,
-        rankPosition: true,
         userId: true,
         fullName: true,
         branchName: true,
         photoUrl: true,
         salesCount: true,
+        pendingSales: true,
+        rejectedSales: true,
         note: true,
         isActive: true,
         createdAt: true,
@@ -64,7 +59,7 @@ export default async function AdminRankingPage() {
   return (
     <AdminShell
       title="Ranking"
-      description="Crea y edita registros del ranking comercial con foto, periodo y ventas."
+      description="Gestiona resultados comerciales; el puesto se calcula automáticamente por desempeño."
       statusBadge={<ConnectedRankingBadge />}
     >
       <div className="grid gap-5">
@@ -74,12 +69,13 @@ export default async function AdminRankingPage() {
           rankings={rankings.map((ranking) => ({
             id: ranking.id,
             periodLabel: ranking.periodLabel,
-            rankPosition: ranking.rankPosition,
             userId: ranking.userId,
             fullName: ranking.user?.fullName ?? ranking.fullName,
             branchName: ranking.user?.branchName ?? ranking.branchName,
             photoUrl: ranking.user?.photoUrl ?? ranking.photoUrl,
             salesCount: ranking.salesCount,
+            pendingSales: ranking.pendingSales,
+            rejectedSales: ranking.rejectedSales,
             note: ranking.note,
             isActive: ranking.isActive,
             hasActiveUser: Boolean(ranking.user?.isActive),

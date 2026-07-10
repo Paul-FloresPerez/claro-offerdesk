@@ -1,17 +1,26 @@
 import { connection } from "next/server";
 import { Award, Medal, TrendingUp, Trophy } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import {
+  formatRankingEffectiveness,
+  getRankingEffectiveness,
+  rankingOrder,
+} from "@/lib/ranking";
 
 export const runtime = "nodejs";
 
 type RankingAdvisor = {
+  id: string;
   rankPosition: number;
   fullName: string;
   branchName: string;
   salesCount: number;
   periodLabel: string;
   photoUrl: string | null;
+  pendingSales: number;
+  rejectedSales: number;
   note: string | null;
+  effectiveness: number | null;
 };
 
 const medalStyles = [
@@ -32,17 +41,12 @@ export default async function TopVentasPage() {
         },
       },
     },
-    orderBy: [
-      {
-        rankPosition: "asc",
-      },
-      {
-        createdAt: "desc",
-      },
-    ],
+    orderBy: rankingOrder,
     select: {
-      rankPosition: true,
+      id: true,
       salesCount: true,
+      pendingSales: true,
+      rejectedSales: true,
       periodLabel: true,
       note: true,
       fullName: true,
@@ -58,15 +62,24 @@ export default async function TopVentasPage() {
     },
   });
 
-  const advisors: RankingAdvisor[] = ranking.map((advisor) => ({
-    rankPosition: advisor.rankPosition,
-    fullName: advisor.user?.fullName ?? advisor.fullName,
-    branchName: advisor.user?.branchName ?? advisor.branchName ?? "Sin sede",
-    photoUrl: advisor.user?.photoUrl ?? advisor.photoUrl,
-    salesCount: advisor.salesCount,
-    periodLabel: advisor.periodLabel,
-    note: advisor.note,
-  }));
+  const advisors: RankingAdvisor[] = ranking.map((advisor, index) => {
+    const salesCount = advisor.salesCount;
+    const rejectedSales = advisor.rejectedSales;
+
+    return {
+      id: advisor.id,
+      rankPosition: index + 1,
+      fullName: advisor.user?.fullName ?? advisor.fullName,
+      branchName: advisor.user?.branchName ?? advisor.branchName ?? "Sin sede",
+      photoUrl: advisor.user?.photoUrl ?? advisor.photoUrl,
+      salesCount,
+      pendingSales: advisor.pendingSales,
+      rejectedSales,
+      periodLabel: advisor.periodLabel,
+      note: advisor.note,
+      effectiveness: getRankingEffectiveness(salesCount, rejectedSales),
+    };
+  });
   const topThree = advisors.slice(0, 3);
   const periodLabel = advisors[0]?.periodLabel ?? "Periodo actual";
 
@@ -112,19 +125,22 @@ export default async function TopVentasPage() {
           </p>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-[1040px] text-left text-sm">
             <thead className="bg-[#111827]/70 text-xs uppercase tracking-[0.12em] text-slate-400">
               <tr>
                 <th className="px-5 py-3">Puesto</th>
                 <th className="px-5 py-3">Asesor</th>
                 <th className="px-5 py-3">Sede</th>
-                <th className="px-5 py-3">Ventas</th>
+                <th className="px-5 py-3">Concretadas</th>
+                <th className="px-5 py-3">Pendientes</th>
+                <th className="px-5 py-3">Rechazadas</th>
+                <th className="px-5 py-3">Efectividad</th>
                 <th className="px-5 py-3">Periodo</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
               {advisors.map((advisor) => (
-                <tr key={advisor.rankPosition} className="text-slate-200">
+                <tr key={advisor.id} className="text-slate-200">
                   <td className="px-5 py-4 font-semibold text-white">
                     #{advisor.rankPosition}
                   </td>
@@ -142,12 +158,17 @@ export default async function TopVentasPage() {
                       {advisor.salesCount}
                     </span>
                   </td>
+                  <td className="px-5 py-4">{advisor.pendingSales}</td>
+                  <td className="px-5 py-4">{advisor.rejectedSales}</td>
+                  <td className="px-5 py-4">
+                    {formatRankingEffectiveness(advisor.effectiveness)}
+                  </td>
                   <td className="px-5 py-4">{advisor.periodLabel}</td>
                 </tr>
               ))}
               {advisors.length === 0 ? (
                 <tr>
-                  <td className="px-5 py-6 text-slate-300" colSpan={5}>
+                  <td className="px-5 py-6 text-slate-300" colSpan={8}>
                     No hay asesores activos en el ranking.
                   </td>
                 </tr>
@@ -185,29 +206,30 @@ function TopAdvisorCard({
       </h2>
       <p className="mt-1 text-sm text-slate-400">{advisor.branchName}</p>
       <div className="mt-5 grid grid-cols-2 gap-3">
-        <div className="rounded-lg border border-white/10 bg-[#111827]/55 p-3">
-          <p className="text-xs uppercase tracking-[0.12em] text-slate-400">
-            Ventas
-          </p>
-          <p className="mt-1 text-2xl font-bold text-white">
-            {advisor.salesCount}
-          </p>
-        </div>
-        <div className="rounded-lg border border-white/10 bg-[#111827]/55 p-3">
-          <p className="text-xs uppercase tracking-[0.12em] text-slate-400">
-            Periodo
-          </p>
-          <p className="mt-1 text-sm font-semibold leading-6 text-white">
-            {advisor.periodLabel}
-          </p>
-        </div>
+        <RankingMetric label="Concretadas" value={advisor.salesCount.toString()} />
+        <RankingMetric label="Pendientes" value={advisor.pendingSales.toString()} />
+        <RankingMetric label="Rechazadas" value={advisor.rejectedSales.toString()} />
+        <RankingMetric
+          label="Efectividad"
+          value={formatRankingEffectiveness(advisor.effectiveness)}
+        />
       </div>
+      <p className="mt-4 text-sm text-slate-400">{advisor.periodLabel}</p>
       {advisor.note ? (
         <p className="mt-4 rounded-lg border border-[#DA291C]/25 bg-[#DA291C]/10 px-3 py-2 text-sm font-medium text-[#FFB4AC]">
           {advisor.note}
         </p>
       ) : null}
     </article>
+  );
+}
+
+function RankingMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-white/10 bg-[#111827]/55 p-3">
+      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">{label}</p>
+      <p className="mt-1 text-2xl font-bold text-white">{value}</p>
+    </div>
   );
 }
 

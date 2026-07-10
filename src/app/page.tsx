@@ -11,6 +11,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPromotionMetrics } from "@/lib/promotions";
+import { rankingOrder } from "@/lib/ranking";
 import {
   getTrainingMedia,
   getTrainingMediaFromRecords,
@@ -78,16 +79,8 @@ export default async function HomePage() {
           },
         },
       },
-      orderBy: [
-        {
-          rankPosition: "asc",
-        },
-        {
-          createdAt: "desc",
-        },
-      ],
+      orderBy: rankingOrder,
       select: {
-        rankPosition: true,
         salesCount: true,
         fullName: true,
         user: {
@@ -169,7 +162,7 @@ export default async function HomePage() {
             value={topAdvisorName ?? "Pendiente"}
             detail={
               topAdvisor
-                ? `#${topAdvisor.rankPosition} con ${topAdvisor.salesCount} ventas`
+                ? `#1 con ${topAdvisor.salesCount} ventas concretadas`
                 : "Sin registros activos"
             }
           />

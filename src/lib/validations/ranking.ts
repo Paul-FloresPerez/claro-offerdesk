@@ -25,22 +25,25 @@ const checkbox = z.preprocess(
   z.boolean()
 );
 
+const salesMetric = (label: string) =>
+  z.preprocess(
+    (value) => (value === "" || value === null ? 0 : value),
+    z.coerce
+      .number()
+      .int(`${label} debe ser un numero entero.`)
+      .min(0, `${label} no pueden ser negativas.`)
+      .max(99999, `${label} es demasiado alta.`)
+  );
+
 const rankingBaseSchema = z.object({
   periodLabel: requiredText("El periodo", 80),
-  rankPosition: z.coerce
-    .number()
-    .int("La posicion debe ser un numero entero.")
-    .min(1, "La posicion debe ser mayor a 0.")
-    .max(999, "La posicion es demasiado alta."),
   userId: z.string().uuid("Selecciona un usuario activo."),
   fullName: requiredText("El nombre mostrado", 120),
   branchName: optionalText(120),
   photoUrl: optionalText(500),
-  salesCount: z.coerce
-    .number()
-    .int("Las ventas deben ser un numero entero.")
-    .min(0, "Las ventas no pueden ser negativas.")
-    .max(99999, "La cantidad de ventas es demasiado alta."),
+  salesCount: salesMetric("Las ventas concretadas"),
+  pendingSales: salesMetric("Las ventas pendientes"),
+  rejectedSales: salesMetric("Las ventas rechazadas"),
   note: optionalText(500),
   isActive: checkbox,
 });

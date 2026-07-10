@@ -17,12 +17,13 @@ export type AdminRankingUser = {
 export type AdminRankingRow = {
   id: string;
   periodLabel: string;
-  rankPosition: number;
   userId: string | null;
   fullName: string;
   branchName: string | null;
   photoUrl: string | null;
   salesCount: number;
+  pendingSales: number;
+  rejectedSales: number;
   note: string | null;
   isActive: boolean;
   hasActiveUser: boolean;
@@ -93,8 +94,8 @@ export default function RankingForm({
           </h2>
           <p className="text-sm text-slate-400">
             {isEdit
-              ? "Actualiza posicion, ventas, usuario y periodo."
-              : "Crea un registro para el ranking comercial."}
+              ? "Actualiza resultados, usuario y periodo. El puesto se recalcula solo."
+              : "Registra resultados; el puesto se calcula automáticamente."}
           </p>
         </div>
       </div>
@@ -149,22 +150,28 @@ export default function RankingForm({
           required
         />
         <AdminField
-          label="Posicion"
-          name="rankPosition"
-          defaultValue={ranking?.rankPosition?.toString()}
-          error={fieldError(state, "rankPosition")}
-          type="number"
-          min="1"
-          required
-        />
-        <AdminField
-          label="Ventas"
+          label="Ventas concretadas"
           name="salesCount"
-          defaultValue={ranking?.salesCount?.toString()}
+          defaultValue={ranking?.salesCount?.toString() ?? "0"}
           error={fieldError(state, "salesCount")}
           type="number"
           min="0"
-          required
+        />
+        <AdminField
+          label="Ventas pendientes"
+          name="pendingSales"
+          defaultValue={ranking?.pendingSales?.toString() ?? "0"}
+          error={fieldError(state, "pendingSales")}
+          type="number"
+          min="0"
+        />
+        <AdminField
+          label="Ventas rechazadas"
+          name="rejectedSales"
+          defaultValue={ranking?.rejectedSales?.toString() ?? "0"}
+          error={fieldError(state, "rejectedSales")}
+          type="number"
+          min="0"
         />
 
         <label className="grid gap-2 text-sm font-semibold text-slate-200 lg:col-span-2">
