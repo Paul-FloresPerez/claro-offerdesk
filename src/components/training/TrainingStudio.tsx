@@ -1,4 +1,5 @@
 import { CheckCircle2, Clapperboard, Video } from "lucide-react";
+import { NativeVideoPlayer } from "@/components/training/NativeVideoPlayer";
 import type { TrainingMediaFile } from "@/lib/training-media";
 
 type TrainingStudioProps = {
@@ -32,14 +33,11 @@ export function TrainingStudio({ video }: TrainingStudioProps) {
         <div className="overflow-hidden rounded-lg border border-white/10 bg-[#070B13] shadow-[0_18px_54px_rgba(0,0,0,0.32)]">
           <div className="aspect-video">
             {video ? (
-              <video
-                controls
-                preload="metadata"
-                className="h-full w-full bg-black"
+              <NativeVideoPlayer
+                className="h-full w-full"
                 src={video.fileUrl}
-              >
-                Tu navegador no puede reproducir este video.
-              </video>
+                title={video.title}
+              />
             ) : (
               <PendingMedia icon={Video} path="/capacitacion/videos/" />
             )}

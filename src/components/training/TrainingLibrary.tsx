@@ -2,6 +2,7 @@
 
 import { useState, type ComponentType } from "react";
 import { AlertCircle, ExternalLink, Headphones, Play, Video } from "lucide-react";
+import { NativeVideoPlayer } from "@/components/training/NativeVideoPlayer";
 import type { TrainingMediaFile } from "@/lib/training-media";
 
 type TrainingLibraryProps = {
@@ -112,23 +113,14 @@ function MediaItem({ item }: { item: TrainingMediaFile }) {
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             />
-          ) : isMounted ? (
-            <video
-              key={item.fileUrl}
-              controls
-              playsInline
-              preload="metadata"
-              src={item.fileUrl}
-              aria-label={`Reproductor de video: ${item.title}`}
-              className="h-full w-full bg-black"
-              onCanPlay={() => setHasPlaybackError(false)}
-              onLoadedMetadata={() => setHasPlaybackError(false)}
-              onError={() => setHasPlaybackError(true)}
-            >
-              Tu navegador no puede reproducir este video.
-            </video>
-          ) : (
+          ) : youtubeEmbedUrl ? (
             <MediaPlaceholder item={item} onPlay={() => setIsMounted(true)} />
+          ) : (
+            <NativeVideoPlayer
+              className="h-full w-full"
+              src={item.fileUrl}
+              title={item.title}
+            />
           )}
         </div>
       ) : (

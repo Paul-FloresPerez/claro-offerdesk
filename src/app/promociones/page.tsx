@@ -53,6 +53,7 @@ export default async function PromocionesPage() {
                 <a
                   key={access.href}
                   href={access.href}
+                  data-promotion-scroll-target={access.href.slice(1)}
                   className="inline-flex h-9 items-center rounded-full border border-white/10 bg-[#111827]/55 px-3 text-sm font-semibold text-slate-100 transition hover:border-[#DA291C]/45 hover:bg-[#DA291C]/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC]"
                 >
                   {access.label}

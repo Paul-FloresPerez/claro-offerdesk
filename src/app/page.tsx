@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
+import { NativeVideoPlayer } from "@/components/training/NativeVideoPlayer";
 import { prisma } from "@/lib/prisma";
 import { getPromotionMetrics } from "@/lib/promotions";
 import { rankingOrder } from "@/lib/ranking";
@@ -284,7 +285,7 @@ function TrainingPreview({
           href="/entrenamiento"
           className="inline-flex h-9 items-center rounded-md border border-white/10 px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
         >
-          Abrir
+          Abrir entrenamiento
         </Link>
       </div>
 
@@ -299,14 +300,11 @@ function TrainingPreview({
               allowFullScreen
             />
           ) : (
-            <video
-              controls
-              preload="metadata"
-              className="aspect-video w-full rounded-lg bg-black"
+            <NativeVideoPlayer
+              className="aspect-video w-full overflow-hidden rounded-lg"
               src={video.fileUrl}
-            >
-              Tu navegador no puede reproducir este video.
-            </video>
+              title={video.title}
+            />
           )
         ) : (
           <PendingMedia label="Video pendiente de cargar" path="/capacitacion/videos/" />

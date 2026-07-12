@@ -19,20 +19,6 @@ type SelectedPromotion = {
   promotion: PromotionGalleryItem;
 };
 
-const viewerHashAccess: Record<
-  string,
-  { offerId: string; pageIndex: number }
-> = {
-  "#promo-oferta-regular": { offerId: "oferta-regular", pageIndex: 0 },
-  "#promo-canales": { offerId: "oferta-regular", pageIndex: 1 },
-  "#promo-oferta-medio": { offerId: "oferta-medio", pageIndex: 0 },
-  "#promo-oferta-basico": { offerId: "oferta-basico", pageIndex: 0 },
-  "#promo-promo-grande": { offerId: "promo-grande", pageIndex: 0 },
-  "#promo-hfc-puro": { offerId: "hfc-puro", pageIndex: 0 },
-  "#promo-linea-movil": { offerId: "linea-movil", pageIndex: 0 },
-  "#promo-promo-1-sol": { offerId: "promo-1-sol", pageIndex: 0 },
-};
-
 export function PromoCatalog({ ofertas }: PromoCatalogProps) {
   const [selectedPromotion, setSelectedPromotion] =
     useState<SelectedPromotion | null>(null);
@@ -65,26 +51,36 @@ export function PromoCatalog({ ofertas }: PromoCatalogProps) {
   );
 
   useEffect(() => {
-    function openFromHash() {
-      const access = viewerHashAccess[window.location.hash];
-
-      if (!access) return;
-
-      const promotion = promotionsById.get(access.offerId);
-
-      if (promotion) {
-        setSelectedPromotion({
-          initialPageIndex: access.pageIndex,
-          promotion,
-        });
+    function scrollToPromotion(event: MouseEvent) {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        !(event.target instanceof Element)
+      ) {
+        return;
       }
+
+      const quickAccess = event.target.closest<HTMLAnchorElement>(
+        "a[data-promotion-scroll-target]"
+      );
+      const targetId = quickAccess?.dataset.promotionScrollTarget;
+      const target = targetId ? document.getElementById(targetId) : null;
+
+      if (!quickAccess || !target) return;
+
+      event.preventDefault();
+      window.history.pushState(null, "", `#${targetId}`);
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    openFromHash();
-    window.addEventListener("hashchange", openFromHash);
+    document.addEventListener("click", scrollToPromotion);
 
-    return () => window.removeEventListener("hashchange", openFromHash);
-  }, [promotionsById]);
+    return () => document.removeEventListener("click", scrollToPromotion);
+  }, []);
 
   function openPromotion(
     promotion: PromotionGalleryItem,
@@ -141,14 +137,6 @@ export function PromoCatalog({ ofertas }: PromoCatalogProps) {
         onOpenChange={(open) => {
           if (!open) {
             setSelectedPromotion(null);
-
-            if (viewerHashAccess[window.location.hash]) {
-              window.history.replaceState(
-                null,
-                "",
-                `${window.location.pathname}${window.location.search}`
-              );
-            }
           }
         }}
       />
