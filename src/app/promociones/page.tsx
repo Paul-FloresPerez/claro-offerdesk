@@ -4,16 +4,8 @@ import { getActivePromotionOffers } from "@/lib/promotions";
 
 export const runtime = "nodejs";
 
-type PageProps = {
-  searchParams: Promise<{
-    q?: string | string[];
-    tipo?: string | string[];
-  }>;
-};
-
-export default async function PromocionesPage({ searchParams }: PageProps) {
+export default async function PromocionesPage() {
   await connection();
-  const params = await searchParams;
   const ofertas = await getActivePromotionOffers();
 
   return (
@@ -32,8 +24,8 @@ export default async function PromocionesPage({ searchParams }: PageProps) {
               Promociones Claro
             </h1>
             <p className="mt-3 max-w-xl text-base leading-7 text-slate-300">
-              Herramienta interna para revisar campañas, condiciones y material
-              oficial antes de ofrecer.
+              Galería interna organizada por promoción para consultar el material
+              oficial y sus anexos en un solo lugar.
             </p>
           </div>
 
@@ -49,18 +41,10 @@ export default async function PromocionesPage({ searchParams }: PageProps) {
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
-        <PromoCatalog
-          activeFilter={getParam(params.tipo)}
-          ofertas={ofertas}
-          query={getParam(params.q)}
-        />
+        <PromoCatalog ofertas={ofertas} />
       </div>
     </main>
   );
-}
-
-function getParam(value?: string | string[]) {
-  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
 }
 
 function HeroSignal({ text }: { text: string }) {

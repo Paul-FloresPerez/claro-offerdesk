@@ -17,17 +17,18 @@ type OfficialImageProps = {
 
 const imageDimensions: Record<string, { width: number; height: number }> = {
   "/ofertas/hfc-puro-ciudades.png": { width: 966, height: 390 },
-  "/ofertas/hfc-puro.png": { width: 965, height: 696 },
+  "/ofertas/hfc-puro.png": { width: 722, height: 692 },
   "/ofertas/linea-movil-MAX.png": { width: 1082, height: 650 },
   "/ofertas/linea-movil-MAXILIMITADO.png": { width: 1085, height: 552 },
-  "/ofertas/oferta-basico.png": { width: 722, height: 552 },
+  "/ofertas/oferta-basico.png": { width: 957, height: 717 },
   "/ofertas/oferta-basicociudades.png": { width: 966, height: 495 },
-  "/ofertas/oferta-medio.png": { width: 962, height: 612 },
+  "/ofertas/oferta-medio.png": { width: 960, height: 695 },
   "/ofertas/oferta-mediociudades.png": { width: 962, height: 462 },
-  "/ofertas/Oferta-Regular.png": { width: 1085, height: 751 },
+  "/ofertas/Oferta-Regular.png": { width: 1050, height: 747 },
+  "/ofertas/canales-tecnologias%20.png": { width: 985, height: 697 },
   "/ofertas/oferta-relampago.png": { width: 725, height: 740 },
   "/ofertas/promo-1-sol.png": { width: 721, height: 765 },
-  "/ofertas/promo-grande.png": { width: 965, height: 567 },
+  "/ofertas/promo-grande.png": { width: 957, height: 731 },
   "/ofertas/promo-grandeciudades.png": { width: 965, height: 112 },
 };
 
