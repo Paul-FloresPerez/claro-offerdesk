@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, Images } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Images } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { PromotionImageViewer } from "@/components/promotions/PromotionImageViewer";
@@ -14,9 +14,25 @@ type PromoCatalogProps = {
   ofertas: Oferta[];
 };
 
+type SelectedPromotion = {
+  initialPageIndex: number;
+  promotion: PromotionGalleryItem;
+};
+
+const quickAccess = [
+  { label: "Oferta regular", offerId: "oferta-regular", pageIndex: 0 },
+  { label: "Canales", offerId: "oferta-regular", pageIndex: 1 },
+  { label: "HFC Puro", offerId: "hfc-puro", pageIndex: 0 },
+  { label: "Básico", offerId: "oferta-basico", pageIndex: 0 },
+  { label: "Medio", offerId: "oferta-medio", pageIndex: 0 },
+  { label: "Grande", offerId: "promo-grande", pageIndex: 0 },
+  { label: "Línea móvil", offerId: "linea-movil", pageIndex: 0 },
+  { label: "S/1", offerId: "promo-1-sol", pageIndex: 0 },
+] as const;
+
 export function PromoCatalog({ ofertas }: PromoCatalogProps) {
   const [selectedPromotion, setSelectedPromotion] =
-    useState<PromotionGalleryItem | null>(null);
+    useState<SelectedPromotion | null>(null);
   const activeOfferIds = useMemo(
     () => new Set(ofertas.map((oferta) => oferta.id)),
     [ofertas]
@@ -31,10 +47,64 @@ export function PromoCatalog({ ofertas }: PromoCatalogProps) {
         .filter((section) => section.items.length > 0),
     [activeOfferIds]
   );
+  const promotionsById = useMemo(
+    () =>
+      new Map(
+        visibleSections.flatMap((section) =>
+          section.items.map((promotion) => [promotion.offerId, promotion] as const)
+        )
+      ),
+    [visibleSections]
+  );
+  const regularPromotion = promotionsById.get("oferta-regular") ?? null;
+  const groupedSections = visibleSections.filter(
+    (section) => section.id !== "regulares"
+  );
+
+  function openPromotion(
+    promotion: PromotionGalleryItem,
+    initialPageIndex = 0
+  ) {
+    setSelectedPromotion({ initialPageIndex, promotion });
+  }
 
   return (
     <section className="space-y-10">
-      {visibleSections.map((section) => (
+      {regularPromotion ? (
+        <RegularOfferHighlight
+          promotion={regularPromotion}
+          onOpen={openPromotion}
+        />
+      ) : null}
+
+      <nav
+        aria-label="Accesos rápidos de promociones"
+        className="rounded-xl border border-white/10 bg-[#172033]/85 p-3 shadow-[0_16px_38px_rgba(0,0,0,0.16)]"
+      >
+        <p className="px-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#FFB4AC]">
+          Accesos rápidos
+        </p>
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+          {quickAccess.map((access) => {
+            const promotion = promotionsById.get(access.offerId);
+
+            if (!promotion) return null;
+
+            return (
+              <button
+                key={`${access.offerId}-${access.pageIndex}`}
+                type="button"
+                onClick={() => openPromotion(promotion, access.pageIndex)}
+                className="inline-flex h-9 shrink-0 items-center rounded-full border border-white/10 bg-white/[0.06] px-3 text-sm font-semibold text-slate-100 transition hover:border-[#DA291C]/45 hover:bg-[#DA291C]/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC]"
+              >
+                {access.label}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      {groupedSections.map((section) => (
         <section key={section.id} aria-labelledby={`section-${section.id}`}>
           <div className="mb-5 flex items-end justify-between gap-4 border-b border-white/10 pb-4">
             <div>
@@ -59,7 +129,7 @@ export function PromoCatalog({ ofertas }: PromoCatalogProps) {
               <PromotionCard
                 key={promotion.offerId}
                 promotion={promotion}
-                onOpen={() => setSelectedPromotion(promotion)}
+                onOpen={() => openPromotion(promotion)}
               />
             ))}
           </div>
@@ -68,11 +138,75 @@ export function PromoCatalog({ ofertas }: PromoCatalogProps) {
 
       <PromotionImageViewer
         open={Boolean(selectedPromotion)}
-        promotion={selectedPromotion}
+        promotion={selectedPromotion?.promotion ?? null}
+        initialPageIndex={selectedPromotion?.initialPageIndex}
         onOpenChange={(open) => {
           if (!open) setSelectedPromotion(null);
         }}
       />
+    </section>
+  );
+}
+
+function RegularOfferHighlight({
+  onOpen,
+  promotion,
+}: {
+  onOpen: (promotion: PromotionGalleryItem, initialPageIndex?: number) => void;
+  promotion: PromotionGalleryItem;
+}) {
+  const plansImage = promotion.images[0];
+
+  return (
+    <section aria-labelledby="oferta-regular-principal">
+      <article className="overflow-hidden rounded-xl border border-[#DA291C]/30 bg-white text-[#111827] shadow-[0_24px_68px_rgba(0,0,0,0.24)]">
+        <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+          <div className="flex flex-col justify-center p-5 sm:p-7 lg:p-8">
+            <span className="w-fit rounded-full border border-[#DA291C]/15 bg-[#DA291C]/[0.08] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#B91F15]">
+              Matriz principal de consulta
+            </span>
+            <h2
+              id="oferta-regular-principal"
+              className="mt-4 text-3xl font-semibold tracking-tight text-[#111827] sm:text-4xl"
+            >
+              Oferta Regular
+            </h2>
+            <p className="mt-3 max-w-xl text-base leading-7 text-slate-600">
+              Planes, velocidades, TV, tecnologías y adicionales.
+            </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => onOpen(promotion, 0)}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#DA291C] px-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(218,41,28,0.24)] transition hover:bg-[#B91F15] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2"
+              >
+                Ver planes regulares
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onOpen(promotion, 1)}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#111827] shadow-sm transition hover:border-[#DA291C]/35 hover:text-[#B91F15] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2"
+              >
+                Canales y tecnologías
+                <ArrowUpRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="relative min-h-72 border-t border-slate-200 bg-slate-50 p-4 lg:min-h-0 lg:border-l lg:border-t-0">
+            <Image
+              src={plansImage.src}
+              alt={plansImage.alt}
+              fill
+              sizes="(max-width: 1023px) 100vw, 46vw"
+              className="object-contain p-4"
+              draggable={false}
+              preload
+            />
+          </div>
+        </div>
+      </article>
     </section>
   );
 }

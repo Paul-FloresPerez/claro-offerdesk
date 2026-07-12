@@ -29,6 +29,7 @@ import type { PromotionGalleryItem } from "@/data/promotion-gallery";
 import { cn } from "@/lib/utils";
 
 type PromotionImageViewerProps = {
+  initialPageIndex?: number;
   open: boolean;
   promotion: PromotionGalleryItem | null;
   onOpenChange: (open: boolean) => void;
@@ -50,6 +51,7 @@ const MAX_ZOOM = 400;
 const ZOOM_STEP = 25;
 
 export function PromotionImageViewer({
+  initialPageIndex = 0,
   onOpenChange,
   open,
   promotion,
@@ -70,12 +72,13 @@ export function PromotionImageViewer({
   useEffect(() => {
     if (!open) return;
 
-    setPageIndex(0);
+    const lastPageIndex = Math.max(0, (promotion?.images.length ?? 1) - 1);
+    setPageIndex(Math.min(Math.max(initialPageIndex, 0), lastPageIndex));
     setZoom(100);
     setPan({ x: 0, y: 0 });
     setIsDragging(false);
     dragRef.current = null;
-  }, [open, promotion?.offerId]);
+  }, [initialPageIndex, open, promotion?.offerId, promotion?.images.length]);
 
   useEffect(() => {
     if (!open) return;
