@@ -2,7 +2,7 @@
 
 import { ArrowRight, ArrowUpRight, Images } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PromotionImageViewer } from "@/components/promotions/PromotionImageViewer";
 import {
   promotionGallerySections,
@@ -19,16 +19,19 @@ type SelectedPromotion = {
   promotion: PromotionGalleryItem;
 };
 
-const quickAccess = [
-  { label: "Oferta regular", offerId: "oferta-regular", pageIndex: 0 },
-  { label: "Canales", offerId: "oferta-regular", pageIndex: 1 },
-  { label: "HFC Puro", offerId: "hfc-puro", pageIndex: 0 },
-  { label: "Básico", offerId: "oferta-basico", pageIndex: 0 },
-  { label: "Medio", offerId: "oferta-medio", pageIndex: 0 },
-  { label: "Grande", offerId: "promo-grande", pageIndex: 0 },
-  { label: "Línea móvil", offerId: "linea-movil", pageIndex: 0 },
-  { label: "S/1", offerId: "promo-1-sol", pageIndex: 0 },
-] as const;
+const viewerHashAccess: Record<
+  string,
+  { offerId: string; pageIndex: number }
+> = {
+  "#promo-oferta-regular": { offerId: "oferta-regular", pageIndex: 0 },
+  "#promo-canales": { offerId: "oferta-regular", pageIndex: 1 },
+  "#promo-oferta-medio": { offerId: "oferta-medio", pageIndex: 0 },
+  "#promo-oferta-basico": { offerId: "oferta-basico", pageIndex: 0 },
+  "#promo-promo-grande": { offerId: "promo-grande", pageIndex: 0 },
+  "#promo-hfc-puro": { offerId: "hfc-puro", pageIndex: 0 },
+  "#promo-linea-movil": { offerId: "linea-movil", pageIndex: 0 },
+  "#promo-promo-1-sol": { offerId: "promo-1-sol", pageIndex: 0 },
+};
 
 export function PromoCatalog({ ofertas }: PromoCatalogProps) {
   const [selectedPromotion, setSelectedPromotion] =
@@ -61,6 +64,28 @@ export function PromoCatalog({ ofertas }: PromoCatalogProps) {
     (section) => section.id !== "regulares"
   );
 
+  useEffect(() => {
+    function openFromHash() {
+      const access = viewerHashAccess[window.location.hash];
+
+      if (!access) return;
+
+      const promotion = promotionsById.get(access.offerId);
+
+      if (promotion) {
+        setSelectedPromotion({
+          initialPageIndex: access.pageIndex,
+          promotion,
+        });
+      }
+    }
+
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, [promotionsById]);
+
   function openPromotion(
     promotion: PromotionGalleryItem,
     initialPageIndex = 0
@@ -76,33 +101,6 @@ export function PromoCatalog({ ofertas }: PromoCatalogProps) {
           onOpen={openPromotion}
         />
       ) : null}
-
-      <nav
-        aria-label="Accesos rápidos de promociones"
-        className="rounded-xl border border-white/10 bg-[#172033]/85 p-3 shadow-[0_16px_38px_rgba(0,0,0,0.16)]"
-      >
-        <p className="px-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#FFB4AC]">
-          Accesos rápidos
-        </p>
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-          {quickAccess.map((access) => {
-            const promotion = promotionsById.get(access.offerId);
-
-            if (!promotion) return null;
-
-            return (
-              <button
-                key={`${access.offerId}-${access.pageIndex}`}
-                type="button"
-                onClick={() => openPromotion(promotion, access.pageIndex)}
-                className="inline-flex h-9 shrink-0 items-center rounded-full border border-white/10 bg-white/[0.06] px-3 text-sm font-semibold text-slate-100 transition hover:border-[#DA291C]/45 hover:bg-[#DA291C]/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC]"
-              >
-                {access.label}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
 
       {groupedSections.map((section) => (
         <section key={section.id} aria-labelledby={`section-${section.id}`}>
@@ -141,7 +139,17 @@ export function PromoCatalog({ ofertas }: PromoCatalogProps) {
         promotion={selectedPromotion?.promotion ?? null}
         initialPageIndex={selectedPromotion?.initialPageIndex}
         onOpenChange={(open) => {
-          if (!open) setSelectedPromotion(null);
+          if (!open) {
+            setSelectedPromotion(null);
+
+            if (viewerHashAccess[window.location.hash]) {
+              window.history.replaceState(
+                null,
+                "",
+                `${window.location.pathname}${window.location.search}`
+              );
+            }
+          }
         }}
       />
     </section>
@@ -158,12 +166,16 @@ function RegularOfferHighlight({
   const plansImage = promotion.images[0];
 
   return (
-    <section aria-labelledby="oferta-regular-principal">
+    <section
+      id="promo-oferta-regular"
+      aria-labelledby="oferta-regular-principal"
+      className="scroll-mt-28"
+    >
       <article className="overflow-hidden rounded-xl border border-[#DA291C]/30 bg-white text-[#111827] shadow-[0_24px_68px_rgba(0,0,0,0.24)]">
         <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
           <div className="flex flex-col justify-center p-5 sm:p-7 lg:p-8">
             <span className="w-fit rounded-full border border-[#DA291C]/15 bg-[#DA291C]/[0.08] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#B91F15]">
-              Matriz principal de consulta
+              Consulta base
             </span>
             <h2
               id="oferta-regular-principal"
@@ -184,12 +196,13 @@ function RegularOfferHighlight({
                 <ArrowRight className="h-4 w-4" />
               </button>
               <button
+                id="promo-canales"
                 type="button"
                 onClick={() => onOpen(promotion, 1)}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#111827] shadow-sm transition hover:border-[#DA291C]/35 hover:text-[#B91F15] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2"
+                className="scroll-mt-28 inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-[linear-gradient(135deg,#FFFFFF,#F8FAFC)] px-4 text-sm font-semibold text-slate-700 shadow-[0_8px_20px_rgba(15,23,42,0.08)] transition hover:border-[#DA291C]/30 hover:bg-red-50 hover:text-[#B91F15] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2"
               >
+                <Images className="h-4 w-4 text-[#DA291C]" />
                 Canales y tecnologías
-                <ArrowUpRight className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -222,9 +235,10 @@ function PromotionCard({
 
   return (
     <button
+      id={`promo-${promotion.offerId}`}
       type="button"
       onClick={onOpen}
-      className="group flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-white text-left text-[#111827] shadow-[0_14px_38px_rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:border-[#DA291C]/35 hover:shadow-[0_22px_52px_rgba(0,0,0,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC] focus-visible:ring-offset-4 focus-visible:ring-offset-[#111827]"
+      className="group flex h-full min-w-0 scroll-mt-28 flex-col overflow-hidden rounded-xl border border-white/10 bg-white text-left text-[#111827] shadow-[0_14px_38px_rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:border-[#DA291C]/35 hover:shadow-[0_22px_52px_rgba(0,0,0,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC] focus-visible:ring-offset-4 focus-visible:ring-offset-[#111827]"
       aria-label={`Ver promoción ${promotion.name}`}
     >
       <span className="relative block h-64 w-full overflow-hidden border-b border-slate-200 bg-slate-50 p-3 sm:h-72">
@@ -245,8 +259,15 @@ function PromotionCard({
       </span>
 
       <span className="flex flex-1 flex-col p-5">
-        <span className="w-fit rounded-full border border-[#DA291C]/15 bg-[#DA291C]/[0.07] px-2.5 py-1 text-xs font-semibold text-[#B91F15]">
-          {promotion.category}
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="w-fit rounded-full border border-[#DA291C]/15 bg-[#DA291C]/[0.07] px-2.5 py-1 text-xs font-semibold text-[#B91F15]">
+            {promotion.category}
+          </span>
+          {promotion.offerId === "oferta-medio" ? (
+            <span className="w-fit rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800">
+              Más ofrecida
+            </span>
+          ) : null}
         </span>
         <span className="mt-3 text-xl font-semibold tracking-tight text-[#111827]">
           {promotion.name}

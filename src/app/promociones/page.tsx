@@ -4,6 +4,17 @@ import { getActivePromotionOffers } from "@/lib/promotions";
 
 export const runtime = "nodejs";
 
+const promotionQuickAccess = [
+  { href: "#promo-oferta-regular", label: "Oferta Regular" },
+  { href: "#promo-canales", label: "Canales y tecnologías" },
+  { href: "#promo-oferta-medio", label: "Promo Medio" },
+  { href: "#promo-oferta-basico", label: "Promo Básico" },
+  { href: "#promo-promo-grande", label: "Promo Grande" },
+  { href: "#promo-hfc-puro", label: "HFC Puro" },
+  { href: "#promo-linea-movil", label: "Línea móvil" },
+  { href: "#promo-promo-1-sol", label: "Promo S/1" },
+];
+
 export default async function PromocionesPage() {
   await connection();
   const ofertas = await getActivePromotionOffers();
@@ -29,14 +40,26 @@ export default async function PromocionesPage() {
             </p>
           </div>
 
-          <div className="relative rounded-lg border border-white/10 bg-white/[0.07] p-4 shadow-[0_20px_56px_rgba(0,0,0,0.24)] backdrop-blur">
+          <nav
+            aria-label="Accesos rápidos de promociones"
+            className="relative rounded-xl border border-white/10 bg-white/[0.07] p-4 shadow-[0_20px_56px_rgba(0,0,0,0.24)] backdrop-blur"
+          >
             <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full border border-[#DA291C]/30" />
-            <div className="grid gap-3">
-              <HeroSignal text={`${ofertas.length} promociones`} />
-              <HeroSignal text="Material oficial" />
-              <HeroSignal text="Validar antes de ofrecer" />
+            <p className="relative text-xs font-semibold uppercase tracking-[0.14em] text-[#FFB4AC]">
+              Accesos rápidos
+            </p>
+            <div className="relative mt-3 flex flex-wrap gap-2">
+              {promotionQuickAccess.map((access) => (
+                <a
+                  key={access.href}
+                  href={access.href}
+                  className="inline-flex h-9 items-center rounded-full border border-white/10 bg-[#111827]/55 px-3 text-sm font-semibold text-slate-100 transition hover:border-[#DA291C]/45 hover:bg-[#DA291C]/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC]"
+                >
+                  {access.label}
+                </a>
+              ))}
             </div>
-          </div>
+          </nav>
         </div>
       </section>
 
@@ -44,15 +67,5 @@ export default async function PromocionesPage() {
         <PromoCatalog ofertas={ofertas} />
       </div>
     </main>
-  );
-}
-
-function HeroSignal({ text }: { text: string }) {
-  return (
-    <div className="rounded-lg border border-white/10 bg-[#111827]/55 px-4 py-3">
-      <p className="text-base font-semibold tracking-tight text-white">
-        {text}
-      </p>
-    </div>
   );
 }

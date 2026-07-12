@@ -8,13 +8,13 @@ export type GuionBloque = {
 export const guiones: GuionBloque[] = [
   {
     etapa: "Apertura",
-    objetivo: "Ubicar la necesidad sin adelantar una promoción.",
+    objetivo: "Abrir la llamada saliente y detectar interés en internet hogar.",
     texto:
-      "Buenos días/tardes, le saluda un asesor de Claro. Para ayudarle correctamente, primero validaré qué servicio necesita y en qué zona se encuentra.",
+      "Hola, buenos días/tardes, ¿me comunico con el titular de la línea? Mi nombre es [NOMBRE] y le llamo de parte de Claro Hogar. Actualmente contamos con opciones de internet hogar disponibles para su zona, con beneficios y promociones vigentes. Para orientarle brevemente, ¿hoy cuenta con internet en casa o está evaluando mejorar su conexión?",
     puntosClave: [
-      "Confirmar nombre del cliente.",
-      "Confirmar servicio consultado: hogar, HFC o móvil.",
-      "Evitar mencionar precios antes de validar cobertura.",
+      "Confirmar que conversa con el titular.",
+      "Presentarse como asesor de Claro Hogar.",
+      "Detectar si ya tiene internet o busca mejorar su conexión.",
     ],
   },
   {

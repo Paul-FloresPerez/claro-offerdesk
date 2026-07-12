@@ -28,6 +28,14 @@ const groupStyles: Record<string, string> = {
   Validación: "border-emerald-100 bg-emerald-50 text-emerald-900",
 };
 
+const groupAnchors: Record<string, string> = {
+  Precio: "respuesta-precio",
+  Cobertura: "respuesta-cobertura",
+  Competencia: "respuesta-variacion",
+  Dudas: "respuesta-dudas",
+  Validación: "respuesta-validacion",
+};
+
 export default function ObjecionesPage() {
   const grouped = objeciones.reduce<Record<string, Objecion[]>>((acc, item) => {
     const group = getObjecionGroup(item);
@@ -61,15 +69,16 @@ export default function ObjecionesPage() {
 
             <div className="mt-5 grid gap-2">
               {Object.keys(grouped).map((group) => (
-                <span
+                <a
                   key={group}
-                  className="inline-flex h-9 items-center justify-between rounded-md border border-white/10 bg-white/[0.07] px-3 text-sm font-semibold text-slate-100"
+                  href={`#${groupAnchors[group]}`}
+                  className="inline-flex h-9 items-center justify-between rounded-md border border-white/10 bg-white/[0.07] px-3 text-sm font-semibold text-slate-100 transition hover:border-[#DA291C]/40 hover:bg-[#DA291C]/15"
                 >
                   {group}
                   <span className="text-xs text-[#FFB4AC]">
                     {grouped[group].length}
                   </span>
-                </span>
+                </a>
               ))}
             </div>
           </aside>
@@ -79,7 +88,11 @@ export default function ObjecionesPage() {
               const Icon = groupIcons[group] ?? ClipboardCheck;
 
               return (
-                <section key={group} className="space-y-3">
+                <section
+                  key={group}
+                  id={groupAnchors[group]}
+                  className="scroll-mt-28 space-y-3"
+                >
                   <div className="flex items-center gap-3">
                     <span
                       className={`grid h-10 w-10 place-items-center rounded-md border ${groupStyles[group]}`}
@@ -146,11 +159,11 @@ function ObjecionCard({ item }: { item: Objecion }) {
 function getObjecionGroup(item: Objecion) {
   const text = `${item.objecion} ${item.validacion}`.toLowerCase();
 
-  if (text.includes("caro") || text.includes("precio")) return "Precio";
-  if (text.includes("fibra") || text.includes("velocidad")) return "Cobertura";
   if (text.includes("menor precio") || text.includes("promoción")) {
     return "Competencia";
   }
+  if (text.includes("caro") || text.includes("precio")) return "Precio";
+  if (text.includes("fibra") || text.includes("velocidad")) return "Cobertura";
   if (text.includes("sorpresas")) return "Dudas";
   return "Validación";
 }

@@ -114,13 +114,17 @@ function MediaItem({ item }: { item: TrainingMediaFile }) {
             />
           ) : isMounted ? (
             <video
+              key={item.fileUrl}
               controls
               playsInline
-              preload="none"
+              preload="metadata"
+              src={item.fileUrl}
+              aria-label={`Reproductor de video: ${item.title}`}
               className="h-full w-full bg-black"
+              onCanPlay={() => setHasPlaybackError(false)}
+              onLoadedMetadata={() => setHasPlaybackError(false)}
               onError={() => setHasPlaybackError(true)}
             >
-              <source src={item.fileUrl} type={item.mimeType} />
               Tu navegador no puede reproducir este video.
             </video>
           ) : (
@@ -249,8 +253,9 @@ function PlaybackError() {
     <div className="mt-3 flex gap-2 rounded-lg border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 py-2 text-sm font-semibold leading-5 text-[#FFB4AC]">
       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
       <span>
-        Este navegador no pudo reproducir el archivo. Intenta abrirlo en nueva
-        pestana.
+        Este navegador no pudo reproducir el archivo integrado. Usa “Abrir en
+        nueva pestaña” para reproducir el original o revisar si Brave está
+        bloqueando su origen.
       </span>
     </div>
   );
