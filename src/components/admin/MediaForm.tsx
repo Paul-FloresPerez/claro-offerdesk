@@ -14,6 +14,7 @@ export type AdminMediaRow = {
   mediaType: MediaType;
   fileUrl: string;
   weekLabel: string | null;
+  isFeatured: boolean;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -140,6 +141,13 @@ export default function MediaForm({
           error={fieldError(state, "weekLabel")}
           placeholder="Semana 27 - 2026"
         />
+
+        {media?.isFeatured ? (
+          <p className="rounded-md border border-amber-300/20 bg-amber-400/10 px-3 py-2 text-sm font-semibold leading-5 text-amber-100 sm:col-span-2">
+            Este es el video de Inicio. Selecciona otro video antes de cambiarlo
+            a audio o desactivarlo.
+          </p>
+        ) : null}
 
         <div className="grid content-end gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
           <label className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-semibold text-slate-200">

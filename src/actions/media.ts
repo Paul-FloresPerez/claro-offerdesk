@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import {
   createMediaSchema,
+  featuredMediaSchema,
   mediaStatusSchema,
   updateMediaSchema,
   type MediaActionState,
@@ -16,6 +17,8 @@ import {
 const MEDIA_ADMIN_PATH = "/admin/media";
 const AUDIO_EXTENSIONS = new Set([".mp3", ".m4a", ".ogg"]);
 const VIDEO_EXTENSIONS = new Set([".mp4"]);
+const FEATURED_MEDIA_GUARD_MESSAGE =
+  "Selecciona otro video para Inicio antes de modificar o desactivar este recurso.";
 
 export async function createMediaAction(
   _previousState: MediaActionState,
@@ -51,6 +54,7 @@ export async function createMediaAction(
         fileUrl: parsed.data.fileUrl!,
         fileKey: null,
         weekLabel: parsed.data.weekLabel,
+        isFeatured: false,
         isActive: parsed.data.isActive,
         createdAt: now,
         updatedAt: now,
@@ -90,21 +94,48 @@ export async function updateMediaAction(
   }
 
   try {
-    await prisma.trainingMedia.update({
-      where: {
-        id: parsed.data.id,
+    await prisma.$transaction(
+      async (transaction) => {
+        const currentMedia = await transaction.trainingMedia.findUnique({
+          where: {
+            id: parsed.data.id,
+          },
+          select: {
+            isFeatured: true,
+          },
+        });
+
+        if (!currentMedia) {
+          throw new MediaNotFoundError();
+        }
+
+        if (
+          currentMedia.isFeatured &&
+          (!parsed.data.isActive || parsed.data.mediaType !== "video")
+        ) {
+          throw new FeaturedMediaProtectedError();
+        }
+
+        await transaction.trainingMedia.update({
+          where: {
+            id: parsed.data.id,
+          },
+          data: {
+            title: parsed.data.title,
+            description: parsed.data.description,
+            mediaType: parsed.data.mediaType,
+            fileUrl: parsed.data.fileUrl!,
+            fileKey: null,
+            weekLabel: parsed.data.weekLabel,
+            isActive: parsed.data.isActive,
+            updatedAt: new Date(),
+          },
+        });
       },
-      data: {
-        title: parsed.data.title,
-        description: parsed.data.description,
-        mediaType: parsed.data.mediaType,
-        fileUrl: parsed.data.fileUrl!,
-        fileKey: null,
-        weekLabel: parsed.data.weekLabel,
-        isActive: parsed.data.isActive,
-        updatedAt: new Date(),
-      },
-    });
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      }
+    );
 
     revalidateMedia();
     return successState("Material actualizado correctamente.");
@@ -133,15 +164,39 @@ export async function setMediaStatusAction(
   }
 
   try {
-    await prisma.trainingMedia.update({
-      where: {
-        id: parsed.data.id,
+    await prisma.$transaction(
+      async (transaction) => {
+        const currentMedia = await transaction.trainingMedia.findUnique({
+          where: {
+            id: parsed.data.id,
+          },
+          select: {
+            isFeatured: true,
+          },
+        });
+
+        if (!currentMedia) {
+          throw new MediaNotFoundError();
+        }
+
+        if (currentMedia.isFeatured && !parsed.data.isActive) {
+          throw new FeaturedMediaProtectedError();
+        }
+
+        await transaction.trainingMedia.update({
+          where: {
+            id: parsed.data.id,
+          },
+          data: {
+            isActive: parsed.data.isActive,
+            updatedAt: new Date(),
+          },
+        });
       },
-      data: {
-        isActive: parsed.data.isActive,
-        updatedAt: new Date(),
-      },
-    });
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      }
+    );
 
     revalidateMedia();
     return successState(
@@ -149,6 +204,79 @@ export async function setMediaStatusAction(
     );
   } catch (error) {
     return databaseErrorState(error, "No se pudo cambiar el estado.");
+  }
+}
+
+export async function setFeaturedMediaAction(
+  _previousState: MediaActionState,
+  formData: FormData
+): Promise<MediaActionState> {
+  const isAdmin = await requireAdmin();
+
+  if (!isAdmin) {
+    return errorState("No autorizado.");
+  }
+
+  const parsed = featuredMediaSchema.safeParse({
+    id: formData.get("id"),
+  });
+
+  if (!parsed.success) {
+    return validationErrorState(parsed.error.flatten().fieldErrors);
+  }
+
+  try {
+    await prisma.$transaction(
+      async (transaction) => {
+        const selectedMedia = await transaction.trainingMedia.findUnique({
+          where: {
+            id: parsed.data.id,
+          },
+          select: {
+            mediaType: true,
+          },
+        });
+
+        if (!selectedMedia) {
+          throw new MediaNotFoundError();
+        }
+
+        if (selectedMedia.mediaType !== "video") {
+          throw new FeaturedMediaMustBeVideoError();
+        }
+
+        const now = new Date();
+
+        await transaction.trainingMedia.updateMany({
+          where: {
+            isFeatured: true,
+          },
+          data: {
+            isFeatured: false,
+            updatedAt: now,
+          },
+        });
+
+        await transaction.trainingMedia.update({
+          where: {
+            id: parsed.data.id,
+          },
+          data: {
+            isActive: true,
+            isFeatured: true,
+            updatedAt: now,
+          },
+        });
+      },
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      }
+    );
+
+    revalidateMedia();
+    return successState("Video de Inicio actualizado correctamente.");
+  } catch (error) {
+    return databaseErrorState(error, "No se pudo cambiar el video de Inicio.");
   }
 }
 
@@ -259,6 +387,18 @@ function fieldErrorState(field: string, message: string): MediaActionState {
 }
 
 function databaseErrorState(error: unknown, fallbackMessage: string): MediaActionState {
+  if (error instanceof FeaturedMediaProtectedError) {
+    return errorState(FEATURED_MEDIA_GUARD_MESSAGE);
+  }
+
+  if (error instanceof FeaturedMediaMustBeVideoError) {
+    return errorState("Solo un video puede usarse como video de Inicio.");
+  }
+
+  if (error instanceof MediaNotFoundError) {
+    return errorState("El material no existe.");
+  }
+
   if (
     error instanceof Prisma.PrismaClientKnownRequestError &&
     error.code === "P2025"
@@ -268,6 +408,12 @@ function databaseErrorState(error: unknown, fallbackMessage: string): MediaActio
 
   return errorState(fallbackMessage);
 }
+
+class FeaturedMediaProtectedError extends Error {}
+
+class FeaturedMediaMustBeVideoError extends Error {}
+
+class MediaNotFoundError extends Error {}
 
 function successState(message: string): MediaActionState {
   return {

@@ -25,10 +25,16 @@ export default async function CapacitacionPage() {
       fileUrl: true,
       fileKey: true,
       weekLabel: true,
+      isFeatured: true,
     },
   });
+  const libraryMedia = dbMedia.filter(
+    (item) => item.mediaType !== "video" || !item.isFeatured
+  );
   const { videos, audios } =
-    dbMedia.length > 0 ? getTrainingMediaFromRecords(dbMedia) : getTrainingMedia();
+    dbMedia.length > 0
+      ? getTrainingMediaFromRecords(libraryMedia)
+      : getTrainingMedia();
 
   return (
     <main className="relative">

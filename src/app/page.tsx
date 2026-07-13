@@ -70,7 +70,7 @@ export default async function HomePage() {
   await connection();
 
   const promotionMetrics = getPromotionMetrics();
-  const [topRanking, dbMedia] = await Promise.all([
+  const [topRanking, dbMedia, dbFeaturedVideo] = await Promise.all([
     prisma.salesRanking.findMany({
       where: {
         isActive: true,
@@ -109,11 +109,37 @@ export default async function HomePage() {
         fileUrl: true,
         fileKey: true,
         weekLabel: true,
+        isFeatured: true,
+      },
+    }),
+    prisma.trainingMedia.findFirst({
+      where: {
+        isActive: true,
+        isFeatured: true,
+        mediaType: "video",
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        mediaType: true,
+        fileUrl: true,
+        fileKey: true,
+        weekLabel: true,
       },
     }),
   ]);
-  const { featuredVideo, featuredAudios, videos, audios } =
-    dbMedia.length > 0 ? getTrainingMediaFromRecords(dbMedia) : getTrainingMedia();
+  const baseMedia = getTrainingMedia();
+  const trainingDbMedia = dbMedia.filter(
+    (item) => item.mediaType !== "video" || !item.isFeatured
+  );
+  const { featuredAudios, videos, audios } =
+    dbMedia.length > 0
+      ? getTrainingMediaFromRecords(trainingDbMedia)
+      : baseMedia;
+  const featuredVideo = dbFeaturedVideo
+    ? getTrainingMediaFromRecords([dbFeaturedVideo]).featuredVideo
+    : baseMedia.featuredVideo;
   const topAdvisor = topRanking[0];
   const topAdvisorName = topAdvisor?.user?.fullName ?? topAdvisor?.fullName;
 

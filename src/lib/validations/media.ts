@@ -50,6 +50,10 @@ export const mediaStatusSchema = z.object({
   isActive: checkbox,
 });
 
+export const featuredMediaSchema = z.object({
+  id: z.string().uuid("Material invalido."),
+});
+
 export type MediaActionState = {
   status: "idle" | "success" | "error";
   message: string;

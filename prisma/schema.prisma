@@ -55,6 +55,7 @@ model TrainingMedia {
   fileUrl     String   @map("file_url")
   fileKey     String?  @map("file_key")
   weekLabel   String?  @map("week_label")
+  isFeatured  Boolean  @default(false) @map("is_featured")
   isActive    Boolean  @map("is_active")
   createdAt   DateTime @map("created_at")
   updatedAt   DateTime @map("updated_at")
