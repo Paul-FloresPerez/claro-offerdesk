@@ -6,6 +6,7 @@ import {
   FileVideo,
   LayoutDashboard,
   PackageCheck,
+  ShoppingCart,
   UsersRound,
 } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +17,7 @@ const adminLinks = [
   { href: "/admin", label: "Resumen", icon: LayoutDashboard },
   { href: "/admin/usuarios", label: "Usuarios", icon: UsersRound },
   { href: "/admin/sedes", label: "Sedes", icon: Building2 },
+  { href: "/admin/ventas", label: "Ventas", icon: ShoppingCart },
   { href: "/admin/ranking", label: "Ranking", icon: BarChart3 },
   { href: "/admin/promociones", label: "Promociones", icon: PackageCheck },
   { href: "/admin/media", label: "Media", icon: FileVideo },
@@ -27,7 +29,7 @@ export default function AdminNavigation() {
   return (
     <nav
       aria-label="Administración"
-      className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6"
+      className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-7"
     >
       {adminLinks.map((item) => {
         const isActive =

@@ -114,6 +114,21 @@ export async function requireSupervisor() {
   };
 }
 
+export async function requireAdvisor() {
+  const user = await requireUser();
+
+  if (user.role !== "ADVISOR") {
+    throw new AuthorizationError("FORBIDDEN", "Se requiere rol asesor.");
+  }
+
+  assertActiveBranch(user);
+
+  return {
+    user,
+    scope: { kind: "SELF", userId: user.id } as const,
+  };
+}
+
 export async function requireBranchAccess(requestedBranchId?: string | null) {
   const user = await requireUser();
 

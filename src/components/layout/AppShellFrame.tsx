@@ -118,6 +118,15 @@ export function AppShellFrame({
                 </Link>
               ) : null}
 
+              {user.role === "ADVISOR" && !shouldLimitNavigation ? (
+                <Link
+                  href="/mis-ventas"
+                  className="inline-flex h-9 items-center rounded-md border border-[#DA291C]/30 bg-[#DA291C]/12 px-3 text-sm font-semibold text-[#FFB4AC] transition hover:border-[#DA291C]/45 hover:bg-[#DA291C]/18"
+                >
+                  Mis ventas
+                </Link>
+              ) : null}
+
               <span className="hidden max-w-44 truncate text-sm font-medium text-slate-300 sm:inline">
                 {user.name ?? user.email}
               </span>

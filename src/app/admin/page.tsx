@@ -4,6 +4,7 @@ import {
   FileVideo,
   PackageCheck,
   ShieldCheck,
+  ShoppingCart,
   Trophy,
   UserCheck,
   UserRound,
@@ -172,6 +173,11 @@ export default async function AdminPage() {
       href: "/admin/usuarios",
       label: "Usuarios",
       icon: UserRound,
+    },
+    {
+      href: "/admin/ventas",
+      label: "Ventas",
+      icon: ShoppingCart,
     },
     {
       href: "/admin/promociones",

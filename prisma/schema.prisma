@@ -14,6 +14,12 @@ enum UserRole {
   ADVISOR
 }
 
+enum SaleStatus {
+  PENDIENTE
+  INSTALADA
+  RECHAZADA
+}
+
 model Branch {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
@@ -22,6 +28,7 @@ model Branch {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   users     User[]
+  sales     Sale[]
 
   @@map("branches")
 }
@@ -65,9 +72,40 @@ model User {
   updatedAt          DateTime       @default(now()) @map("updated_at") @db.Timestamptz(6)
   branch             Branch?        @relation(fields: [branchId], references: [id], onDelete: Restrict)
   rankings           SalesRanking[]
+  advisorSales       Sale[]          @relation("SaleAdvisor")
+  registeredSales    Sale[]          @relation("SaleRegisteredBy")
 
   @@index([branchId, role, isActive])
   @@map("users")
+}
+
+/// PostgreSQL also enforces that rejected sales have a non-empty reason and
+/// that non-rejected sales keep rejection_reason null.
+model Sale {
+  id                String     @id @default(uuid()) @db.Uuid
+  advisorId         String     @map("advisor_id") @db.Uuid
+  branchId          String     @map("branch_id") @db.Uuid
+  registeredById    String     @map("registered_by_id") @db.Uuid
+  customerName      String     @map("customer_name")
+  customerDni       String     @map("customer_dni")
+  customerPhone     String     @map("customer_phone")
+  customerEmail     String?    @map("customer_email")
+  customerAddress   String?    @map("customer_address")
+  service           String
+  planName          String?    @map("plan_name")
+  status            SaleStatus @default(PENDIENTE)
+  rejectionReason   String?    @map("rejection_reason")
+  saleDate          DateTime   @map("sale_date") @db.Date
+  createdAt         DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  advisor           User       @relation("SaleAdvisor", fields: [advisorId], references: [id], onDelete: Restrict)
+  branch            Branch     @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  registeredBy      User       @relation("SaleRegisteredBy", fields: [registeredById], references: [id], onDelete: Restrict)
+
+  @@index([advisorId, status, saleDate(sort: Desc)])
+  @@index([branchId, status, saleDate(sort: Desc)])
+  @@index([status, saleDate(sort: Desc)])
+  @@map("sales")
 }
 
 model SalesRanking {
