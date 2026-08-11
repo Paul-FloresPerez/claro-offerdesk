@@ -243,6 +243,10 @@ function revalidateSales() {
   revalidatePath("/supervision");
   revalidatePath("/mis-ventas");
   revalidatePath("/admin/ventas");
+  revalidatePath("/top-ventas");
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/admin/ranking");
 }
 
 function authorizationErrorState(error: unknown): SaleActionState {

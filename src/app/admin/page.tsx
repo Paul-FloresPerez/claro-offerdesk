@@ -17,7 +17,7 @@ import { connection } from "next/server";
 import AdminShell from "@/components/admin/AdminShell";
 import { prisma } from "@/lib/prisma";
 import { getPromotionMetrics } from "@/lib/promotions";
-import { rankingOrder } from "@/lib/ranking";
+import { getAutomaticSalesRanking } from "@/lib/sales-ranking";
 
 export const runtime = "nodejs";
 
@@ -33,8 +33,7 @@ export default async function AdminPage() {
     admins,
     activeBranches,
     activeMedia,
-    activeRankingRecords,
-    topRanking,
+    automaticRanking,
   ] = await Promise.all([
     prisma.user.count({
       where: {
@@ -71,31 +70,7 @@ export default async function AdminPage() {
         isActive: true,
       },
     }),
-    prisma.salesRanking.count({
-      where: {
-        isActive: true,
-      },
-    }),
-    prisma.salesRanking.findFirst({
-      where: {
-        isActive: true,
-        user: {
-          is: {
-            isActive: true,
-          },
-        },
-      },
-      orderBy: rankingOrder,
-      select: {
-        salesCount: true,
-        fullName: true,
-        user: {
-          select: {
-            fullName: true,
-          },
-        },
-      },
-    }),
+    getAutomaticSalesRanking(),
   ]);
 
   const cards: DashboardCard[] = [
@@ -154,15 +129,15 @@ export default async function AdminPage() {
       icon: FileVideo,
     },
     {
-      label: "Ranking activo",
-      value: activeRankingRecords.toString(),
-      detail: "Registros visibles",
+      label: "Asesores en ranking",
+      value: automaticRanking.advisors.length.toString(),
+      detail: "Con ventas instaladas",
       icon: BarChart3,
     },
   ];
 
-  const topSellerName =
-    topRanking?.user?.fullName ?? topRanking?.fullName ?? "Sin registros";
+  const topRanking = automaticRanking.advisors[0];
+  const topSellerName = topRanking?.fullName ?? "Sin registros";
   const quickLinks = [
     {
       href: "/admin/sedes",
@@ -224,8 +199,8 @@ export default async function AdminPage() {
           </div>
           <p className="mt-4 text-sm leading-6 text-slate-400">
             {topRanking
-              ? `#1 con ${topRanking.salesCount} ventas concretadas.`
-              : "Aun no hay registros activos en el ranking."}
+              ? `#1 con ${topRanking.installedSales} ventas instaladas.`
+              : "Aún no hay ventas instaladas."}
           </p>
         </article>
 

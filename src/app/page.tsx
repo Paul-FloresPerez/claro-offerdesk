@@ -12,7 +12,7 @@ import { connection } from "next/server";
 import { NativeVideoPlayer } from "@/components/training/NativeVideoPlayer";
 import { prisma } from "@/lib/prisma";
 import { getPromotionMetrics } from "@/lib/promotions";
-import { rankingOrder } from "@/lib/ranking";
+import { getAutomaticSalesRanking } from "@/lib/sales-ranking";
 import {
   getTrainingMedia,
   getTrainingMediaFromRecords,
@@ -70,28 +70,8 @@ export default async function HomePage() {
   await connection();
 
   const promotionMetrics = getPromotionMetrics();
-  const [topRanking, dbMedia, dbFeaturedVideo] = await Promise.all([
-    prisma.salesRanking.findMany({
-      where: {
-        isActive: true,
-        user: {
-          is: {
-            isActive: true,
-          },
-        },
-      },
-      orderBy: rankingOrder,
-      select: {
-        salesCount: true,
-        fullName: true,
-        user: {
-          select: {
-            fullName: true,
-          },
-        },
-      },
-      take: 3,
-    }),
+  const [automaticRanking, dbMedia, dbFeaturedVideo] = await Promise.all([
+    getAutomaticSalesRanking(),
     prisma.trainingMedia.findMany({
       where: {
         isActive: true,
@@ -140,8 +120,7 @@ export default async function HomePage() {
   const featuredVideo = dbFeaturedVideo
     ? getTrainingMediaFromRecords([dbFeaturedVideo]).featuredVideo
     : baseMedia.featuredVideo;
-  const topAdvisor = topRanking[0];
-  const topAdvisorName = topAdvisor?.user?.fullName ?? topAdvisor?.fullName;
+  const topAdvisor = automaticRanking.advisors[0];
 
   return (
     <main className="relative">
@@ -186,11 +165,11 @@ export default async function HomePage() {
           />
           <MetricCard
             label="Top ventas"
-            value={topAdvisorName ?? "Pendiente"}
+            value={topAdvisor?.fullName ?? "Pendiente"}
             detail={
               topAdvisor
-                ? `#1 con ${topAdvisor.salesCount} ventas concretadas`
-                : "Sin registros activos"
+                ? `#1 con ${topAdvisor.installedSales} ventas instaladas`
+                : "Sin ventas instaladas"
             }
           />
         </section>
