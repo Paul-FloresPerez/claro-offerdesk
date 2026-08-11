@@ -26,8 +26,29 @@ model Branch {
   @@map("branches")
 }
 
+// Compatibility-only representation of the legacy physical table.
+// Claro OfferDesk promotions remain static in code and do not query this model.
+model PromotionCompatibility {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String   @unique
+  title       String
+  category    String?
+  description String?
+  price       String?
+  benefits    Json?
+  conditions  Json?
+  validity    String?
+  imageUrl    String?  @map("image_url")
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("promotions")
+}
+
 model User {
-  id                 String         @id @db.Uuid
+  id                 String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email              String         @unique
   username           String         @unique
   dni                String?        @unique
@@ -37,11 +58,11 @@ model User {
   branchId           String?        @map("branch_id") @db.Uuid
   role               UserRole?
   photoUrl           String?        @map("photo_url")
-  isAdmin            Boolean        @map("is_admin")
-  isActive           Boolean        @map("is_active")
-  mustChangePassword Boolean        @map("must_change_password")
-  createdAt          DateTime       @map("created_at")
-  updatedAt          DateTime       @map("updated_at")
+  isAdmin            Boolean        @default(false) @map("is_admin")
+  isActive           Boolean        @default(true) @map("is_active")
+  mustChangePassword Boolean        @default(true) @map("must_change_password")
+  createdAt          DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime       @default(now()) @map("updated_at") @db.Timestamptz(6)
   branch             Branch?        @relation(fields: [branchId], references: [id], onDelete: Restrict)
   rankings           SalesRanking[]
 
@@ -50,27 +71,28 @@ model User {
 }
 
 model SalesRanking {
-  id           String   @id @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   periodLabel  String   @map("period_label")
   rankPosition Int      @map("rank_position")
   userId       String?  @map("user_id") @db.Uuid
   fullName     String   @map("full_name")
   branchName   String?  @map("branch_name")
   photoUrl     String?  @map("photo_url")
-  salesCount   Int      @map("sales_count")
+  salesCount   Int      @default(0) @map("sales_count")
   pendingSales Int      @default(0) @map("pending_sales")
   rejectedSales Int     @default(0) @map("rejected_sales")
   note         String?
-  isActive     Boolean  @map("is_active")
-  createdAt    DateTime @map("created_at")
-  updatedAt    DateTime @map("updated_at")
-  user         User?    @relation(fields: [userId], references: [id])
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: NoAction)
 
   @@map("sales_ranking")
 }
 
+/// PostgreSQL also enforces training_media_media_type_check and an updated_at trigger.
 model TrainingMedia {
-  id          String   @id @db.Uuid
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title       String
   description String?
   mediaType   String   @map("media_type")
@@ -78,9 +100,9 @@ model TrainingMedia {
   fileKey     String?  @map("file_key")
   weekLabel   String?  @map("week_label")
   isFeatured  Boolean  @default(false) @map("is_featured")
-  isActive    Boolean  @map("is_active")
-  createdAt   DateTime @map("created_at")
-  updatedAt   DateTime @map("updated_at")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
 
   @@map("training_media")
 }
