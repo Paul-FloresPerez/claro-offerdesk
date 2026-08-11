@@ -8,6 +8,24 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum UserRole {
+  ADMIN
+  SUPERVISOR
+  ADVISOR
+}
+
+model Branch {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  city      String
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  users     User[]
+
+  @@map("branches")
+}
+
 model User {
   id                 String         @id @db.Uuid
   email              String         @unique
@@ -16,14 +34,18 @@ model User {
   passwordHash       String         @map("password_hash")
   fullName           String         @map("full_name")
   branchName         String?        @map("branch_name")
+  branchId           String?        @map("branch_id") @db.Uuid
+  role               UserRole?
   photoUrl           String?        @map("photo_url")
   isAdmin            Boolean        @map("is_admin")
   isActive           Boolean        @map("is_active")
   mustChangePassword Boolean        @map("must_change_password")
   createdAt          DateTime       @map("created_at")
   updatedAt          DateTime       @map("updated_at")
+  branch             Branch?        @relation(fields: [branchId], references: [id], onDelete: Restrict)
   rankings           SalesRanking[]
 
+  @@index([branchId, role, isActive])
   @@map("users")
 }
 

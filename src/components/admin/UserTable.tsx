@@ -5,23 +5,34 @@ import type { ReactNode } from "react";
 import {
   ExternalLink,
   KeyRound,
-  Shield,
-  ShieldOff,
+  Pencil,
+  Plus,
   UserCheck,
   UserX,
 } from "lucide-react";
 import {
   resetUserPasswordAction,
-  setUserRoleAction,
   setUserStatusAction,
 } from "@/actions/users";
-import UserForm, { type AdminUserRow } from "@/components/admin/UserForm";
+import UserForm, {
+  type AdminUserRow,
+  type BranchOption,
+} from "@/components/admin/UserForm";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { USER_ROLE_LABELS } from "@/lib/roles";
 import type { UserActionState } from "@/lib/validations/user";
 
 type UserTableProps = {
   users: AdminUserRow[];
+  branches: BranchOption[];
   currentUserId: string;
 };
 
@@ -30,25 +41,52 @@ const initialState: UserActionState = {
   message: "",
 };
 
-export default function UserTable({ currentUserId, users }: UserTableProps) {
+export default function UserTable({
+  branches,
+  currentUserId,
+  users,
+}: UserTableProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<AdminUserRow | null>(null);
+
+  function openCreateDialog() {
+    setSelectedUser(null);
+    setDialogOpen(true);
+  }
+
+  function openEditDialog(user: AdminUserRow) {
+    setSelectedUser(user);
+    setDialogOpen(true);
+  }
+
   return (
     <section className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.07]">
-      <div className="flex flex-col gap-2 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-white">
             Usuarios
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            Gestiona accesos, roles y estado de cuenta. No se eliminan usuarios.
+            Gestiona accesos, rol, sede y estado. No se eliminan usuarios.
           </p>
         </div>
-        <span className="inline-flex w-fit rounded-md border border-white/10 bg-[#111827]/55 px-3 py-2 text-xs font-semibold text-slate-300">
-          {users.length} usuario{users.length === 1 ? "" : "s"}
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex rounded-md border border-white/10 bg-[#111827]/55 px-3 py-2 text-xs font-semibold text-slate-300">
+            {users.length} usuario{users.length === 1 ? "" : "s"}
+          </span>
+          <Button
+            type="button"
+            onClick={openCreateDialog}
+            className="h-9 bg-[#DA291C] text-white hover:bg-[#B91F15]"
+          >
+            <Plus />
+            Nuevo usuario
+          </Button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[980px] text-left text-sm">
+        <table className="w-full min-w-[1050px] text-left text-sm">
           <thead className="bg-[#111827]/70 text-xs uppercase tracking-[0.12em] text-slate-400">
             <tr>
               <th className="px-5 py-3">Usuario</th>
@@ -66,6 +104,7 @@ export default function UserTable({ currentUserId, users }: UserTableProps) {
                 key={user.id}
                 user={user}
                 isCurrentUser={user.id === currentUserId}
+                onEdit={() => openEditDialog(user)}
               />
             ))}
             {users.length === 0 ? (
@@ -78,86 +117,116 @@ export default function UserTable({ currentUserId, users }: UserTableProps) {
           </tbody>
         </table>
       </div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent
+          key={selectedUser?.id ?? "new-user"}
+          className="max-h-[90vh] overflow-y-auto border border-white/10 bg-[#0B1120] text-white sm:max-w-3xl"
+        >
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">
+              {selectedUser ? "Editar usuario" : "Nuevo usuario"}
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              {selectedUser
+                ? "Actualiza sus datos, rol, sede y estado de acceso."
+                : "Crea un acceso con rol, sede y password temporal."}
+            </DialogDescription>
+          </DialogHeader>
+          <UserForm
+            mode={selectedUser ? "edit" : "create"}
+            user={selectedUser ?? undefined}
+            branches={branches}
+            onSuccess={() => setDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
 
 function UserRow({
   isCurrentUser,
+  onEdit,
   user,
 }: {
   isCurrentUser: boolean;
+  onEdit: () => void;
   user: AdminUserRow;
 }) {
   return (
-    <>
-      <tr className="align-top text-slate-200">
-        <td className="px-5 py-4">
-          <div className="flex items-center gap-3">
-            <UserAvatar user={user} />
-            <div className="min-w-0">
-              <p className="font-semibold text-white">{user.fullName}</p>
-              <p className="mt-1 text-xs text-slate-500">@{user.username}</p>
-              {user.photoUrl ? (
-                <a
-                  href={user.photoUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-[#FFB4AC] underline-offset-4 hover:underline"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                  Abrir foto
-                </a>
-              ) : null}
-              {isCurrentUser ? (
-                <span className="mt-2 inline-flex rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-2 py-1 text-[11px] font-semibold text-[#FFB4AC]">
-                  Tu cuenta
-                </span>
-              ) : null}
-            </div>
-          </div>
-        </td>
-        <td className="px-5 py-4">{user.dni ?? "-"}</td>
-        <td className="px-5 py-4">{user.email}</td>
-        <td className="px-5 py-4">{user.branchName ?? "-"}</td>
-        <td className="px-5 py-4">
-          <StatusPill tone={user.isAdmin ? "admin" : "neutral"}>
-            {user.isAdmin ? "Admin" : "Asesor"}
-          </StatusPill>
-        </td>
-        <td className="px-5 py-4">
-          <div className="grid gap-2">
-            <StatusPill tone={user.isActive ? "active" : "inactive"}>
-              {user.isActive ? "Activo" : "Inactivo"}
-            </StatusPill>
-            {user.mustChangePassword ? (
-              <StatusPill tone="warning">Cambio pendiente</StatusPill>
+    <tr className="align-top text-slate-200">
+      <td className="px-5 py-4">
+        <div className="flex items-center gap-3">
+          <UserAvatar user={user} />
+          <div className="min-w-0">
+            <p className="font-semibold text-white">{user.fullName}</p>
+            <p className="mt-1 text-xs text-slate-500">@{user.username}</p>
+            {user.photoUrl ? (
+              <a
+                href={user.photoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-[#FFB4AC] underline-offset-4 hover:underline"
+              >
+                <ExternalLink className="h-3 w-3" />
+                Abrir foto
+              </a>
+            ) : null}
+            {isCurrentUser ? (
+              <span className="mt-2 block w-fit rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-2 py-1 text-[11px] font-semibold text-[#FFB4AC]">
+                Tu cuenta
+              </span>
             ) : null}
           </div>
-        </td>
-        <td className="px-5 py-4">
-          <div className="grid gap-2">
-            <div className="flex flex-wrap gap-2">
-              <StatusAction user={user} isCurrentUser={isCurrentUser} />
-              <RoleAction user={user} isCurrentUser={isCurrentUser} />
-            </div>
-            <ResetPasswordForm user={user} />
+        </div>
+      </td>
+      <td className="px-5 py-4">{user.dni ?? "-"}</td>
+      <td className="px-5 py-4">{user.email}</td>
+      <td className="px-5 py-4">
+        <p>
+          {user.role === "ADMIN"
+            ? "Alcance global"
+            : user.branch?.name ?? user.branchName ?? "Sin sede"}
+        </p>
+        {user.branch && !user.branch.isActive ? (
+          <span className="mt-1 block text-xs text-amber-200">Sede inactiva</span>
+        ) : null}
+      </td>
+      <td className="px-5 py-4">
+        <StatusPill tone={user.role === "ADMIN" ? "admin" : "neutral"}>
+          {USER_ROLE_LABELS[user.role]}
+        </StatusPill>
+      </td>
+      <td className="px-5 py-4">
+        <div className="grid gap-2">
+          <StatusPill tone={user.isActive ? "active" : "inactive"}>
+            {user.isActive ? "Activo" : "Inactivo"}
+          </StatusPill>
+          {user.mustChangePassword ? (
+            <StatusPill tone="warning">Cambio pendiente</StatusPill>
+          ) : null}
+        </div>
+      </td>
+      <td className="px-5 py-4">
+        <div className="grid gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onEdit}
+              className="border-white/10 bg-white/[0.06] text-slate-200 hover:bg-white/[0.1] hover:text-white"
+            >
+              <Pencil />
+              Editar
+            </Button>
+            <StatusAction user={user} isCurrentUser={isCurrentUser} />
           </div>
-        </td>
-      </tr>
-      <tr className="bg-[#111827]/35">
-        <td colSpan={7} className="px-5 pb-5">
-          <details className="rounded-lg border border-white/10 bg-white/[0.035]">
-            <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-[#FFB4AC] transition hover:text-white">
-              Editar datos del usuario
-            </summary>
-            <div className="border-t border-white/10 p-4">
-              <UserForm mode="edit" user={user} compact />
-            </div>
-          </details>
-        </td>
-      </tr>
-    </>
+          <ResetPasswordForm user={user} />
+        </div>
+      </td>
+    </tr>
   );
 }
 
@@ -180,49 +249,13 @@ function StatusAction({
       <input type="hidden" name="isActive" value={String(nextActiveState)} />
       <Button
         type="submit"
+        variant="outline"
+        size="sm"
         disabled={isPending || (isCurrentUser && !nextActiveState)}
-        className="h-8 border border-white/10 bg-white/[0.06] px-2 text-xs text-slate-200 hover:bg-white/[0.1]"
+        className="border-white/10 bg-white/[0.06] text-slate-200 hover:bg-white/[0.1] hover:text-white"
       >
-        {nextActiveState ? (
-          <UserCheck className="h-3.5 w-3.5" />
-        ) : (
-          <UserX className="h-3.5 w-3.5" />
-        )}
+        {nextActiveState ? <UserCheck /> : <UserX />}
         {nextActiveState ? "Activar" : "Desactivar"}
-      </Button>
-      <ActionMessage state={state} />
-    </form>
-  );
-}
-
-function RoleAction({
-  isCurrentUser,
-  user,
-}: {
-  isCurrentUser: boolean;
-  user: AdminUserRow;
-}) {
-  const [state, formAction, isPending] = useActionState(
-    setUserRoleAction,
-    initialState
-  );
-  const nextAdminState = !user.isAdmin;
-
-  return (
-    <form action={formAction} className="grid gap-1">
-      <input type="hidden" name="id" value={user.id} />
-      <input type="hidden" name="isAdmin" value={String(nextAdminState)} />
-      <Button
-        type="submit"
-        disabled={isPending || (isCurrentUser && !nextAdminState)}
-        className="h-8 border border-white/10 bg-white/[0.06] px-2 text-xs text-slate-200 hover:bg-white/[0.1]"
-      >
-        {nextAdminState ? (
-          <Shield className="h-3.5 w-3.5" />
-        ) : (
-          <ShieldOff className="h-3.5 w-3.5" />
-        )}
-        {nextAdminState ? "Hacer admin" : "Hacer asesor"}
       </Button>
       <ActionMessage state={state} />
     </form>
@@ -253,7 +286,7 @@ function ResetPasswordForm({ user }: { user: AdminUserRow }) {
           disabled={isPending}
           className="h-8 border border-[#DA291C]/30 bg-[#DA291C]/12 px-2 text-xs text-[#FFB4AC] hover:bg-[#DA291C]/18"
         >
-          <KeyRound className="h-3.5 w-3.5" />
+          <KeyRound />
           Reset
         </Button>
       </div>
@@ -263,9 +296,7 @@ function ResetPasswordForm({ user }: { user: AdminUserRow }) {
 }
 
 function ActionMessage({ state }: { state: UserActionState }) {
-  if (!state.message) {
-    return null;
-  }
+  if (!state.message) return null;
 
   return (
     <p

@@ -1,10 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
-import { ExternalLink, ImageIcon, Save, ShieldCheck, UserPlus } from "lucide-react";
+import { useActionState, useEffect, useState } from "react";
+import { ExternalLink, ImageIcon, Save } from "lucide-react";
 import { createUserAction, updateUserAction } from "@/actions/users";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  USER_ROLE_LABELS,
+  USER_ROLE_VALUES,
+  type UserRoleValue,
+} from "@/lib/roles";
 import type { UserActionState } from "@/lib/validations/user";
 
 export type AdminUserRow = {
@@ -14,6 +19,13 @@ export type AdminUserRow = {
   dni: string | null;
   email: string;
   branchName: string | null;
+  branchId: string | null;
+  branch: {
+    id: string;
+    name: string;
+    isActive: boolean;
+  } | null;
+  role: UserRoleValue;
   photoUrl: string | null;
   isAdmin: boolean;
   isActive: boolean;
@@ -22,10 +34,11 @@ export type AdminUserRow = {
   updatedAt: string;
 };
 
-type UserFormProps = {
-  mode?: "create" | "edit";
-  user?: AdminUserRow;
-  compact?: boolean;
+export type BranchOption = {
+  id: string;
+  name: string;
+  city: string;
+  isActive: boolean;
 };
 
 const initialState: UserActionState = {
@@ -34,155 +47,183 @@ const initialState: UserActionState = {
 };
 
 export default function UserForm({
-  compact = false,
+  branches,
   mode = "create",
+  onSuccess,
   user,
-}: UserFormProps) {
-  const formRef = useRef<HTMLFormElement>(null);
+}: {
+  branches: BranchOption[];
+  mode?: "create" | "edit";
+  onSuccess?: () => void;
+  user?: AdminUserRow;
+}) {
   const action = mode === "create" ? createUserAction : updateUserAction;
   const [state, formAction, isPending] = useActionState(action, initialState);
   const [photoUrl, setPhotoUrl] = useState(user?.photoUrl ?? "");
+  const [role, setRole] = useState<UserRoleValue>(user?.role ?? "ADVISOR");
   const isEdit = mode === "edit";
+  const availableBranches = branches.filter(
+    (branch) => branch.isActive || branch.id === user?.branchId
+  );
+  const keepsLegacyBranchlessAdvisor =
+    isEdit && user?.role === "ADVISOR" && !user.branchId;
 
   useEffect(() => {
-    if (mode === "create" && state.status === "success") {
-      formRef.current?.reset();
-      setPhotoUrl("");
+    if (state.status !== "success") {
+      return;
     }
-  }, [mode, state.status]);
+
+    onSuccess?.();
+  }, [isEdit, onSuccess, state.status]);
 
   return (
-    <section
-      className={
-        compact
-          ? "rounded-lg border border-white/10 bg-[#111827]/55 p-4"
-          : "rounded-lg border border-white/10 bg-white/[0.07] p-5"
-      }
+    <form
+      action={formAction}
+      className="grid gap-4 sm:grid-cols-2"
     >
-      <div className="mb-5 flex items-center gap-3">
-        <span className="grid h-10 w-10 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
-          {isEdit ? (
-            <ShieldCheck className="h-5 w-5" />
-          ) : (
-            <UserPlus className="h-5 w-5" />
-          )}
-        </span>
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight text-white">
-            {isEdit ? "Editar usuario" : "Nuevo usuario"}
-          </h2>
-          <p className="text-sm text-slate-400">
-            {isEdit
-              ? "Actualiza datos, estado y permisos del asesor."
-              : "Crea el acceso interno con password temporal."}
-          </p>
+      {isEdit ? <input type="hidden" name="id" value={user?.id} /> : null}
+
+      <AdminField
+        label="Nombre completo"
+        name="fullName"
+        defaultValue={user?.fullName}
+        error={fieldError(state, "fullName")}
+        required
+      />
+      <AdminField
+        label="Usuario"
+        name="username"
+        defaultValue={user?.username}
+        error={fieldError(state, "username")}
+        placeholder="usuario.apellido"
+        required
+      />
+      <AdminField
+        label="DNI"
+        name="dni"
+        defaultValue={user?.dni ?? ""}
+        error={fieldError(state, "dni")}
+        required
+      />
+      <AdminField
+        label="Correo (recuperación)"
+        name="email"
+        defaultValue={user?.email}
+        error={fieldError(state, "email")}
+        type="email"
+        required
+      />
+
+      <label className="grid gap-2 text-sm font-semibold text-slate-200">
+        Rol
+        <select
+          name="role"
+          value={role}
+          onChange={(event) => setRole(event.target.value as UserRoleValue)}
+          className="h-10 rounded-md border border-white/10 bg-[#111827]/70 px-3 text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C]/60"
+        >
+          {USER_ROLE_VALUES.map((value) => (
+            <option key={value} value={value}>
+              {USER_ROLE_LABELS[value]}
+            </option>
+          ))}
+        </select>
+        {fieldError(state, "role") ? (
+          <span className="text-xs font-medium text-[#FFB4AC]">
+            {fieldError(state, "role")}
+          </span>
+        ) : null}
+      </label>
+
+      {role === "ADMIN" ? (
+        <div className="grid content-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-slate-400">
+          <input type="hidden" name="branchId" value="" />
+          <span className="font-semibold text-slate-200">Sede</span>
+          <span>El administrador tiene alcance global.</span>
         </div>
+      ) : (
+        <label className="grid gap-2 text-sm font-semibold text-slate-200">
+          Sede
+          <select
+            name="branchId"
+            defaultValue={user?.branchId ?? ""}
+            required={role === "SUPERVISOR" || !keepsLegacyBranchlessAdvisor}
+            className="h-10 rounded-md border border-white/10 bg-[#111827]/70 px-3 text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C]/60"
+          >
+            <option value="">
+              {keepsLegacyBranchlessAdvisor
+                ? "Sin sede (registro legacy)"
+                : "Selecciona una sede"}
+            </option>
+            {availableBranches.map((branch) => (
+              <option key={branch.id} value={branch.id}>
+                {branch.name} - {branch.city}
+                {branch.isActive ? "" : " (inactiva)"}
+              </option>
+            ))}
+          </select>
+          {fieldError(state, "branchId") ? (
+            <span className="text-xs font-medium text-[#FFB4AC]">
+              {fieldError(state, "branchId")}
+            </span>
+          ) : null}
+        </label>
+      )}
+
+      <PhotoUploadField
+        currentFullName={user?.fullName ?? ""}
+        currentPhotoUrl={photoUrl}
+        onPhotoUrlChange={setPhotoUrl}
+        urlError={fieldError(state, "photoUrl")}
+      />
+
+      {isEdit ? null : (
+        <AdminField
+          label="Contraseña temporal"
+          name="password"
+          error={fieldError(state, "password")}
+          type="password"
+          autoComplete="new-password"
+          required
+        />
+      )}
+
+      <div className="grid content-end gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
+        <ToggleField
+          label="Cuenta activa"
+          name="isActive"
+          defaultChecked={isEdit ? Boolean(user?.isActive) : true}
+        />
       </div>
 
-      <form
-        ref={formRef}
-        action={formAction}
-        className="grid gap-4 sm:grid-cols-2"
-      >
-        {isEdit ? <input type="hidden" name="id" value={user?.id} /> : null}
+      {state.message ? (
+        <p
+          aria-live="polite"
+          className={
+            state.status === "success"
+              ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-200 sm:col-span-2"
+              : "rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 py-2 text-sm font-semibold text-[#FFB4AC] sm:col-span-2"
+          }
+        >
+          {state.message}
+        </p>
+      ) : null}
 
-        <AdminField
-          label="Nombre completo"
-          name="fullName"
-          defaultValue={user?.fullName}
-          error={fieldError(state, "fullName")}
-          required
-        />
-        <AdminField
-          label="Usuario"
-          name="username"
-          defaultValue={user?.username}
-          error={fieldError(state, "username")}
-          placeholder="usuario.apellido"
-          required
-        />
-        <AdminField
-          label="DNI"
-          name="dni"
-          defaultValue={user?.dni ?? ""}
-          error={fieldError(state, "dni")}
-          required
-        />
-        <AdminField
-          label="Correo (recuperacion)"
-          name="email"
-          defaultValue={user?.email}
-          error={fieldError(state, "email")}
-          type="email"
-          required
-        />
-        <AdminField
-          label="Sede"
-          name="branchName"
-          defaultValue={user?.branchName ?? ""}
-          error={fieldError(state, "branchName")}
-          placeholder="Sede comercial"
-        />
-        <PhotoUploadField
-          currentFullName={user?.fullName ?? ""}
-          currentPhotoUrl={photoUrl}
-          onPhotoUrlChange={setPhotoUrl}
-          urlError={fieldError(state, "photoUrl")}
-        />
-
-        {isEdit ? null : (
-          <AdminField
-            label="Password temporal"
-            name="password"
-            error={fieldError(state, "password")}
-            type="password"
-            autoComplete="new-password"
-            required
-          />
-        )}
-
-        <div className="grid content-end gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3 sm:grid-cols-2">
-          <ToggleField
-            label="Admin"
-            name="isAdmin"
-            defaultChecked={Boolean(user?.isAdmin)}
-          />
-          <ToggleField
-            label="Activo"
-            name="isActive"
-            defaultChecked={isEdit ? Boolean(user?.isActive) : true}
-          />
-        </div>
-
-        {state.message ? (
-          <p
-            aria-live="polite"
-            className={
-              state.status === "success"
-                ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-200 sm:col-span-2"
-                : "rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 py-2 text-sm font-semibold text-[#FFB4AC] sm:col-span-2"
-            }
-          >
-            {state.message}
-          </p>
-        ) : null}
-
-        <div className="sm:col-span-2">
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="h-10 bg-[#DA291C] text-white hover:bg-[#B91F15]"
-          >
-            <Save className="h-4 w-4" />
-            {isPending
-              ? "Guardando..."
-              : isEdit
-                ? "Guardar cambios"
-                : "Crear usuario"}
-          </Button>
-        </div>
-      </form>
-    </section>
+      <div className="sm:col-span-2">
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="h-10 bg-[#DA291C] text-white hover:bg-[#B91F15]"
+        >
+          <Save />
+          {isPending
+            ? "Guardando..."
+            : isEdit
+              ? "Guardar cambios"
+              : "Crear usuario"}
+        </Button>
+      </div>
+    </form>
   );
 }
 
@@ -197,15 +238,12 @@ function PhotoUploadField({
   onPhotoUrlChange: (value: string) => void;
   urlError?: string;
 }) {
-  const [imageFailed, setImageFailed] = useState(false);
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const imageFailed = failedUrl === currentPhotoUrl;
   const initials = currentFullName ? getInitials(currentFullName) : null;
 
-  useEffect(() => {
-    setImageFailed(false);
-  }, [currentPhotoUrl]);
-
   return (
-    <div className="grid gap-2 text-sm font-semibold text-slate-200">
+    <div className="grid gap-2 text-sm font-semibold text-slate-200 sm:col-span-2">
       <span>URL de foto</span>
       <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
         {currentPhotoUrl && !imageFailed ? (
@@ -214,7 +252,7 @@ function PhotoUploadField({
             src={currentPhotoUrl}
             alt={currentFullName || "Foto actual"}
             className="h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
-            onError={() => setImageFailed(true)}
+            onError={() => setFailedUrl(currentPhotoUrl)}
           />
         ) : (
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#DA291C] text-sm font-black text-white">
@@ -222,16 +260,14 @@ function PhotoUploadField({
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <label className="grid gap-2">
-            <Input
-              name="photoUrl"
-              value={currentPhotoUrl}
-              onChange={(event) => onPhotoUrlChange(event.target.value)}
-              placeholder="Pega la URL publica de Vercel Blob"
-              aria-invalid={Boolean(urlError)}
-              className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
-            />
-          </label>
+          <Input
+            name="photoUrl"
+            value={currentPhotoUrl}
+            onChange={(event) => onPhotoUrlChange(event.target.value)}
+            placeholder="Pega la URL publica de Vercel Blob"
+            aria-invalid={Boolean(urlError)}
+            className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
+          />
           <p className="mt-1 text-xs leading-5 text-slate-500">
             Acepta https://... o /usuarios/archivo.jpg como fallback legacy.
           </p>
@@ -287,7 +323,9 @@ function AdminField({
         aria-invalid={Boolean(error)}
         className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
       />
-      {error ? <span className="text-xs font-medium text-[#FFB4AC]">{error}</span> : null}
+      {error ? (
+        <span className="text-xs font-medium text-[#FFB4AC]">{error}</span>
+      ) : null}
     </label>
   );
 }

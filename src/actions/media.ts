@@ -3,7 +3,10 @@
 import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
-import { auth } from "@/auth";
+import {
+  isAuthorizationError,
+  requireAdmin as requireDatabaseAdmin,
+} from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import {
   createMediaSchema,
@@ -281,8 +284,16 @@ export async function setFeaturedMediaAction(
 }
 
 async function requireAdmin() {
-  const session = await auth();
-  return Boolean(session?.user?.isAdmin);
+  try {
+    await requireDatabaseAdmin();
+    return true;
+  } catch (error) {
+    if (isAuthorizationError(error)) {
+      return false;
+    }
+
+    throw error;
+  }
 }
 
 function readMediaFormData(formData: FormData) {

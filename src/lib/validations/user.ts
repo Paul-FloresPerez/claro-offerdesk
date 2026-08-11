@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { USER_ROLE_VALUES } from "@/lib/roles";
 
 const requiredText = (label: string, max = 160) =>
   z
@@ -6,19 +7,6 @@ const requiredText = (label: string, max = 160) =>
     .trim()
     .min(1, `${label} es obligatorio.`)
     .max(max, `${label} es demasiado largo.`);
-
-const optionalText = (max = 500) =>
-  z.preprocess(
-    (value) => {
-      if (typeof value !== "string") {
-        return null;
-      }
-
-      const trimmed = value.trim();
-      return trimmed ? trimmed : null;
-    },
-    z.string().max(max, "El texto es demasiado largo.").nullable()
-  );
 
 const checkbox = z.preprocess(
   (value) => value === true || value === "true" || value === "on",
@@ -61,6 +49,18 @@ const photoUrl = z.preprocess(
     .nullable()
 );
 
+const optionalBranchId = z.preprocess(
+  (value) => {
+    if (typeof value !== "string") {
+      return null;
+    }
+
+    const trimmed = value.trim();
+    return trimmed || null;
+  },
+  z.string().uuid("Selecciona una sede valida.").nullable()
+);
+
 const userBaseSchema = z.object({
   fullName: requiredText("El nombre completo", 120),
   username: requiredText("El usuario", 50)
@@ -74,9 +74,9 @@ const userBaseSchema = z.object({
     "El DNI solo debe contener letras, numeros, punto o guion."
   ),
   email: requiredText("El correo", 160).toLowerCase().email("Correo invalido."),
-  branchName: optionalText(120),
+  role: z.enum(USER_ROLE_VALUES, { message: "Selecciona un rol valido." }),
+  branchId: optionalBranchId,
   photoUrl,
-  isAdmin: checkbox,
   isActive: checkbox,
 });
 
@@ -94,11 +94,6 @@ export const updateUserSchema = userBaseSchema.extend({
 export const userStatusSchema = z.object({
   id: z.string().uuid("Usuario invalido."),
   isActive: checkbox,
-});
-
-export const userRoleSchema = z.object({
-  id: z.string().uuid("Usuario invalido."),
-  isAdmin: checkbox,
 });
 
 export const resetUserPasswordSchema = z.object({

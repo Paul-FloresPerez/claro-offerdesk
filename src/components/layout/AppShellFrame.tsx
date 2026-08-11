@@ -5,11 +5,14 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { cn } from "@/lib/utils";
+import type { UserRoleValue } from "@/lib/roles";
 
 export type AppShellUser = {
   name: string | null;
   email: string | null;
   isAdmin: boolean;
+  role: UserRoleValue;
+  branchId: string | null;
   mustChangePassword: boolean;
 };
 
@@ -97,12 +100,21 @@ export function AppShellFrame({
             )}
 
             <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.045] p-1.5">
-              {user.isAdmin && !shouldLimitNavigation ? (
+              {user.role === "ADMIN" && !shouldLimitNavigation ? (
                 <Link
                   href="/admin"
                   className="inline-flex h-9 items-center rounded-md border border-[#DA291C]/30 bg-[#DA291C]/12 px-3 text-sm font-semibold text-[#FFB4AC] transition hover:border-[#DA291C]/45 hover:bg-[#DA291C]/18"
                 >
-                  Panel admin
+                  Administración
+                </Link>
+              ) : null}
+
+              {user.role === "SUPERVISOR" && !shouldLimitNavigation ? (
+                <Link
+                  href="/supervision"
+                  className="inline-flex h-9 items-center rounded-md border border-[#DA291C]/30 bg-[#DA291C]/12 px-3 text-sm font-semibold text-[#FFB4AC] transition hover:border-[#DA291C]/45 hover:bg-[#DA291C]/18"
+                >
+                  Supervisión
                 </Link>
               ) : null}
 

@@ -1,10 +1,12 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse, type NextRequest } from "next/server";
 import { missingAuthSecret } from "@/lib/auth-secret";
+import { resolveUserRole } from "@/lib/roles";
 
 const canonicalHost = "claro-offerdesk.vercel.app";
 const canonicalOrigin = `https://${canonicalHost}`;
 const adminRoutePrefixes = ["/admin"];
+const supervisionRoutePrefixes = ["/supervision"];
 const passwordChangePath = "/cambiar-contrasena";
 const publicFilePrefixes = [
   "/capacitacion/",
@@ -59,7 +61,13 @@ export async function proxy(request: NextRequest) {
     return legacyRedirect;
   }
 
-  if (isAdminRoute(request.nextUrl.pathname) && token.isAdmin !== true) {
+  const role = resolveUserRole(token.role, token.isAdmin === true);
+
+  if (isAdminRoute(request.nextUrl.pathname) && role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  if (isSupervisionRoute(request.nextUrl.pathname) && role !== "SUPERVISOR") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -81,11 +89,18 @@ export const config = {
     "/recomendador/:path*",
     "/validaciones/:path*",
     "/admin/:path*",
+    "/supervision/:path*",
   ],
 };
 
 function isAdminRoute(pathname: string) {
   return adminRoutePrefixes.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
+function isSupervisionRoute(pathname: string) {
+  return supervisionRoutePrefixes.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   );
 }

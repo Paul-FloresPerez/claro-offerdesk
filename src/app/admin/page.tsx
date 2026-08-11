@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  Building2,
   FileVideo,
   PackageCheck,
   ShieldCheck,
@@ -27,7 +28,9 @@ export default async function AdminPage() {
     activeUsers,
     inactiveUsers,
     advisors,
+    supervisors,
     admins,
+    activeBranches,
     activeMedia,
     activeRankingRecords,
     topRanking,
@@ -44,12 +47,22 @@ export default async function AdminPage() {
     }),
     prisma.user.count({
       where: {
-        isAdmin: false,
+        OR: [{ role: "ADVISOR" }, { role: null, isAdmin: false }],
       },
     }),
     prisma.user.count({
       where: {
-        isAdmin: true,
+        role: "SUPERVISOR",
+      },
+    }),
+    prisma.user.count({
+      where: {
+        OR: [{ role: "ADMIN" }, { role: null, isAdmin: true }],
+      },
+    }),
+    prisma.branch.count({
+      where: {
+        isActive: true,
       },
     }),
     prisma.trainingMedia.count({
@@ -104,10 +117,22 @@ export default async function AdminPage() {
       icon: UsersRound,
     },
     {
+      label: "Total supervisores",
+      value: supervisors.toString(),
+      detail: "Usuarios con rol supervisor",
+      icon: UsersRound,
+    },
+    {
       label: "Total admins",
       value: admins.toString(),
       detail: "Usuarios administradores",
       icon: ShieldCheck,
+    },
+    {
+      label: "Sedes activas",
+      value: activeBranches.toString(),
+      detail: "Disponibles para asignacion",
+      icon: Building2,
     },
     {
       label: "Promociones activas",
@@ -138,6 +163,11 @@ export default async function AdminPage() {
   const topSellerName =
     topRanking?.user?.fullName ?? topRanking?.fullName ?? "Sin registros";
   const quickLinks = [
+    {
+      href: "/admin/sedes",
+      label: "Sedes",
+      icon: Building2,
+    },
     {
       href: "/admin/usuarios",
       label: "Usuarios",

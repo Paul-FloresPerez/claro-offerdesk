@@ -2,15 +2,19 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   isAuthorizationError,
-  requireAdmin,
+  requireSupervisor,
 } from "@/lib/authorization";
 
-export default async function AdminLayout({ children }: { children: ReactNode }) {
+export default async function SupervisionLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   try {
-    await requireAdmin();
+    await requireSupervisor();
   } catch (error) {
     if (isAuthorizationError(error, "UNAUTHENTICATED")) {
-      redirect("/login?callbackUrl=/admin");
+      redirect("/login?callbackUrl=/supervision");
     }
 
     if (isAuthorizationError(error)) {

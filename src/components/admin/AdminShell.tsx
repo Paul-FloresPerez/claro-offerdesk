@@ -1,45 +1,5 @@
-import {
-  BarChart3,
-  FileVideo,
-  LayoutDashboard,
-  PackageCheck,
-  UsersRound,
-} from "lucide-react";
-import Link from "next/link";
 import type { ReactNode } from "react";
-
-const adminLinks = [
-  {
-    href: "/admin",
-    label: "Resumen",
-    description: "Vista general",
-    icon: LayoutDashboard,
-  },
-  {
-    href: "/admin/usuarios",
-    label: "Usuarios",
-    description: "Asesores y permisos",
-    icon: UsersRound,
-  },
-  {
-    href: "/admin/ranking",
-    label: "Ranking",
-    description: "Ventas destacadas",
-    icon: BarChart3,
-  },
-  {
-    href: "/admin/promociones",
-    label: "Promociones",
-    description: "Catalogo comercial",
-    icon: PackageCheck,
-  },
-  {
-    href: "/admin/media",
-    label: "Media",
-    description: "Audios y videos",
-    icon: FileVideo,
-  },
-];
+import AdminNavigation from "@/components/admin/AdminNavigation";
 
 type AdminShellProps = {
   title: string;
@@ -71,30 +31,7 @@ export default function AdminShell({
         {statusBadge ?? <OperationalBadge />}
       </section>
 
-      <nav
-        aria-label="Administración"
-        className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-      >
-        {adminLinks.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="group rounded-lg border border-white/10 bg-white/[0.06] p-4 shadow-[0_14px_34px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:border-[#DA291C]/40 hover:bg-white/[0.09] hover:shadow-[0_18px_42px_rgba(0,0,0,0.18)]"
-          >
-            <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC] ring-1 ring-[#DA291C]/15 transition group-hover:scale-[1.03]">
-                <item.icon className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-white">{item.label}</p>
-                <p className="mt-1 text-xs text-slate-400">
-                  {item.description}
-                </p>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </nav>
+      <AdminNavigation />
 
       {children}
     </main>

@@ -5,9 +5,12 @@ import { getServerSession, type NextAuthOptions, type User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { missingAuthSecret } from "@/lib/auth-secret";
 import { prisma } from "@/lib/prisma";
+import { resolveUserRole, type UserRoleValue } from "@/lib/roles";
 
 type ClaroAuthUser = User & {
   isAdmin: boolean;
+  role: UserRoleValue;
+  branchId: string | null;
   mustChangePassword: boolean;
 };
 
@@ -67,6 +70,8 @@ export const authOptions: NextAuthOptions = {
             fullName: true,
             photoUrl: true,
             isAdmin: true,
+            role: true,
+            branchId: true,
             isActive: true,
             mustChangePassword: true,
           },
@@ -82,12 +87,16 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const role = resolveUserRole(user.role, user.isAdmin);
+
         return {
           id: user.id,
           email: user.email,
           name: user.fullName,
           image: user.photoUrl,
-          isAdmin: user.isAdmin,
+          isAdmin: role === "ADMIN",
+          role,
+          branchId: user.branchId,
           mustChangePassword: user.mustChangePassword,
         } satisfies ClaroAuthUser;
       },
@@ -99,6 +108,8 @@ export const authOptions: NextAuthOptions = {
         const claroUser = user as ClaroAuthUser;
         token.id = claroUser.id;
         token.isAdmin = claroUser.isAdmin;
+        token.role = claroUser.role;
+        token.branchId = claroUser.branchId;
         token.mustChangePassword = claroUser.mustChangePassword;
       }
 
@@ -107,7 +118,10 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = typeof token.id === "string" ? token.id : "";
-        session.user.isAdmin = Boolean(token.isAdmin);
+        session.user.role = resolveUserRole(token.role, Boolean(token.isAdmin));
+        session.user.isAdmin = session.user.role === "ADMIN";
+        session.user.branchId =
+          typeof token.branchId === "string" ? token.branchId : null;
         session.user.mustChangePassword = Boolean(token.mustChangePassword);
       }
 
