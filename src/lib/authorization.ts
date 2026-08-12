@@ -14,6 +14,7 @@ export type AuthorizedUser = {
   id: string;
   fullName: string;
   email: string;
+  photoUrl: string | null;
   role: UserRoleValue;
   branchId: string | null;
   branch: {
@@ -22,6 +23,7 @@ export type AuthorizedUser = {
     city: string;
     isActive: boolean;
   } | null;
+  mustChangePassword: boolean;
 };
 
 export type AuthorizationErrorCode =
@@ -57,9 +59,11 @@ export const requireUser = cache(async (): Promise<AuthorizedUser> => {
       id: true,
       fullName: true,
       email: true,
+      photoUrl: true,
       role: true,
       isAdmin: true,
       isActive: true,
+      mustChangePassword: true,
       branchId: true,
       branch: {
         select: {
@@ -80,9 +84,11 @@ export const requireUser = cache(async (): Promise<AuthorizedUser> => {
     id: user.id,
     fullName: user.fullName,
     email: user.email,
+    photoUrl: user.photoUrl,
     role: resolveUserRole(user.role, user.isAdmin),
     branchId: user.branchId,
     branch: user.branch,
+    mustChangePassword: user.mustChangePassword,
   };
 });
 

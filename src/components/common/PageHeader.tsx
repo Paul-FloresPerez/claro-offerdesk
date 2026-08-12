@@ -21,25 +21,18 @@ export function PageHeader({
     <section
       className={
         isDark
-          ? "relative overflow-hidden border-b border-white/10 bg-[#111827]"
+          ? "border-b border-white/10 bg-[#111827]"
           : "border-b border-neutral-200 bg-white"
       }
     >
-      {isDark ? (
-        <>
-          <div className="pointer-events-none absolute right-12 top-8 h-36 w-36 rounded-full border border-[#DA291C]/20" />
-          <div className="pointer-events-none absolute right-24 top-14 h-44 w-44 rounded-full bg-[#DA291C]/10 blur-3xl" />
-        </>
-      ) : null}
-
-      <div className="relative mx-auto flex max-w-7xl flex-col gap-5 px-4 py-7 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:py-6">
         <div className="max-w-3xl">
           {eyebrow ? (
             <p
               className={
                 isDark
-                  ? "mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-[#FFB4AC]"
-                  : "mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-[#DA291C]"
+                  ? "mb-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-[#FF8D83]"
+                  : "mb-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-[#DA291C]"
               }
             >
               {eyebrow}
@@ -48,8 +41,8 @@ export function PageHeader({
           <h1
             className={
               isDark
-                ? "text-2xl font-semibold tracking-tight text-white sm:text-3xl"
-                : "text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl"
+                ? "text-2xl font-semibold tracking-tight text-white sm:text-[2rem]"
+                : "text-2xl font-semibold tracking-tight text-neutral-950 sm:text-[2rem]"
             }
           >
             {title}
@@ -57,7 +50,7 @@ export function PageHeader({
           <p
             className={
               isDark
-                ? "mt-2 text-sm leading-6 text-slate-300"
+                ? "mt-1.5 max-w-2xl text-sm leading-6 text-slate-300"
                 : "mt-2 text-sm leading-6 text-neutral-600"
             }
           >

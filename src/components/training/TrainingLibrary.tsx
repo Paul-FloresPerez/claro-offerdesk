@@ -12,7 +12,7 @@ type TrainingLibraryProps = {
 
 export function TrainingLibrary({ videos, audios }: TrainingLibraryProps) {
   return (
-    <div className="grid gap-5">
+    <div className="grid gap-4">
       <LibrarySection
         title="Videos de entrenamiento"
         description="Revisa los flujos visuales disponibles."
@@ -49,14 +49,14 @@ function LibrarySection({
   emptyPath: string;
 }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-white/[0.07] p-4 shadow-[0_18px_54px_rgba(0,0,0,0.2)] backdrop-blur">
+    <section className="rounded-xl border border-white/10 bg-[#172033] p-4 shadow-[0_14px_34px_rgba(0,0,0,0.12)] sm:p-5">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-[#DA291C]/18 text-[#FFB4AC] ring-1 ring-[#DA291C]/25">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-[#DA291C]/20 bg-[#DA291C]/10 text-[#FF8D83]">
             <Icon className="h-5 w-5" />
           </span>
           <div>
-            <h2 className="text-xl font-semibold tracking-tight text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-white">
               {title}
             </h2>
             <p className="mt-1 text-sm text-slate-400">{description}</p>
@@ -99,8 +99,8 @@ function MediaItem({ item }: { item: TrainingMediaFile }) {
     <article
       className={
         isVideo
-          ? "overflow-hidden rounded-lg border border-white/10 bg-[#111827]/58"
-          : "rounded-lg border border-white/10 bg-[#111827]/58 p-3"
+          ? "overflow-hidden rounded-xl border border-white/10 bg-[#111827]/55"
+          : "rounded-xl border border-white/10 bg-[#111827]/55 p-3"
       }
     >
       {isVideo ? (

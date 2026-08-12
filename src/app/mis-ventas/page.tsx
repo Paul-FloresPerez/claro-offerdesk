@@ -33,15 +33,15 @@ export default async function MySalesPage() {
   ]);
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:py-9">
-      <section className="border-b border-white/10 pb-6">
-        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#FFB4AC]">
+    <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
+      <section className="border-b border-white/10 pb-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#FF8D83]">
           Actividad personal
         </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+        <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
           Mis ventas
         </h1>
-        <p className="mt-3 max-w-2xl text-base leading-7 text-slate-300">
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
           {user.fullName}, consulta el estado actual de tus ventas registradas.
         </p>
       </section>
@@ -50,12 +50,12 @@ export default async function MySalesPage() {
         <SalesKpis kpis={toSaleKpis(statusGroups)} />
       </div>
 
-      <section className="mt-8">
+      <section className="mt-7">
         <div className="mb-4">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#FFB4AC]">
             Historial
           </p>
-          <h2 className="mt-1 text-2xl font-semibold text-white">
+          <h2 className="mt-1 text-xl font-semibold text-white sm:text-2xl">
             Ventas registradas
           </h2>
         </div>

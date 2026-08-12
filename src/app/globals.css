@@ -126,14 +126,12 @@
   }
   body {
     @apply bg-background text-foreground;
-    background:
-      radial-gradient(circle at 12% 8%, rgba(218, 41, 28, 0.18), transparent 26rem),
-      radial-gradient(circle at 88% 18%, rgba(218, 41, 28, 0.08), transparent 24rem),
-      linear-gradient(135deg, #111827 0%, #172033 42%, #1f2937 100%);
+    background: #111827;
     min-height: 100vh;
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
 }
 
@@ -153,6 +151,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .animate-fade-up {
     animation: none;
   }
