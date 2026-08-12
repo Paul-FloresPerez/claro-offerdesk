@@ -1,19 +1,12 @@
 "use client";
 
-import {
-  BarChart3,
-  FileVideo,
-  PackageCheck,
-} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  adminContentNavigation,
+  isNavigationItemActive,
+} from "@/lib/navigation";
 import { cn } from "@/lib/utils";
-
-const adminLinks = [
-  { href: "/admin/ranking", label: "Ranking", icon: BarChart3 },
-  { href: "/admin/promociones", label: "Promociones", icon: PackageCheck },
-  { href: "/admin/media", label: "Media", icon: FileVideo },
-];
 
 export default function AdminNavigation() {
   const pathname = usePathname();
@@ -26,11 +19,8 @@ export default function AdminNavigation() {
       <span className="px-2 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
         Contenido
       </span>
-      {adminLinks.map((item) => {
-        const isActive =
-          item.href === "/admin"
-            ? pathname === item.href
-            : pathname === item.href || pathname.startsWith(`${item.href}/`);
+      {adminContentNavigation.map((item) => {
+        const isActive = isNavigationItemActive(item, pathname);
 
         return (
           <Link

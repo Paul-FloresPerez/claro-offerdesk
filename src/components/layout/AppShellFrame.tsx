@@ -1,24 +1,18 @@
 "use client";
 
-import {
-  BarChart3,
-  BookOpenText,
-  Building2,
-  GraduationCap,
-  Home,
-  LayoutDashboard,
-  Menu,
-  PackageCheck,
-  ShoppingCart,
-  Trophy,
-  UsersRound,
-  type LucideIcon,
-} from "lucide-react";
-import Link from "next/link";
+import { ChevronDown, Menu } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { UserMenu } from "@/components/layout/UserMenu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetClose,
@@ -28,8 +22,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+import {
+  isNavigationItemActive,
+  isNavigationNodeActive,
+  navigationByRole,
+  type NavigationGroup,
+  type NavigationItem,
+  type NavigationNode,
+} from "@/lib/navigation";
 import type { UserRoleValue } from "@/lib/roles";
+import { cn } from "@/lib/utils";
 
 export type AppShellUser = {
   name: string | null;
@@ -40,68 +42,6 @@ export type AppShellUser = {
   branchId: string | null;
   branchName: string | null;
   mustChangePassword: boolean;
-};
-
-type NavigationItem = {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-  match: string[];
-};
-
-const commonItems = {
-  home: { href: "/", label: "Inicio", icon: Home, match: ["/"] },
-  promotions: {
-    href: "/promociones",
-    label: "Promociones",
-    icon: PackageCheck,
-    match: ["/promociones", "/ofertas"],
-  },
-  script: {
-    href: "/guion",
-    label: "Guion",
-    icon: BookOpenText,
-    match: ["/guion", "/objeciones"],
-  },
-  training: {
-    href: "/entrenamiento",
-    label: "Entrenamiento",
-    icon: GraduationCap,
-    match: ["/entrenamiento", "/capacitacion"],
-  },
-  ranking: {
-    href: "/top-ventas",
-    label: "Top ventas",
-    icon: Trophy,
-    match: ["/top-ventas"],
-  },
-} satisfies Record<string, NavigationItem>;
-
-const navigationByRole: Record<UserRoleValue, NavigationItem[]> = {
-  ADVISOR: [
-    commonItems.home,
-    commonItems.promotions,
-    commonItems.script,
-    commonItems.training,
-    { href: "/mis-ventas", label: "Mis ventas", icon: ShoppingCart, match: ["/mis-ventas"] },
-    commonItems.ranking,
-  ],
-  SUPERVISOR: [
-    commonItems.home,
-    commonItems.promotions,
-    commonItems.script,
-    commonItems.training,
-    { href: "/supervision", label: "Supervisión", icon: BarChart3, match: ["/supervision"] },
-    commonItems.ranking,
-  ],
-  ADMIN: [
-    commonItems.home,
-    { href: "/admin", label: "Dashboard", icon: LayoutDashboard, match: ["/admin"] },
-    { href: "/admin/ventas", label: "Ventas", icon: ShoppingCart, match: ["/admin/ventas"] },
-    { href: "/admin/usuarios", label: "Usuarios", icon: UsersRound, match: ["/admin/usuarios"] },
-    { href: "/admin/sedes", label: "Sedes", icon: Building2, match: ["/admin/sedes"] },
-    commonItems.ranking,
-  ],
 };
 
 export function AppShellFrame({
@@ -175,20 +115,92 @@ function DesktopNavigation({
   navigation,
   pathname,
 }: {
-  navigation: NavigationItem[];
+  navigation: readonly NavigationNode[];
   pathname: string;
 }) {
   return (
     <nav className="ml-auto hidden h-full items-center gap-0.5 lg:flex" aria-label="Principal">
-      {navigation.map((item) => (
-        <NavigationLink
-          key={item.href}
-          item={item}
-          pathname={pathname}
-          className="h-full rounded-none border-b-2 border-transparent px-3"
-        />
-      ))}
+      {navigation.map((node) =>
+        node.kind === "group" ? (
+          <DesktopNavigationGroup key={node.id} group={node} pathname={pathname} />
+        ) : (
+          <NavigationLink
+            key={node.id}
+            item={node}
+            pathname={pathname}
+            className="h-full rounded-none border-b-2 border-transparent px-3"
+          />
+        )
+      )}
     </nav>
+  );
+}
+
+function DesktopNavigationGroup({
+  group,
+  pathname,
+}: {
+  group: NavigationGroup;
+  pathname: string;
+}) {
+  const isActive = isNavigationNodeActive(group, pathname);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-current={isActive ? "page" : undefined}
+          className={cn(
+            "inline-flex h-full items-center gap-2 rounded-none border-b-2 border-transparent px-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8D83]",
+            isActive
+              ? "border-[#DA291C] bg-white/[0.055] text-white"
+              : "text-slate-300 hover:bg-white/[0.055] hover:text-white"
+          )}
+        >
+          <group.icon
+            aria-hidden="true"
+            className={cn("size-4", isActive ? "text-[#FF5145]" : "text-slate-400")}
+          />
+          {group.label}
+          <ChevronDown aria-hidden="true" className="size-3.5 text-slate-500" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        sideOffset={8}
+        className="w-64 border border-slate-700 bg-[#111827] p-1.5 text-white shadow-xl"
+      >
+        <DropdownMenuGroup>
+          {group.items.map((item) => {
+            const itemIsActive = isNavigationItemActive(item, pathname);
+
+            return (
+              <DropdownMenuItem
+                asChild
+                key={item.id}
+                className="min-h-11 cursor-pointer rounded-lg p-0 focus:bg-white/[0.08] focus:text-white"
+              >
+                <Link
+                  href={item.href}
+                  aria-current={itemIsActive ? "page" : undefined}
+                  className="flex w-full items-center gap-3 px-3 py-2.5"
+                >
+                  <item.icon
+                    aria-hidden="true"
+                    className={cn(
+                      "size-4",
+                      itemIsActive ? "text-[#FF5145]" : "text-slate-400"
+                    )}
+                  />
+                  <span className="font-semibold">{item.label}</span>
+                </Link>
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -197,7 +209,7 @@ function MobileNavigation({
   pathname,
   userRole,
 }: {
-  navigation: NavigationItem[];
+  navigation: readonly NavigationNode[];
   pathname: string;
   userRole: UserRoleValue;
 }) {
@@ -220,18 +232,51 @@ function MobileNavigation({
           </SheetDescription>
         </SheetHeader>
         <nav className="grid gap-1 p-3" aria-label="Principal móvil">
-          {navigation.map((item) => (
-            <SheetClose asChild key={item.href}>
-              <NavigationLink
-                item={item}
-                pathname={pathname}
-                className="h-12 rounded-lg px-3"
-              />
-            </SheetClose>
-          ))}
+          {navigation.map((node) =>
+            node.kind === "group" ? (
+              <MobileNavigationGroup key={node.id} group={node} pathname={pathname} />
+            ) : (
+              <SheetClose asChild key={node.id}>
+                <NavigationLink
+                  item={node}
+                  pathname={pathname}
+                  className="h-12 rounded-lg px-3"
+                />
+              </SheetClose>
+            )
+          )}
         </nav>
       </SheetContent>
     </Sheet>
+  );
+}
+
+function MobileNavigationGroup({
+  group,
+  pathname,
+}: {
+  group: NavigationGroup;
+  pathname: string;
+}) {
+  return (
+    <section className="mt-2 border-t border-white/10 pt-2 first:mt-0 first:border-t-0 first:pt-0">
+      <p className="flex h-9 items-center gap-2 px-3 text-xs font-bold uppercase tracking-[0.1em] text-slate-500">
+        <group.icon aria-hidden="true" className="size-4" />
+        {group.label}
+      </p>
+      <div className="grid gap-1">
+        {group.items.map((item) => (
+          <SheetClose asChild key={item.id}>
+            <NavigationLink
+              item={item}
+              pathname={pathname}
+              useFullLabel
+              className="h-12 rounded-lg px-3 pl-7"
+            />
+          </SheetClose>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -239,16 +284,14 @@ function NavigationLink({
   item,
   pathname,
   className,
+  useFullLabel = false,
 }: {
   item: NavigationItem;
   pathname: string;
   className?: string;
+  useFullLabel?: boolean;
 }) {
-  const isActive = item.match.some((route) =>
-    route === "/" || route === "/admin"
-      ? pathname === route
-      : pathname === route || pathname.startsWith(`${route}/`)
-  );
+  const isActive = isNavigationItemActive(item, pathname);
 
   return (
     <Link
@@ -262,8 +305,11 @@ function NavigationLink({
         className
       )}
     >
-      <item.icon className={cn("size-4", isActive ? "text-[#FF5145]" : "text-slate-400")} />
-      {item.label}
+      <item.icon
+        aria-hidden="true"
+        className={cn("size-4", isActive ? "text-[#FF5145]" : "text-slate-400")}
+      />
+      {useFullLabel ? item.label : item.shortLabel ?? item.label}
     </Link>
   );
 }

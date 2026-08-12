@@ -1,15 +1,9 @@
 import {
   ArrowRight,
-  BarChart3,
-  BookOpenText,
   Building2,
   CheckCircle2,
   Clock3,
-  GraduationCap,
-  LayoutDashboard,
-  PackageCheck,
   PlayCircle,
-  ShoppingCart,
   Trophy,
   UsersRound,
   type LucideIcon,
@@ -18,6 +12,10 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { NativeVideoPlayer } from "@/components/training/NativeVideoPlayer";
 import { requireUser } from "@/lib/authorization";
+import {
+  homePrimaryActionByRole,
+  quickLinksByRole,
+} from "@/lib/navigation";
 import { prisma } from "@/lib/prisma";
 import { getPromotionMetrics } from "@/lib/promotions";
 import { getAutomaticSalesRanking } from "@/lib/sales-ranking";
@@ -26,40 +24,8 @@ import {
   getTrainingMediaFromRecords,
   type TrainingMediaFile,
 } from "@/lib/training-media";
-import type { UserRoleValue } from "@/lib/roles";
 
 export const runtime = "nodejs";
-
-type QuickLink = {
-  href: string;
-  label: string;
-  description: string;
-  icon: LucideIcon;
-};
-
-const quickLinksByRole: Record<UserRoleValue, QuickLink[]> = {
-  ADVISOR: [
-    { href: "/promociones", label: "Ver promociones", description: "Consulta la oferta vigente.", icon: PackageCheck },
-    { href: "/guion", label: "Abrir guion", description: "Guion y respuestas rápidas.", icon: BookOpenText },
-    { href: "/mis-ventas", label: "Revisar mis ventas", description: "Consulta estados y observaciones.", icon: ShoppingCart },
-    { href: "/entrenamiento", label: "Entrenamiento", description: "Practica con video y audio.", icon: GraduationCap },
-    { href: "/top-ventas", label: "Top ventas", description: "Revisa tu avance en la sede.", icon: Trophy },
-  ],
-  SUPERVISOR: [
-    { href: "/supervision", label: "Gestionar ventas", description: "Registra y actualiza al equipo.", icon: ShoppingCart },
-    { href: "/supervision/dashboard", label: "Ver dashboard", description: "Analiza la operación de la sede.", icon: BarChart3 },
-    { href: "/top-ventas", label: "Top ventas", description: "Revisa el avance del equipo.", icon: Trophy },
-    { href: "/promociones", label: "Promociones", description: "Consulta el material comercial.", icon: PackageCheck },
-    { href: "/entrenamiento", label: "Entrenamiento", description: "Comparte recursos con la sede.", icon: GraduationCap },
-  ],
-  ADMIN: [
-    { href: "/admin", label: "Abrir dashboard", description: "Vista gerencial consolidada.", icon: LayoutDashboard },
-    { href: "/admin/ventas", label: "Gestionar ventas", description: "Consulta la operación global.", icon: ShoppingCart },
-    { href: "/admin/usuarios", label: "Administrar usuarios", description: "Cuentas, roles y sedes.", icon: UsersRound },
-    { href: "/admin/sedes", label: "Administrar sedes", description: "Estructura multi-sede.", icon: Building2 },
-    { href: "/top-ventas", label: "Top ventas", description: "Compara el rendimiento comercial.", icon: Trophy },
-  ],
-};
 
 export default async function HomePage() {
   await connection();
@@ -74,7 +40,14 @@ export default async function HomePage() {
 
   const [automaticRanking, dbMedia, dbFeaturedVideo, statusGroups, peopleCount, branchCount] =
     await Promise.all([
-      getAutomaticSalesRanking(user.role === "ADMIN" ? null : user.branchId),
+      getAutomaticSalesRanking({
+        scope:
+          user.role === "ADMIN"
+            ? { kind: "GLOBAL" }
+            : user.branchId
+              ? { kind: "BRANCH", branchId: user.branchId }
+              : { kind: "NONE" },
+      }),
       prisma.trainingMedia.findMany({
         where: { isActive: true },
         orderBy: [{ createdAt: "desc" }],
@@ -137,18 +110,7 @@ export default async function HomePage() {
   const firstName = user.fullName.split(/\s+/)[0] || user.fullName;
   const scopeLabel =
     user.role === "ADMIN" ? "Vista global" : user.branch?.name ?? "Sin sede asignada";
-  const primaryHref =
-    user.role === "ADMIN"
-      ? "/admin"
-      : user.role === "SUPERVISOR"
-        ? "/supervision"
-        : "/promociones";
-  const primaryLabel =
-    user.role === "ADMIN"
-      ? "Abrir dashboard"
-      : user.role === "SUPERVISOR"
-        ? "Gestionar ventas"
-        : "Ver promociones";
+  const primaryAction = homePrimaryActionByRole[user.role];
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
@@ -163,10 +125,10 @@ export default async function HomePage() {
           <p className="mt-1 text-xs font-semibold text-[#FF8D83]">{scopeLabel}</p>
         </div>
         <Link
-          href={primaryHref}
+          href={primaryAction.href}
           className="inline-flex h-11 w-fit items-center gap-2 rounded-lg bg-[#DA291C] px-4 text-sm font-semibold text-white transition hover:bg-[#B91F15] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8D83] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111827]"
         >
-          {primaryLabel}
+          {primaryAction.label}
           <ArrowRight className="size-4" />
         </Link>
       </section>

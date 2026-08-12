@@ -4,6 +4,7 @@ import BranchLeaders from "@/components/ranking/BranchLeaders";
 import BranchRankingFilter from "@/components/ranking/BranchRankingFilter";
 import RankingRows from "@/components/ranking/RankingRows";
 import SalesPodium from "@/components/ranking/SalesPodium";
+import { requireRankingAccess } from "@/lib/authorization";
 import { getAutomaticSalesRanking } from "@/lib/sales-ranking";
 
 export const runtime = "nodejs";
@@ -18,11 +19,18 @@ export default async function TopVentasPage({
   searchParams,
 }: TopVentasPageProps) {
   await connection();
-  const params = await searchParams;
+  const [params, authorization] = await Promise.all([
+    searchParams,
+    requireRankingAccess(),
+  ]);
   const requestedBranchId = Array.isArray(params.branchId)
     ? params.branchId[0]
     : params.branchId;
-  const ranking = await getAutomaticSalesRanking(requestedBranchId);
+  const ranking = await getAutomaticSalesRanking({
+    requestedBranchId:
+      authorization.scope.kind === "GLOBAL" ? requestedBranchId : null,
+    scope: authorization.scope,
+  });
   const selectedBranch = ranking.selectionValid ? ranking.selectedBranch : null;
   const isGlobal = !selectedBranch;
   const viewTitle = selectedBranch ? `Top ${selectedBranch.name}` : "Top global";
@@ -44,13 +52,15 @@ export default async function TopVentasPage({
             Clasificación automática por ventas instaladas.
           </p>
         </div>
-        <BranchRankingFilter
-          branches={ranking.branches}
-          selectedBranchId={selectedBranch?.id ?? null}
-        />
+        {authorization.scope.kind === "GLOBAL" ? (
+          <BranchRankingFilter
+            branches={ranking.branches}
+            selectedBranchId={selectedBranch?.id ?? null}
+          />
+        ) : null}
       </header>
 
-      {!ranking.selectionValid ? (
+      {authorization.scope.kind === "GLOBAL" && !ranking.selectionValid ? (
         <p className="mt-5 rounded-xl border border-amber-300/25 bg-amber-300/10 px-4 py-3 text-sm font-medium text-amber-100">
           La sede solicitada no está disponible. Se muestra el ranking global.
         </p>

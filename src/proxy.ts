@@ -2,9 +2,8 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse, type NextRequest } from "next/server";
 import { missingAuthSecret } from "@/lib/auth-secret";
 import { resolveUserRole } from "@/lib/roles";
+import { canRoleAccessPath } from "@/lib/route-access";
 
-const adminRoutePrefixes = ["/admin"];
-const supervisionRoutePrefixes = ["/supervision"];
 const passwordChangePath = "/cambiar-contrasena";
 const publicFilePrefixes = [
   "/capacitacion/",
@@ -55,11 +54,7 @@ export async function proxy(request: NextRequest) {
 
   const role = resolveUserRole(token.role, token.isAdmin === true);
 
-  if (isAdminRoute(request.nextUrl.pathname) && role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  if (isSupervisionRoute(request.nextUrl.pathname) && role !== "SUPERVISOR") {
+  if (!canRoleAccessPath(role, request.nextUrl.pathname)) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -76,6 +71,7 @@ export const config = {
     "/guion/:path*",
     "/objeciones/:path*",
     "/top-ventas/:path*",
+    "/mis-ventas/:path*",
     "/capacitacion/:path*",
     "/entrenamiento/:path*",
     "/recomendador/:path*",
@@ -84,18 +80,6 @@ export const config = {
     "/supervision/:path*",
   ],
 };
-
-function isAdminRoute(pathname: string) {
-  return adminRoutePrefixes.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  );
-}
-
-function isSupervisionRoute(pathname: string) {
-  return supervisionRoutePrefixes.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  );
-}
 
 function isPublicFile(pathname: string) {
   return (

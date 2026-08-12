@@ -135,6 +135,24 @@ export async function requireAdvisor() {
   };
 }
 
+export async function requireRankingAccess() {
+  const user = await requireUser();
+
+  if (user.role === "ADMIN") {
+    return {
+      user,
+      scope: { kind: "GLOBAL" } as const,
+    };
+  }
+
+  assertActiveBranch(user);
+
+  return {
+    user,
+    scope: { kind: "BRANCH", branchId: user.branchId } as const,
+  };
+}
+
 export async function requireBranchAccess(requestedBranchId?: string | null) {
   const user = await requireUser();
 

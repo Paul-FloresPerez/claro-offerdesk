@@ -10,7 +10,9 @@ export const runtime = "nodejs";
 
 export default async function AdminRankingPage() {
   await connection();
-  const ranking = await getAutomaticSalesRanking();
+  const ranking = await getAutomaticSalesRanking({
+    scope: { kind: "GLOBAL" },
+  });
   const topAdvisor = ranking.advisors[0];
 
   return (

@@ -34,23 +34,54 @@ export type AutomaticSalesRanking = {
   selectionValid: boolean;
 };
 
+export type RankingAccessScope =
+  | { kind: "GLOBAL" }
+  | { kind: "BRANCH"; branchId: string }
+  | { kind: "NONE" };
+
+type AutomaticSalesRankingOptions = {
+  requestedBranchId?: string | null;
+  scope: RankingAccessScope;
+};
+
 const nameCollator = new Intl.Collator("es", {
   sensitivity: "base",
   usage: "sort",
 });
 
 export async function getAutomaticSalesRanking(
-  requestedBranchId?: string | null
+  options: AutomaticSalesRankingOptions
 ): Promise<AutomaticSalesRanking> {
+  if (options.scope.kind === "NONE") {
+    return emptyRanking(!options.requestedBranchId);
+  }
+
+  const scopedBranchId =
+    options.scope.kind === "BRANCH"
+      ? normalizeUuid(options.scope.branchId)
+      : null;
+
+  if (options.scope.kind === "BRANCH" && !scopedBranchId) {
+    return emptyRanking(false);
+  }
+
+  const requestedBranchId =
+    options.scope.kind === "BRANCH"
+      ? scopedBranchId
+      : options.requestedBranchId;
   const normalizedBranchId = normalizeUuid(requestedBranchId);
 
   const [branchGroups, allBranches] = await Promise.all([
     prisma.sale.groupBy({
       by: ["advisorId", "branchId"],
-      where: { status: "INSTALADA" },
+      where: {
+        status: "INSTALADA",
+        ...(scopedBranchId ? { branchId: scopedBranchId } : {}),
+      },
       _count: { _all: true },
     }),
     prisma.branch.findMany({
+      where: scopedBranchId ? { id: scopedBranchId } : undefined,
       orderBy: [{ isActive: "desc" }, { name: "asc" }],
       select: { id: true, name: true, isActive: true },
     }),
@@ -145,6 +176,16 @@ export async function getAutomaticSalesRanking(
     branches,
     leadersByBranch,
     selectedBranch,
+    selectionValid,
+  };
+}
+
+function emptyRanking(selectionValid: boolean): AutomaticSalesRanking {
+  return {
+    advisors: [],
+    branches: [],
+    leadersByBranch: [],
+    selectedBranch: null,
     selectionValid,
   };
 }
