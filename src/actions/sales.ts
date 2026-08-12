@@ -241,6 +241,7 @@ function toDatabaseDate(value: string) {
 
 function revalidateSales() {
   revalidatePath("/supervision");
+  revalidatePath("/supervision/dashboard");
   revalidatePath("/mis-ventas");
   revalidatePath("/admin/ventas");
   revalidatePath("/top-ventas");

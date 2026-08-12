@@ -14,7 +14,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const adminLinks = [
-  { href: "/admin", label: "Resumen", icon: LayoutDashboard },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/usuarios", label: "Usuarios", icon: UsersRound },
   { href: "/admin/sedes", label: "Sedes", icon: Building2 },
   { href: "/admin/ventas", label: "Ventas", icon: ShoppingCart },

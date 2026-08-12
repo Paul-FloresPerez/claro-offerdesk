@@ -1,9 +1,12 @@
 import { Prisma } from "@prisma/client";
+import { BarChart3 } from "lucide-react";
+import Link from "next/link";
 import { connection } from "next/server";
 import { CreateSaleDialog } from "@/components/sales/SaleDialogs";
 import ManagerSalesList from "@/components/sales/ManagerSalesList";
 import SalesFilters from "@/components/sales/SalesFilters";
 import SalesKpis from "@/components/sales/SalesKpis";
+import { buttonVariants } from "@/components/ui/button";
 import { requireSupervisor } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import {
@@ -15,6 +18,7 @@ import {
   toSaleKpis,
   type SalesSearchParams,
 } from "@/lib/sales-query";
+import { cn } from "@/lib/utils";
 
 export const runtime = "nodejs";
 
@@ -77,10 +81,22 @@ export default async function SupervisionPage({
             Registra y actualiza las ventas de los asesores de tu sede.
           </p>
         </div>
-        <CreateSaleDialog
-          advisors={advisorOptions}
-          defaultSaleDate={currentLimaDate()}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/supervision/dashboard"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "h-10 border-white/15 bg-white/[0.05] px-3 text-white hover:bg-white/[0.1] hover:text-white"
+            )}
+          >
+            <BarChart3 className="size-4" aria-hidden="true" />
+            Ver dashboard
+          </Link>
+          <CreateSaleDialog
+            advisors={advisorOptions}
+            defaultSaleDate={currentLimaDate()}
+          />
+        </div>
       </section>
 
       <div className="mt-6">
