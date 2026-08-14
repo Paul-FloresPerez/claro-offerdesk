@@ -141,7 +141,12 @@ export async function updateSaleAction(
         }
 
         await tx.sale.update({
-          where: { id: currentSale.id },
+          where: {
+            id: currentSale.id,
+            ...(authorization.scope.kind === "BRANCH"
+              ? { branchId: authorization.scope.branchId }
+              : {}),
+          },
           data: {
             advisorId: parsed.data.advisorId,
             customerName: parsed.data.customerName,

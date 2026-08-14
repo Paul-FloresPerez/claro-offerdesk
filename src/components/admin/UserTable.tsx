@@ -60,24 +60,24 @@ export default function UserTable({
   }
 
   return (
-    <section className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.07]">
-      <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <section className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="flex flex-col gap-3 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-white">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
             Usuarios
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             Gestiona accesos, rol, sede y estado. No se eliminan usuarios.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex rounded-md border border-white/10 bg-[#111827]/55 px-3 py-2 text-xs font-semibold text-slate-300">
+          <span className="inline-flex rounded-md border border-border bg-background/55 px-3 py-2 text-xs font-semibold text-muted-foreground">
             {users.length} usuario{users.length === 1 ? "" : "s"}
           </span>
           <Button
             type="button"
             onClick={openCreateDialog}
-            className="h-9 bg-[#DA291C] text-white hover:bg-[#B91F15]"
+            className="h-9 bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Plus />
             Nuevo usuario
@@ -87,7 +87,7 @@ export default function UserTable({
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1050px] text-left text-sm">
-          <thead className="bg-[#111827]/70 text-xs uppercase tracking-[0.12em] text-slate-400">
+          <thead className="bg-background text-xs uppercase tracking-[0.12em] text-muted-foreground">
             <tr>
               <th className="px-5 py-3">Usuario</th>
               <th className="px-5 py-3">DNI</th>
@@ -98,7 +98,7 @@ export default function UserTable({
               <th className="px-5 py-3">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/10">
+          <tbody className="divide-y divide-border">
             {users.map((user) => (
               <UserRow
                 key={user.id}
@@ -109,7 +109,7 @@ export default function UserTable({
             ))}
             {users.length === 0 ? (
               <tr>
-                <td className="px-5 py-6 text-slate-300" colSpan={7}>
+                <td className="px-5 py-6 text-muted-foreground" colSpan={7}>
                   No hay usuarios registrados.
                 </td>
               </tr>
@@ -121,13 +121,13 @@ export default function UserTable({
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent
           key={selectedUser?.id ?? "new-user"}
-          className="max-h-[90vh] overflow-y-auto border border-white/10 bg-[#0B1120] text-white sm:max-w-3xl"
+          className="max-h-[90vh] overflow-y-auto border border-border bg-header text-foreground sm:max-w-3xl"
         >
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
               {selectedUser ? "Editar usuario" : "Nuevo usuario"}
             </DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogDescription className="text-muted-foreground">
               {selectedUser
                 ? "Actualiza sus datos, rol, sede y estado de acceso."
                 : "Crea un acceso con rol, sede y password temporal."}
@@ -155,26 +155,26 @@ function UserRow({
   user: AdminUserRow;
 }) {
   return (
-    <tr className="align-top text-slate-200">
+    <tr className="align-top text-muted-foreground">
       <td className="px-5 py-4">
         <div className="flex items-center gap-3">
           <UserAvatar user={user} />
           <div className="min-w-0">
-            <p className="font-semibold text-white">{user.fullName}</p>
-            <p className="mt-1 text-xs text-slate-500">@{user.username}</p>
+            <p className="font-semibold text-foreground">{user.fullName}</p>
+            <p className="mt-1 text-xs text-muted-foreground">@{user.username}</p>
             {user.photoUrl ? (
               <a
                 href={user.photoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-[#FFB4AC] underline-offset-4 hover:underline"
+                className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-brand-emphasis underline-offset-4 hover:underline"
               >
                 <ExternalLink className="h-3 w-3" />
                 Abrir foto
               </a>
             ) : null}
             {isCurrentUser ? (
-              <span className="mt-2 block w-fit rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-2 py-1 text-[11px] font-semibold text-[#FFB4AC]">
+              <span className="mt-2 block w-fit rounded-md border border-primary/25 bg-primary/12 px-2 py-1 text-[11px] font-semibold text-brand-emphasis">
                 Tu cuenta
               </span>
             ) : null}
@@ -190,7 +190,7 @@ function UserRow({
             : user.branch?.name ?? user.branchName ?? "Sin sede"}
         </p>
         {user.branch && !user.branch.isActive ? (
-          <span className="mt-1 block text-xs text-amber-200">Sede inactiva</span>
+          <span className="mt-1 block text-xs text-amber-800 dark:text-amber-200">Sede inactiva</span>
         ) : null}
       </td>
       <td className="px-5 py-4">
@@ -216,7 +216,7 @@ function UserRow({
               variant="outline"
               size="sm"
               onClick={onEdit}
-              className="border-white/10 bg-white/[0.06] text-slate-200 hover:bg-white/[0.1] hover:text-white"
+              className="border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
             >
               <Pencil />
               Editar
@@ -252,7 +252,7 @@ function StatusAction({
         variant="outline"
         size="sm"
         disabled={isPending || (isCurrentUser && !nextActiveState)}
-        className="border-white/10 bg-white/[0.06] text-slate-200 hover:bg-white/[0.1] hover:text-white"
+        className="border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
       >
         {nextActiveState ? <UserCheck /> : <UserX />}
         {nextActiveState ? "Activar" : "Desactivar"}
@@ -279,12 +279,12 @@ function ResetPasswordForm({ user }: { user: AdminUserRow }) {
           minLength={8}
           placeholder="Nueva password"
           autoComplete="new-password"
-          className="h-8 border-white/10 bg-[#111827]/60 text-xs text-white placeholder:text-slate-500"
+          className="h-8 border-border bg-background/60 text-xs text-foreground placeholder:text-muted-foreground"
         />
         <Button
           type="submit"
           disabled={isPending}
-          className="h-8 border border-[#DA291C]/30 bg-[#DA291C]/12 px-2 text-xs text-[#FFB4AC] hover:bg-[#DA291C]/18"
+          className="h-8 border border-primary/30 bg-primary/12 px-2 text-xs text-brand-emphasis hover:bg-primary/18"
         >
           <KeyRound />
           Reset
@@ -303,8 +303,8 @@ function ActionMessage({ state }: { state: UserActionState }) {
       aria-live="polite"
       className={
         state.status === "success"
-          ? "text-xs font-semibold text-emerald-200"
-          : "text-xs font-semibold text-[#FFB4AC]"
+          ? "text-xs font-semibold text-emerald-700 dark:text-emerald-200"
+          : "text-xs font-semibold text-brand-emphasis"
       }
     >
       {state.message}
@@ -321,14 +321,14 @@ function UserAvatar({ user }: { user: AdminUserRow }) {
       <img
         src={user.photoUrl}
         alt={user.fullName}
-        className="h-10 w-10 rounded-full object-cover ring-2 ring-white/10"
+        className="h-10 w-10 rounded-full object-cover ring-2 ring-border"
         onError={() => setFailed(true)}
       />
     );
   }
 
   return (
-    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#DA291C] text-sm font-black text-white">
+    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-black text-primary-foreground">
       {getInitials(user.fullName)}
     </span>
   );
@@ -342,11 +342,11 @@ function StatusPill({
   tone: "active" | "admin" | "inactive" | "neutral" | "warning";
 }) {
   const className = {
-    active: "border-emerald-400/20 bg-emerald-400/10 text-emerald-200",
-    admin: "border-[#DA291C]/30 bg-[#DA291C]/12 text-[#FFB4AC]",
-    inactive: "border-slate-500/20 bg-slate-500/10 text-slate-300",
-    neutral: "border-white/10 bg-white/[0.06] text-slate-300",
-    warning: "border-yellow-300/20 bg-yellow-300/10 text-yellow-100",
+    active: "border-emerald-400/20 bg-emerald-400/10 text-emerald-700 dark:text-emerald-200",
+    admin: "border-primary/30 bg-primary/12 text-brand-emphasis",
+    inactive: "border-slate-500/20 bg-muted0/10 text-muted-foreground",
+    neutral: "border-border bg-card text-muted-foreground",
+    warning: "border-yellow-300/20 bg-yellow-300/10 text-yellow-800 dark:text-yellow-100",
   }[tone];
 
   return (

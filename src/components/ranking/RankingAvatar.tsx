@@ -49,7 +49,7 @@ export default function RankingAvatar({
     <span
       aria-label={`Sin fotografía para ${fullName}`}
       className={cn(
-        "grid shrink-0 place-items-center rounded-full bg-[#DA291C] font-black text-white ring-1 ring-white/20",
+        "grid shrink-0 place-items-center rounded-full bg-primary font-black text-primary-foreground ring-1 ring-border",
         sizeClasses[size],
         className
       )}

@@ -5,22 +5,22 @@ import { cn } from "@/lib/utils";
 
 const positionStyles = {
   1: {
-    card: "col-span-2 row-start-1 border-amber-300/35 bg-[#182235] lg:col-span-1 lg:col-start-2 lg:min-h-[25rem]",
-    marker: "border-amber-300/40 bg-amber-300/10 text-amber-200",
+    card: "col-span-2 row-start-1 border-amber-300/35 bg-card lg:col-span-1 lg:col-start-2 lg:min-h-[25rem]",
+    marker: "border-amber-300/40 bg-amber-300/10 text-amber-800 dark:text-amber-200",
     ring: "ring-4 ring-amber-300/25",
     size: "hero" as const,
     icon: Trophy,
   },
   2: {
-    card: "col-start-1 row-start-2 border-slate-300/25 bg-[#151f31] lg:row-start-1 lg:min-h-[21rem]",
-    marker: "border-slate-200/30 bg-slate-200/10 text-slate-100",
+    card: "col-start-1 row-start-2 border-border/25 bg-card lg:row-start-1 lg:min-h-[21rem]",
+    marker: "border-border/30 bg-slate-200/10 text-foreground",
     ring: "ring-4 ring-slate-200/15",
     size: "podium" as const,
     icon: Medal,
   },
   3: {
-    card: "col-start-2 row-start-2 border-orange-300/25 bg-[#151f31] lg:col-start-3 lg:row-start-1 lg:min-h-[21rem]",
-    marker: "border-orange-300/30 bg-orange-300/10 text-orange-200",
+    card: "col-start-2 row-start-2 border-orange-300/25 bg-card lg:col-start-3 lg:row-start-1 lg:min-h-[21rem]",
+    marker: "border-orange-300/30 bg-orange-300/10 text-orange-700 dark:text-orange-200",
     ring: "ring-4 ring-orange-300/15",
     size: "podium" as const,
     icon: Medal,
@@ -72,24 +72,24 @@ function PodiumPlace({ advisor }: { advisor: InstalledSalesAdvisor }) {
       />
       <h3
         className={cn(
-          "mt-5 line-clamp-2 font-bold tracking-tight text-white",
+          "mt-5 line-clamp-2 font-bold tracking-tight text-foreground",
           isWinner ? "text-2xl sm:text-3xl" : "text-base sm:text-xl"
         )}
       >
         {advisor.fullName}
       </h3>
-      <p className="mt-2 line-clamp-1 text-xs font-medium text-slate-400 sm:text-sm">
+      <p className="mt-2 line-clamp-1 text-xs font-medium text-muted-foreground sm:text-sm">
         {advisor.branchContext}
       </p>
       <p
         className={cn(
-          "mt-4 font-black tabular-nums text-white",
+          "mt-4 font-black tabular-nums text-foreground",
           isWinner ? "text-4xl sm:text-5xl" : "text-2xl sm:text-3xl"
         )}
       >
         {advisor.installedSales}
       </p>
-      <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-[#FFB4AC] sm:text-sm">
+      <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-brand-emphasis sm:text-sm">
         {advisor.installedSales === 1 ? "venta instalada" : "ventas instaladas"}
       </p>
       <span

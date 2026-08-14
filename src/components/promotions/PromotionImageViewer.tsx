@@ -184,16 +184,16 @@ export function PromotionImageViewer({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="flex h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] max-w-none flex-col gap-0 overflow-hidden rounded-xl border border-white/10 bg-[#070B13] p-0 text-white shadow-[0_32px_100px_rgba(0,0,0,0.72)] sm:max-w-none"
+        className="dark flex h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] max-w-none flex-col gap-0 overflow-hidden rounded-xl border border-border bg-[#070B13] p-0 text-foreground shadow-[0_32px_100px_rgba(0,0,0,0.72)] sm:max-w-none"
       >
-        <header className="flex shrink-0 flex-col gap-3 border-b border-white/10 bg-[#0B1120] px-3 py-3 sm:px-4">
+        <header className="flex shrink-0 flex-col gap-3 border-b border-border bg-header px-3 py-3 sm:px-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <DialogTitle className="truncate text-base font-semibold text-white sm:text-lg">
+              <DialogTitle className="truncate text-base font-semibold text-foreground sm:text-lg">
                 {promotion?.name ?? "Promoción"}
               </DialogTitle>
-              <DialogDescription className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-400 sm:text-sm">
-                <span className="font-semibold text-[#FFB4AC]">
+              <DialogDescription className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:text-sm">
+                <span className="font-semibold text-brand-emphasis">
                   {currentImage?.label ?? "Material oficial"}
                 </span>
                 <span aria-hidden="true">·</span>
@@ -206,7 +206,7 @@ export function PromotionImageViewer({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.06] text-white transition hover:bg-white/[0.12] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC]"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-border bg-card text-foreground transition hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Cerrar visor"
             >
               <X className="h-5 w-5" />
@@ -222,7 +222,7 @@ export function PromotionImageViewer({
               <Minus className="h-4 w-4" />
             </ViewerButton>
             <output
-              className="inline-flex h-9 min-w-16 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] px-2 text-xs font-semibold tabular-nums text-slate-200"
+              className="inline-flex h-9 min-w-16 items-center justify-center rounded-lg border border-border bg-card px-2 text-xs font-semibold tabular-nums text-muted-foreground"
               aria-label={`Zoom ${zoom}%`}
             >
               {zoom}%
@@ -278,7 +278,7 @@ export function PromotionImageViewer({
               <button
                 type="button"
                 onClick={() => goToPage(pageIndex - 1)}
-                className="absolute left-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/65 text-white shadow-lg transition hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC] sm:left-4 sm:h-12 sm:w-12"
+                className="absolute left-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-border bg-black/65 text-foreground shadow-lg transition hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:left-4 sm:h-12 sm:w-12"
                 aria-label="Imagen anterior"
               >
                 <ChevronLeft className="h-6 w-6" />
@@ -286,7 +286,7 @@ export function PromotionImageViewer({
               <button
                 type="button"
                 onClick={() => goToPage(pageIndex + 1)}
-                className="absolute right-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/65 text-white shadow-lg transition hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC] sm:right-4 sm:h-12 sm:w-12"
+                className="absolute right-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-border bg-black/65 text-foreground shadow-lg transition hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:right-4 sm:h-12 sm:w-12"
                 aria-label="Imagen siguiente"
               >
                 <ChevronRight className="h-6 w-6" />
@@ -296,17 +296,17 @@ export function PromotionImageViewer({
         </div>
 
         {hasMultipleImages ? (
-          <footer className="flex shrink-0 items-center justify-center gap-2 border-t border-white/10 bg-[#0B1120] px-3 py-3">
+          <footer className="flex shrink-0 items-center justify-center gap-2 border-t border-border bg-header px-3 py-3">
             {images.map((image, index) => (
               <button
                 key={image.src}
                 type="button"
                 onClick={() => goToPage(index)}
                 className={cn(
-                  "h-9 rounded-lg border px-3 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC]",
+                  "h-9 rounded-lg border px-3 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   index === pageIndex
-                    ? "border-[#DA291C] bg-[#DA291C] text-white"
-                    : "border-white/10 bg-white/[0.05] text-slate-300 hover:bg-white/[0.1]"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-muted-foreground hover:bg-accent"
                 )}
                 aria-current={index === pageIndex ? "page" : undefined}
               >
@@ -340,7 +340,7 @@ function ViewerButton({
       disabled={disabled}
       aria-label={label}
       title={label}
-      className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-2.5 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.12] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC]"
+      className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-card px-2.5 text-xs font-semibold text-muted-foreground transition hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {children}
       {text ? <span className="hidden sm:inline">{text}</span> : null}

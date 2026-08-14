@@ -23,10 +23,10 @@ export function ImportantCondition({
         "rounded-xl border text-sm leading-6",
         compact ? "p-3" : "p-4",
         tone === "warning" &&
-          "border-yellow-200 bg-[#FEF3C7] text-yellow-950",
+          "border-amber-300/40 bg-amber-100 text-amber-900 dark:bg-amber-400/10 dark:text-amber-100",
         tone === "success" &&
-          "border-emerald-200 bg-[#DCFCE7] text-emerald-950",
-        tone === "neutral" && "border-slate-200 bg-slate-50 text-slate-700"
+          "border-emerald-300/40 bg-emerald-100 text-emerald-900 dark:bg-emerald-400/10 dark:text-emerald-100",
+        tone === "neutral" && "border-border bg-muted text-foreground"
       )}
     >
       <div className="flex gap-3">
@@ -35,7 +35,7 @@ export function ImportantCondition({
             "mt-0.5 h-5 w-5 shrink-0",
             tone === "warning" && "text-yellow-700",
             tone === "success" && "text-emerald-700",
-            tone === "neutral" && "text-[#DA291C]"
+            tone === "neutral" && "text-primary"
           )}
         />
         <div>

@@ -138,18 +138,13 @@ export async function requireAdvisor() {
 export async function requireRankingAccess() {
   const user = await requireUser();
 
-  if (user.role === "ADMIN") {
-    return {
-      user,
-      scope: { kind: "GLOBAL" } as const,
-    };
+  if (user.role !== "ADMIN") {
+    assertActiveBranch(user);
   }
-
-  assertActiveBranch(user);
 
   return {
     user,
-    scope: { kind: "BRANCH", branchId: user.branchId } as const,
+    scope: { kind: "GLOBAL" } as const,
   };
 }
 

@@ -61,7 +61,7 @@ export function LoginForm() {
 
   return (
     <form className="grid gap-4" noValidate onSubmit={handleSubmit}>
-      <label className="grid gap-2 text-sm font-semibold text-slate-700">
+      <label className="grid gap-2 text-sm font-semibold text-foreground">
         Usuario o DNI
         <Input
           name="identifier"
@@ -70,11 +70,11 @@ export function LoginForm() {
           placeholder="Ingresa tu usuario o DNI"
           aria-invalid={Boolean(error)}
           disabled={isSubmitting}
-          className="h-12 rounded-lg border-slate-200 bg-white/[0.85] text-[#111827] shadow-inner shadow-slate-950/[0.03] transition focus-visible:border-[#DA291C] focus-visible:ring-[#DA291C]/20"
+          className="h-12 rounded-lg bg-background/80 text-foreground shadow-inner transition"
         />
       </label>
 
-      <label className="grid gap-2 text-sm font-semibold text-slate-700">
+      <label className="grid gap-2 text-sm font-semibold text-foreground">
         Contraseña
         <Input
           name="password"
@@ -83,14 +83,14 @@ export function LoginForm() {
           placeholder="Ingresa tu contraseña"
           aria-invalid={Boolean(error)}
           disabled={isSubmitting}
-          className="h-12 rounded-lg border-slate-200 bg-white/[0.85] text-[#111827] shadow-inner shadow-slate-950/[0.03] transition focus-visible:border-[#DA291C] focus-visible:ring-[#DA291C]/20"
+          className="h-12 rounded-lg bg-background/80 text-foreground shadow-inner transition"
         />
       </label>
 
       {error ? (
         <p
           aria-live="polite"
-          className="rounded-lg border border-[#DA291C]/20 bg-[#DA291C]/[0.08] px-3 py-2 text-sm font-medium leading-5 text-[#B91F15]"
+          className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm font-medium leading-5 text-destructive"
         >
           {error}
         </p>
@@ -99,7 +99,7 @@ export function LoginForm() {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="mt-1 h-12 rounded-lg bg-[#DA291C] text-white shadow-[0_16px_30px_rgba(218,41,28,0.26)] transition hover:bg-[#B91F15] hover:shadow-[0_18px_36px_rgba(185,31,21,0.30)] disabled:cursor-not-allowed disabled:opacity-70"
+        className="mt-1 h-12 rounded-lg bg-primary text-primary-foreground shadow-lg transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
       </Button>

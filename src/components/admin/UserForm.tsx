@@ -114,13 +114,13 @@ export default function UserForm({
         required
       />
 
-      <label className="grid gap-2 text-sm font-semibold text-slate-200">
+      <label className="grid gap-2 text-sm font-semibold text-muted-foreground">
         Rol
         <select
           name="role"
           value={role}
           onChange={(event) => setRole(event.target.value as UserRoleValue)}
-          className="h-10 rounded-md border border-white/10 bg-[#111827]/70 px-3 text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C]/60"
+          className="h-10 rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
         >
           {USER_ROLE_VALUES.map((value) => (
             <option key={value} value={value}>
@@ -129,26 +129,26 @@ export default function UserForm({
           ))}
         </select>
         {fieldError(state, "role") ? (
-          <span className="text-xs font-medium text-[#FFB4AC]">
+          <span className="text-xs font-medium text-brand-emphasis">
             {fieldError(state, "role")}
           </span>
         ) : null}
       </label>
 
       {role === "ADMIN" ? (
-        <div className="grid content-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-slate-400">
+        <div className="grid content-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
           <input type="hidden" name="branchId" value="" />
-          <span className="font-semibold text-slate-200">Sede</span>
+          <span className="font-semibold text-muted-foreground">Sede</span>
           <span>El administrador tiene alcance global.</span>
         </div>
       ) : (
-        <label className="grid gap-2 text-sm font-semibold text-slate-200">
+        <label className="grid gap-2 text-sm font-semibold text-muted-foreground">
           Sede
           <select
             name="branchId"
             defaultValue={user?.branchId ?? ""}
             required={role === "SUPERVISOR" || !keepsLegacyBranchlessAdvisor}
-            className="h-10 rounded-md border border-white/10 bg-[#111827]/70 px-3 text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C]/60"
+            className="h-10 rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
           >
             <option value="">
               {keepsLegacyBranchlessAdvisor
@@ -163,7 +163,7 @@ export default function UserForm({
             ))}
           </select>
           {fieldError(state, "branchId") ? (
-            <span className="text-xs font-medium text-[#FFB4AC]">
+            <span className="text-xs font-medium text-brand-emphasis">
               {fieldError(state, "branchId")}
             </span>
           ) : null}
@@ -188,7 +188,7 @@ export default function UserForm({
         />
       )}
 
-      <div className="grid content-end gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
+      <div className="grid content-end gap-3 rounded-lg border border-border bg-background/55 p-3">
         <ToggleField
           label="Cuenta activa"
           name="isActive"
@@ -201,8 +201,8 @@ export default function UserForm({
           aria-live="polite"
           className={
             state.status === "success"
-              ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-200 sm:col-span-2"
-              : "rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 py-2 text-sm font-semibold text-[#FFB4AC] sm:col-span-2"
+              ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-200 sm:col-span-2"
+              : "rounded-md border border-primary/25 bg-primary/12 px-3 py-2 text-sm font-semibold text-brand-emphasis sm:col-span-2"
           }
         >
           {state.message}
@@ -213,7 +213,7 @@ export default function UserForm({
         <Button
           type="submit"
           disabled={isPending}
-          className="h-10 bg-[#DA291C] text-white hover:bg-[#B91F15]"
+          className="h-10 bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <Save />
           {isPending
@@ -243,19 +243,19 @@ function PhotoUploadField({
   const initials = currentFullName ? getInitials(currentFullName) : null;
 
   return (
-    <div className="grid gap-2 text-sm font-semibold text-slate-200 sm:col-span-2">
+    <div className="grid gap-2 text-sm font-semibold text-muted-foreground sm:col-span-2">
       <span>URL de foto</span>
-      <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
+      <div className="flex items-center gap-3 rounded-lg border border-border bg-background/55 p-3">
         {currentPhotoUrl && !imageFailed ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={currentPhotoUrl}
             alt={currentFullName || "Foto actual"}
-            className="h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
+            className="h-12 w-12 rounded-full object-cover ring-2 ring-border"
             onError={() => setFailedUrl(currentPhotoUrl)}
           />
         ) : (
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#DA291C] text-sm font-black text-white">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-primary text-sm font-black text-primary-foreground">
             {initials ?? <ImageIcon className="h-5 w-5" />}
           </span>
         )}
@@ -266,9 +266,9 @@ function PhotoUploadField({
             onChange={(event) => onPhotoUrlChange(event.target.value)}
             placeholder="Pega la URL publica de Vercel Blob"
             aria-invalid={Boolean(urlError)}
-            className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
+            className="h-10 border-border bg-background/55 text-foreground placeholder:text-muted-foreground"
           />
-          <p className="mt-1 text-xs leading-5 text-slate-500">
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Acepta https://... o /usuarios/archivo.jpg como fallback legacy.
           </p>
         </div>
@@ -278,14 +278,14 @@ function PhotoUploadField({
           href={currentPhotoUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-[#FFB4AC] underline-offset-4 hover:underline"
+          className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-brand-emphasis underline-offset-4 hover:underline"
         >
           <ExternalLink className="h-3.5 w-3.5" />
           Abrir foto
         </a>
       ) : null}
       {urlError ? (
-        <span className="text-xs font-medium text-[#FFB4AC]">{urlError}</span>
+        <span className="text-xs font-medium text-brand-emphasis">{urlError}</span>
       ) : null}
     </div>
   );
@@ -311,7 +311,7 @@ function AdminField({
   type?: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-semibold text-slate-200">
+    <label className="grid gap-2 text-sm font-semibold text-muted-foreground">
       {label}
       <Input
         name={name}
@@ -321,10 +321,10 @@ function AdminField({
         placeholder={placeholder}
         autoComplete={autoComplete}
         aria-invalid={Boolean(error)}
-        className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
+        className="h-10 border-border bg-background/55 text-foreground placeholder:text-muted-foreground"
       />
       {error ? (
-        <span className="text-xs font-medium text-[#FFB4AC]">{error}</span>
+        <span className="text-xs font-medium text-brand-emphasis">{error}</span>
       ) : null}
     </label>
   );
@@ -340,7 +340,7 @@ function ToggleField({
   name: string;
 }) {
   return (
-    <label className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-semibold text-slate-200">
+    <label className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm font-semibold text-muted-foreground">
       {label}
       <input
         name={name}

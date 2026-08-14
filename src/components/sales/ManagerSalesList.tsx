@@ -29,20 +29,20 @@ export default function ManagerSalesList({
 
   return (
     <section aria-label="Listado de ventas">
-      <div className="hidden overflow-hidden rounded-lg border border-white/10 bg-white/[0.05] md:block">
+      <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
         <Table>
-          <TableHeader className="bg-white/[0.05]">
-            <TableRow className="border-white/10 hover:bg-transparent">
-              <TableHead className="text-slate-300">Fecha</TableHead>
+          <TableHeader className="bg-card">
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground">Fecha</TableHead>
               {showBranch ? (
-                <TableHead className="text-slate-300">Sede</TableHead>
+                <TableHead className="text-muted-foreground">Sede</TableHead>
               ) : null}
-              <TableHead className="text-slate-300">Asesor</TableHead>
-              <TableHead className="text-slate-300">DNI cliente</TableHead>
-              <TableHead className="text-slate-300">Cliente</TableHead>
-              <TableHead className="text-slate-300">Servicio</TableHead>
-              <TableHead className="text-slate-300">Estado</TableHead>
-              <TableHead className="text-right text-slate-300">
+              <TableHead className="text-muted-foreground">Asesor</TableHead>
+              <TableHead className="text-muted-foreground">DNI cliente</TableHead>
+              <TableHead className="text-muted-foreground">Cliente</TableHead>
+              <TableHead className="text-muted-foreground">Servicio</TableHead>
+              <TableHead className="text-muted-foreground">Estado</TableHead>
+              <TableHead className="text-right text-muted-foreground">
                 Acciones
               </TableHead>
             </TableRow>
@@ -51,7 +51,7 @@ export default function ManagerSalesList({
             {sales.map((sale) => (
               <TableRow
                 key={sale.id}
-                className="border-white/10 text-slate-200 hover:bg-white/[0.04]"
+                className="border-border text-muted-foreground hover:bg-card"
               >
                 <TableCell>{formatSaleDate(sale.saleDate)}</TableCell>
                 {showBranch ? <TableCell>{sale.branchName}</TableCell> : null}
@@ -71,7 +71,7 @@ export default function ManagerSalesList({
                 <TableCell>
                   <span className="block max-w-48 truncate">{sale.service}</span>
                   {sale.planName ? (
-                    <span className="mt-0.5 block max-w-48 truncate text-xs text-slate-500">
+                    <span className="mt-0.5 block max-w-48 truncate text-xs text-muted-foreground">
                       {sale.planName}
                     </span>
                   ) : null}
@@ -92,14 +92,14 @@ export default function ManagerSalesList({
         {sales.map((sale) => (
           <article
             key={sale.id}
-            className="rounded-lg border border-white/10 bg-white/[0.06] p-4"
+            className="rounded-lg border border-border bg-card p-4"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="truncate font-semibold text-white">
+                <p className="truncate font-semibold text-foreground">
                   {sale.customerName}
                 </p>
-                <p className="mt-1 font-mono text-xs text-slate-400">
+                <p className="mt-1 font-mono text-xs text-muted-foreground">
                   DNI {sale.customerDni}
                 </p>
               </div>
@@ -131,21 +131,21 @@ export default function ManagerSalesList({
 function SaleDetail({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <dt className="text-xs uppercase tracking-[0.08em] text-slate-500">
+      <dt className="text-xs uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </dt>
-      <dd className="mt-1 break-words text-slate-200">{value}</dd>
+      <dd className="mt-1 break-words text-muted-foreground">{value}</dd>
     </div>
   );
 }
 
 function SalesEmptyState() {
   return (
-    <div className="grid min-h-52 place-items-center rounded-lg border border-dashed border-white/15 bg-white/[0.035] p-6 text-center">
+    <div className="grid min-h-52 place-items-center rounded-lg border border-dashed border-border bg-card p-6 text-center">
       <div>
-        <FileSearch className="mx-auto size-8 text-slate-500" aria-hidden="true" />
-        <p className="mt-3 font-semibold text-white">No hay ventas para mostrar</p>
-        <p className="mt-1 text-sm text-slate-400">
+        <FileSearch className="mx-auto size-8 text-muted-foreground" aria-hidden="true" />
+        <p className="mt-3 font-semibold text-foreground">No hay ventas para mostrar</p>
+        <p className="mt-1 text-sm text-muted-foreground">
           Ajusta los filtros o registra la primera venta.
         </p>
       </div>

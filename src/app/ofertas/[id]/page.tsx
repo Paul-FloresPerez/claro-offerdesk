@@ -45,11 +45,11 @@ export default async function OfertaDetallePage({
 
   return (
     <main className="relative">
-      <section className="relative overflow-hidden border-b border-white/10">
+      <section className="relative overflow-hidden border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
           <Link
             href="/promociones"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.08] px-5 text-sm font-semibold text-white transition hover:bg-white/[0.13]"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-border bg-accent px-5 text-sm font-semibold text-foreground transition hover:bg-accent"
           >
             <ArrowLeft className="h-5 w-5" />
             Volver a promociones
@@ -65,22 +65,22 @@ export default async function OfertaDetallePage({
                 ))}
               </div>
 
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 {oferta.nombre}
               </h1>
-              <p className="mt-3 max-w-3xl text-base leading-7 text-slate-300">
+              <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">
                 {oferta.resumen}
               </p>
             </div>
 
-            <div className="rounded-lg border border-white/10 bg-[#172033] p-4 shadow-[0_18px_42px_rgba(0,0,0,0.26)]">
-              <p className="text-sm font-medium text-slate-300">
+            <div className="rounded-lg border border-border bg-card p-4 shadow-[0_18px_42px_rgba(0,0,0,0.26)]">
+              <p className="text-sm font-medium text-muted-foreground">
                 Condición comercial
               </p>
-              <p className="mt-1 text-3xl font-bold text-[#FFB4AC]">
+              <p className="mt-1 text-3xl font-bold text-brand-emphasis">
                 {oferta.precio}
               </p>
-              <p className="mt-2 text-sm leading-6 text-slate-300">
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 {oferta.detallePrecio}
               </p>
             </div>
@@ -132,7 +132,7 @@ export default async function OfertaDetallePage({
             </Panel>
           ) : cityNote ? (
             <Panel title="Ciudades / zonas aplicables" icon={MapPinned}>
-              <p className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+              <p className="rounded-lg border border-border bg-muted p-4 text-sm leading-6 text-foreground">
                 {cityNote}
               </p>
             </Panel>
@@ -183,24 +183,24 @@ export default async function OfertaDetallePage({
                 {oferta.variantes.map((variante) => (
                   <div
                     key={`${variante.nombre}-${variante.precio}`}
-                    className="rounded-lg border border-slate-200 bg-slate-50 p-3"
+                    className="rounded-lg border border-border bg-muted p-3"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-semibold text-[#111827]">
+                        <p className="font-semibold text-foreground">
                           {variante.nombre}
                         </p>
                         {variante.velocidad ? (
-                          <p className="mt-1 text-sm text-slate-600">
+                          <p className="mt-1 text-sm text-muted-foreground">
                             {variante.velocidad}
                           </p>
                         ) : null}
                       </div>
-                      <p className="shrink-0 text-lg font-bold text-[#DA291C]">
+                      <p className="shrink-0 text-lg font-bold text-primary">
                         {variante.precio}
                       </p>
                     </div>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {[variante.detalle, variante.luego]
                         .filter(Boolean)
                         .join(" ")}
@@ -212,7 +212,7 @@ export default async function OfertaDetallePage({
           ) : null}
 
           <Panel title="Condiciones comerciales" icon={FileText}>
-            <p className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm font-medium leading-6 text-slate-800">
+            <p className="rounded-lg border border-border bg-muted p-4 text-sm font-medium leading-6 text-foreground">
               {oferta.detallePrecio}
             </p>
           </Panel>
@@ -230,7 +230,7 @@ export default async function OfertaDetallePage({
           </Panel>
 
           <Panel title="Frase sugerida de venta" icon={FileText}>
-            <p className="rounded-lg border border-red-100 bg-red-50 p-4 text-sm leading-6 text-[#7F1D1D]">
+            <p className="rounded-lg border border-primary/15 bg-primary/10 p-4 text-sm leading-6 text-brand-emphasis">
               {oferta.fraseVenta}
             </p>
           </Panel>
@@ -254,8 +254,8 @@ function Panel({
   return (
     <section
       className={cn(
-        "animate-fade-up rounded-lg border bg-white p-4 text-[#111827] shadow-[0_18px_42px_rgba(0,0,0,0.20)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_56px_rgba(0,0,0,0.24)] sm:p-5",
-        tone === "warning" ? "border-yellow-200" : "border-white/70"
+        "animate-fade-up rounded-lg border bg-card p-4 text-foreground shadow-[0_18px_42px_rgba(0,0,0,0.20)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_56px_rgba(0,0,0,0.24)] sm:p-5",
+        tone === "warning" ? "border-yellow-200" : "border-border"
       )}
     >
       <div className="mb-4 flex items-center gap-3">
@@ -263,13 +263,13 @@ function Panel({
           className={cn(
             "grid h-10 w-10 place-items-center rounded-md",
             tone === "warning"
-              ? "bg-[#FEF3C7] text-yellow-700"
-              : "bg-red-50 text-[#DA291C]"
+              ? "bg-amber-100 text-amber-800 dark:bg-amber-400/10 dark:text-amber-200"
+              : "bg-primary/10 text-primary"
           )}
         >
           <Icon className="h-5 w-5" />
         </span>
-        <h2 className="text-lg font-semibold text-[#111827]">{title}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{title}</h2>
       </div>
       {children}
     </section>
@@ -290,8 +290,8 @@ function Fact({
   const isValidationBadge = value.startsWith("Validar");
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-      <div className="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500">
+    <div className="rounded-lg border border-border bg-muted p-3">
+      <div className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
         <Icon className="h-4 w-4" />
         {label}
       </div>
@@ -304,8 +304,8 @@ function Fact({
           className={cn(
             "leading-6",
             strong
-              ? "text-lg font-bold text-[#DA291C]"
-              : "text-sm font-semibold text-[#111827]"
+              ? "text-lg font-bold text-primary"
+              : "text-sm font-semibold text-foreground"
           )}
         >
           {value}
@@ -319,7 +319,7 @@ function BulletList({ items, icon }: { items: string[]; icon: "check" | "alert" 
   return (
     <ul className="space-y-3">
       {items.map((item) => (
-        <li key={item} className="flex gap-3 text-sm leading-6 text-slate-700">
+        <li key={item} className="flex gap-3 text-sm leading-6 text-foreground">
           {icon === "check" ? (
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
           ) : (

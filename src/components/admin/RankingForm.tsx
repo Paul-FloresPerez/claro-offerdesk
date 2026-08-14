@@ -80,19 +80,19 @@ export default function RankingForm({
     <section
       className={
         compact
-          ? "rounded-lg border border-white/10 bg-[#111827]/55 p-4"
-          : "rounded-lg border border-white/10 bg-white/[0.07] p-5"
+          ? "rounded-lg border border-border bg-background/55 p-4"
+          : "rounded-lg border border-border bg-card p-5"
       }
     >
       <div className="mb-5 flex items-center gap-3">
-        <span className="grid h-10 w-10 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
+        <span className="grid h-10 w-10 place-items-center rounded-md bg-primary/15 text-brand-emphasis">
           <ListPlus className="h-5 w-5" />
         </span>
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-white">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
             {isEdit ? "Editar registro" : "Registro de ventas"}
           </h2>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-muted-foreground">
             {isEdit
               ? "Actualiza resultados, usuario y periodo. El puesto se recalcula solo."
               : "Registra resultados; el puesto se calcula automáticamente."}
@@ -103,13 +103,13 @@ export default function RankingForm({
       <form ref={formRef} action={formAction} className="grid gap-4 lg:grid-cols-3">
         {isEdit ? <input type="hidden" name="id" value={ranking?.id} /> : null}
 
-        <label className="grid gap-2 text-sm font-semibold text-slate-200 lg:col-span-3">
+        <label className="grid gap-2 text-sm font-semibold text-muted-foreground lg:col-span-3">
           Usuario vinculado
           <select
             name="userId"
             value={selectedUserId}
             onChange={(event) => handleUserChange(event.target.value)}
-            className="h-10 rounded-md border border-white/10 bg-[#111827]/55 px-2.5 text-sm text-white outline-none transition focus:border-[#DA291C] focus:ring-2 focus:ring-[#DA291C]/20"
+            className="h-10 rounded-md border border-border bg-background/55 px-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20"
           >
             <option value="">Selecciona un usuario activo</option>
             {selectedUserId && !selectedUser ? (
@@ -124,11 +124,11 @@ export default function RankingForm({
             ))}
           </select>
           {fieldError(state, "userId") ? (
-            <span className="text-xs font-medium text-[#FFB4AC]">
+            <span className="text-xs font-medium text-brand-emphasis">
               {fieldError(state, "userId")}
             </span>
           ) : selectedUser ? (
-            <span className="text-xs font-medium text-slate-500">
+            <span className="text-xs font-medium text-muted-foreground">
               El ranking usara nombre, sede y foto del usuario seleccionado.
             </span>
           ) : null}
@@ -174,27 +174,27 @@ export default function RankingForm({
           min="0"
         />
 
-        <label className="grid gap-2 text-sm font-semibold text-slate-200 lg:col-span-2">
+        <label className="grid gap-2 text-sm font-semibold text-muted-foreground lg:col-span-2">
           Nota
           <textarea
             name="note"
             defaultValue={ranking?.note ?? ""}
             rows={3}
-            className="min-h-20 rounded-md border border-white/10 bg-[#111827]/55 px-2.5 py-2 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#DA291C] focus:ring-2 focus:ring-[#DA291C]/20"
+            className="min-h-20 rounded-md border border-border bg-background/55 px-2.5 py-2 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/20"
             placeholder="Reconocimiento, comentario o detalle del periodo"
           />
           {fieldError(state, "note") ? (
-            <span className="text-xs font-medium text-[#FFB4AC]">
+            <span className="text-xs font-medium text-brand-emphasis">
               {fieldError(state, "note")}
             </span>
           ) : null}
         </label>
 
-        <div className="grid content-start gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3">
-          <p className="text-xs leading-5 text-slate-500">
+        <div className="grid content-start gap-3 rounded-lg border border-border bg-background/55 p-3">
+          <p className="text-xs leading-5 text-muted-foreground">
             Nombre, sede y foto se toman del perfil del usuario activo.
           </p>
-          <label className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-semibold text-slate-200">
+          <label className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm font-semibold text-muted-foreground">
             Activo
             <input
               name="isActive"
@@ -210,8 +210,8 @@ export default function RankingForm({
             aria-live="polite"
             className={
               state.status === "success"
-                ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-200 lg:col-span-3"
-                : "rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 py-2 text-sm font-semibold text-[#FFB4AC] lg:col-span-3"
+                ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-200 lg:col-span-3"
+                : "rounded-md border border-primary/25 bg-primary/12 px-3 py-2 text-sm font-semibold text-brand-emphasis lg:col-span-3"
             }
           >
             {state.message}
@@ -222,7 +222,7 @@ export default function RankingForm({
           <Button
             type="submit"
             disabled={isPending}
-            className="h-10 bg-[#DA291C] text-white hover:bg-[#B91F15]"
+            className="h-10 bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Save className="h-4 w-4" />
             {isPending
@@ -257,7 +257,7 @@ function AdminField({
   type?: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-semibold text-slate-200">
+    <label className="grid gap-2 text-sm font-semibold text-muted-foreground">
       {label}
       <Input
         name={name}
@@ -267,9 +267,9 @@ function AdminField({
         defaultValue={defaultValue}
         placeholder={placeholder}
         aria-invalid={Boolean(error)}
-        className="h-10 border-white/10 bg-[#111827]/55 text-white placeholder:text-slate-500"
+        className="h-10 border-border bg-background/55 text-foreground placeholder:text-muted-foreground"
       />
-      {error ? <span className="text-xs font-medium text-[#FFB4AC]">{error}</span> : null}
+      {error ? <span className="text-xs font-medium text-brand-emphasis">{error}</span> : null}
     </label>
   );
 }
@@ -292,20 +292,20 @@ function UserPreview({
   const photoUrl = selectedUser?.photoUrl ?? fallbackPhotoUrl;
 
   return (
-    <div className="grid gap-3 rounded-lg border border-white/10 bg-[#111827]/55 p-3 lg:col-span-3">
+    <div className="grid gap-3 rounded-lg border border-border bg-background/55 p-3 lg:col-span-3">
       <PhotoPreview
         fullName={fullName}
         photoUrl={photoUrl ?? ""}
         previewFailed={previewFailed}
         onError={onError}
       />
-      <div className="grid gap-1 text-sm text-slate-300">
+      <div className="grid gap-1 text-sm text-muted-foreground">
         <p>
-          <span className="font-semibold text-white">Nombre:</span>{" "}
+          <span className="font-semibold text-foreground">Nombre:</span>{" "}
           {fullName || "Selecciona un usuario"}
         </p>
         <p>
-          <span className="font-semibold text-white">Sede:</span>{" "}
+          <span className="font-semibold text-foreground">Sede:</span>{" "}
           {branchName || "Sin sede registrada"}
         </p>
       </div>
@@ -330,12 +330,12 @@ function PhotoPreview({
         <img
           src={photoUrl}
           alt={fullName || "Preview de asesor"}
-          className="h-14 w-14 rounded-full object-cover ring-2 ring-white/10"
+          className="h-14 w-14 rounded-full object-cover ring-2 ring-border"
           onError={onError}
         />
         <div>
-          <p className="text-sm font-semibold text-white">Preview de foto</p>
-          <p className="mt-1 max-w-44 truncate text-xs text-slate-500">{photoUrl}</p>
+          <p className="text-sm font-semibold text-foreground">Preview de foto</p>
+          <p className="mt-1 max-w-44 truncate text-xs text-muted-foreground">{photoUrl}</p>
         </div>
       </div>
     );
@@ -343,12 +343,12 @@ function PhotoPreview({
 
   return (
     <div className="flex items-center gap-3">
-      <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#DA291C] text-sm font-black text-white">
+      <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-primary text-sm font-black text-primary-foreground">
         {fullName ? getInitials(fullName) : <ImageIcon className="h-5 w-5" />}
       </span>
       <div>
-        <p className="text-sm font-semibold text-white">Avatar por iniciales</p>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="text-sm font-semibold text-foreground">Avatar por iniciales</p>
+        <p className="mt-1 text-xs text-muted-foreground">
           La foto viene del perfil del usuario.
         </p>
       </div>

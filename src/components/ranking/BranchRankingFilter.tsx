@@ -12,15 +12,15 @@ export default function BranchRankingFilter({
   return (
     <form
       action="/top-ventas"
-      className="flex w-full flex-col gap-3 rounded-xl border border-white/10 bg-white/[0.06] p-4 sm:flex-row sm:items-end lg:w-auto lg:min-w-[30rem]"
+      className="flex w-full flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-end lg:w-auto lg:min-w-[30rem]"
     >
-      <label className="grid flex-1 gap-2 text-sm font-semibold text-slate-200">
+      <label className="grid flex-1 gap-2 text-sm font-semibold text-muted-foreground">
         Sede
         <span className="relative">
           <select
             name="branchId"
             defaultValue={selectedBranchId ?? ""}
-            className="h-11 w-full appearance-none rounded-lg border border-white/15 bg-[#111827] px-3 pr-10 text-sm font-medium text-white outline-none transition focus-visible:border-[#DA291C] focus-visible:ring-3 focus-visible:ring-[#DA291C]/25"
+            className="h-11 w-full appearance-none rounded-lg border border-border bg-background px-3 pr-10 text-sm font-medium text-foreground outline-none transition focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-ring/25"
           >
             <option value="">Todas las sedes</option>
             {branches.map((branch) => (
@@ -32,13 +32,13 @@ export default function BranchRankingFilter({
           </select>
           <SlidersHorizontal
             aria-hidden="true"
-            className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
           />
         </span>
       </label>
       <Button
         type="submit"
-        className="h-11 bg-[#DA291C] px-5 font-bold text-white hover:bg-[#C52218]"
+        className="h-11 bg-primary px-5 font-bold text-primary-foreground hover:bg-primary/90"
       >
         Aplicar filtro
       </Button>

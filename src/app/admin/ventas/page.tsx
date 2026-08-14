@@ -96,10 +96,10 @@ export default async function AdminSalesPage({
 
         <section>
           <div className="mb-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#FF8D83]">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-emphasis">
               Alcance global
             </p>
-            <h2 className="mt-1 text-xl font-semibold text-white sm:text-2xl">
+            <h2 className="mt-1 text-xl font-semibold text-foreground sm:text-2xl">
               Ventas registradas
             </h2>
           </div>

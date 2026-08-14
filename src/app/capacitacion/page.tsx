@@ -61,9 +61,9 @@ export default async function CapacitacionPage() {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-24 rounded-lg border border-white/10 bg-white/[0.045] px-3 py-2 text-right">
-      <p className="text-xl font-bold tracking-tight text-white">{value}</p>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-400">
+    <div className="min-w-24 rounded-lg border border-border bg-card px-3 py-2 text-right">
+      <p className="text-xl font-bold tracking-tight text-foreground">{value}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
         {label}
       </p>
     </div>

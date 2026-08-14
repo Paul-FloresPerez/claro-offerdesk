@@ -57,17 +57,17 @@ export function OfficialImage({
     return (
       <div
         className={cn(
-          "flex min-h-52 items-center justify-center rounded-lg border border-dashed border-neutral-300 bg-[linear-gradient(135deg,#fff,#f4f4f5)] text-neutral-500",
+          "flex min-h-52 items-center justify-center rounded-lg border border-dashed border-border bg-muted text-muted-foreground",
           frameClass,
           className
         )}
       >
         <div className="flex flex-col items-center gap-2 text-center text-sm">
-          <span className="grid h-11 w-11 place-items-center rounded-md bg-white text-[#DA291C] shadow-sm ring-1 ring-neutral-200">
+          <span className="grid h-11 w-11 place-items-center rounded-md bg-card text-primary shadow-sm ring-1 ring-border">
             <ImageIcon className="h-5 w-5" />
           </span>
           <span className="font-medium">Imagen oficial pendiente</span>
-          <span className="max-w-52 text-xs leading-5 text-neutral-500">
+          <span className="max-w-52 text-xs leading-5 text-muted-foreground">
             Cargar material oficial para mostrar esta oferta.
           </span>
         </div>
@@ -102,9 +102,9 @@ export function OfficialImage({
     <figure className={cn("space-y-2", className)}>
       <div
         className={cn(
-          "group/image relative overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-[0_12px_28px_rgba(15,23,42,0.08)] transition duration-300",
+          "group/image relative overflow-hidden rounded-lg border border-border bg-card shadow-[0_12px_28px_rgba(15,23,42,0.08)] transition duration-300",
           interactive &&
-            "cursor-zoom-in border-[#DA291C]/25 group-hover:border-[#DA291C]/45 group-hover:shadow-[0_18px_44px_rgba(218,41,28,0.14)]",
+            "cursor-zoom-in border-primary/25 group-hover:border-primary/45 group-hover:shadow-[0_18px_44px_rgba(218,41,28,0.14)]",
           frameClass
         )}
       >
@@ -134,9 +134,9 @@ export function OfficialImage({
         )}
       </div>
       {showCaption ? (
-        <figcaption className="text-xs leading-5 text-neutral-500">
+        <figcaption className="text-xs leading-5 text-muted-foreground">
           {captionTitle ? (
-            <span className="font-semibold text-neutral-700">{captionTitle}</span>
+            <span className="font-semibold text-muted-foreground">{captionTitle}</span>
           ) : null}
           {captionTitle && captionDescription ? " · " : null}
           {captionDescription}

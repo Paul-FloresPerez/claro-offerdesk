@@ -75,11 +75,11 @@ function DashboardFilters({
   return (
     <section
       aria-labelledby="dashboard-filters-title"
-      className="rounded-xl border border-white/10 bg-[#0D1525]/75 p-4 sm:p-5"
+      className="rounded-xl border border-border bg-card p-4 sm:p-5"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 text-[#FFB4AC]">
+          <div className="flex items-center gap-2 text-brand-emphasis">
             <Filter className="size-4" aria-hidden="true" />
             <h2
               id="dashboard-filters-title"
@@ -88,12 +88,12 @@ function DashboardFilters({
               Vista comercial
             </h2>
           </div>
-          <p className="mt-2 text-sm text-slate-300">
+          <p className="mt-2 text-sm text-muted-foreground">
             {data.scopeLabel} · {data.filters.rangeLabel}
           </p>
         </div>
-        <span className="inline-flex w-fit items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-medium text-slate-300">
-          <CalendarDays className="size-3.5 text-[#FFB4AC]" aria-hidden="true" />
+        <span className="inline-flex w-fit items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground">
+          <CalendarDays className="size-3.5 text-brand-emphasis" aria-hidden="true" />
           Datos por fecha de venta
         </span>
       </div>
@@ -161,17 +161,17 @@ function DashboardFilters({
 
         <Button
           type="submit"
-          className="h-11 bg-[#DA291C] px-5 text-white hover:bg-[#C52218]"
+          className="h-11 bg-primary px-5 text-primary-foreground hover:bg-primary/90"
         >
           Aplicar filtros
         </Button>
       </form>
 
-      <div className="mt-3 flex flex-col gap-2 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-3 flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>Las fechas se usan al elegir “Rango personalizado”.</p>
         <Link
           href={basePath}
-          className="w-fit font-semibold text-slate-300 underline-offset-4 hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C]/60"
+          className="w-fit font-semibold text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
         >
           Restablecer vista
         </Link>
@@ -180,7 +180,7 @@ function DashboardFilters({
       {data.filters.warning ? (
         <p
           role="status"
-          className="mt-3 rounded-md border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-sm text-amber-100"
+          className="mt-3 rounded-md border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-100"
         >
           {data.filters.warning}
         </p>
@@ -200,7 +200,7 @@ function FilterField({
 }) {
   return (
     <label htmlFor={htmlFor} className="block min-w-0">
-      <span className="mb-1.5 block text-xs font-semibold text-slate-400">
+      <span className="mb-1.5 block text-xs font-semibold text-muted-foreground">
         {label}
       </span>
       {children}
@@ -209,7 +209,7 @@ function FilterField({
 }
 
 const fieldClassName =
-  "h-11 w-full min-w-0 rounded-md border border-white/10 bg-[#111827] px-3 text-sm text-white outline-none transition focus:border-[#DA291C]/70 focus:ring-2 focus:ring-[#DA291C]/25 [color-scheme:dark]";
+  "h-11 w-full min-w-0 rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none transition focus:border-primary/70 focus:ring-2 focus:ring-ring/25 [color-scheme:dark]";
 
 function KpiBand({ kpis }: { kpis: SalesDashboardKpis }) {
   const items: Array<{
@@ -224,28 +224,28 @@ function KpiBand({ kpis }: { kpis: SalesDashboardKpis }) {
       value: kpis.installed,
       helper: "Ventas completadas",
       icon: CheckCircle2,
-      tone: "text-emerald-300 bg-emerald-400/10",
+      tone: "text-emerald-700 dark:text-emerald-300 bg-emerald-400/10",
     },
     {
       label: "Pendientes",
       value: kpis.pending,
       helper: "Requieren seguimiento",
       icon: Clock3,
-      tone: "text-amber-300 bg-amber-400/10",
+      tone: "text-amber-800 dark:text-amber-300 bg-amber-400/10",
     },
     {
       label: "Rechazadas",
       value: kpis.rejected,
       helper: "No instaladas",
       icon: XCircle,
-      tone: "text-rose-300 bg-rose-400/10",
+      tone: "text-rose-700 dark:text-rose-300 bg-rose-400/10",
     },
     {
       label: "Total",
       value: kpis.total,
       helper: "Todas las ventas",
       icon: ListChecks,
-      tone: "text-sky-300 bg-sky-400/10",
+      tone: "text-sky-700 dark:text-sky-300 bg-sky-400/10",
     },
   ];
 
@@ -257,14 +257,14 @@ function KpiBand({ kpis }: { kpis: SalesDashboardKpis }) {
       {items.map((item) => (
         <article
           key={item.label}
-          className="min-w-0 rounded-xl border border-white/10 bg-white/[0.055] p-4 sm:p-5"
+          className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-5"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                 {item.label}
               </p>
-              <p className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 {item.value.toLocaleString("es-PE")}
               </p>
             </div>
@@ -274,7 +274,7 @@ function KpiBand({ kpis }: { kpis: SalesDashboardKpis }) {
               <item.icon className="size-4" aria-hidden="true" />
             </span>
           </div>
-          <p className="mt-3 truncate text-xs text-slate-500">{item.helper}</p>
+          <p className="mt-3 truncate text-xs text-muted-foreground">{item.helper}</p>
         </article>
       ))}
     </section>
@@ -285,25 +285,25 @@ function InstallationRate({ kpis }: { kpis: SalesDashboardKpis }) {
   const rate = Math.min(100, Math.max(0, kpis.installationRate));
 
   return (
-    <section className="rounded-xl border border-white/10 bg-[#0D1525]/75 p-4 sm:p-5">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <TrendingUp className="size-4 text-emerald-300" aria-hidden="true" />
-            <h2 className="text-sm font-semibold text-white">
+            <TrendingUp className="size-4 text-emerald-700 dark:text-emerald-300" aria-hidden="true" />
+            <h2 className="text-sm font-semibold text-foreground">
               Tasa de instalación
             </h2>
           </div>
-          <p className="mt-1 text-xs leading-5 text-slate-500">
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Instaladas ÷ (instaladas + rechazadas). Las pendientes no alteran la tasa.
           </p>
         </div>
-        <p className="text-3xl font-semibold tracking-tight text-white">
+        <p className="text-3xl font-semibold tracking-tight text-foreground">
           {kpis.hasDecidedSales ? `${rate.toFixed(1)}%` : "0.0%"}
         </p>
       </div>
       <div
-        className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.07]"
+        className="mt-4 h-2 overflow-hidden rounded-full bg-card"
         role="progressbar"
         aria-label="Tasa de instalación"
         aria-valuemin={0}
@@ -316,7 +316,7 @@ function InstallationRate({ kpis }: { kpis: SalesDashboardKpis }) {
         />
       </div>
       {!kpis.hasDecidedSales ? (
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-muted-foreground">
           Aún no hay ventas instaladas o rechazadas en este período.
         </p>
       ) : null}
@@ -332,7 +332,7 @@ function SalesEvolutionChart({
   total: number;
 }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-[#0D1525]/75 p-4 sm:p-5">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
       <SectionHeading
         eyebrow="Tendencia"
         title="Evolución de ventas"
@@ -353,7 +353,7 @@ function SalesEvolutionChart({
 
 function ChartLegend() {
   return (
-    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
+    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
       <LegendDot className="bg-emerald-400" label="Instaladas" />
       <LegendDot className="bg-amber-300" label="Pendientes" />
       <LegendDot className="bg-rose-400" label="Rechazadas" />
@@ -392,7 +392,7 @@ function LineChart({ data }: { data: SalesDashboardData["timeline"] }) {
   const labelEvery = Math.max(1, Math.ceil(data.length / 7));
 
   return (
-    <div className="mt-3 overflow-hidden rounded-lg border border-white/[0.07] bg-[#09111F] px-2 py-3 sm:px-3">
+    <div className="mt-3 overflow-hidden rounded-lg border border-border bg-surface-elevated px-2 py-3 sm:px-3">
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="h-auto min-h-56 w-full"
@@ -507,7 +507,7 @@ function BranchPerformance({
   branches: SalesDashboardData["branchPerformance"];
 }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-[#0D1525]/75 p-4 sm:p-5">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
       <SectionHeading
         eyebrow="Comparativo"
         title="Rendimiento por sede"
@@ -519,8 +519,8 @@ function BranchPerformance({
         <EmptyState message="No hay sedes disponibles para comparar." />
       ) : (
         <>
-          <div className="mt-5 hidden overflow-hidden rounded-lg border border-white/[0.07] lg:block">
-            <div className="grid grid-cols-[minmax(0,1.7fr)_repeat(4,minmax(5rem,.65fr))] gap-3 bg-white/[0.04] px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+          <div className="mt-5 hidden overflow-hidden rounded-lg border border-border lg:block">
+            <div className="grid grid-cols-[minmax(0,1.7fr)_repeat(4,minmax(5rem,.65fr))] gap-3 bg-card px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
               <span>Sede</span>
               <span className="text-right">Instaladas</span>
               <span className="text-right">Pendientes</span>
@@ -530,20 +530,20 @@ function BranchPerformance({
             {branches.map((branch) => (
               <div
                 key={branch.id}
-                className="grid grid-cols-[minmax(0,1.7fr)_repeat(4,minmax(5rem,.65fr))] items-center gap-3 border-t border-white/[0.07] px-4 py-3 text-sm"
+                className="grid grid-cols-[minmax(0,1.7fr)_repeat(4,minmax(5rem,.65fr))] items-center gap-3 border-t border-border px-4 py-3 text-sm"
               >
                 <div className="min-w-0">
-                  <p className="truncate font-semibold text-white">{branch.name}</p>
-                  <p className="truncate text-xs text-slate-500">
+                  <p className="truncate font-semibold text-foreground">{branch.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">
                     {branch.city}{branch.isActive ? "" : " · Inactiva"}
                   </p>
                 </div>
-                <MetricNumber value={branch.kpis.installed} tone="text-emerald-300" />
-                <MetricNumber value={branch.kpis.pending} tone="text-amber-300" />
-                <MetricNumber value={branch.kpis.rejected} tone="text-rose-300" />
+                <MetricNumber value={branch.kpis.installed} tone="text-emerald-700 dark:text-emerald-300" />
+                <MetricNumber value={branch.kpis.pending} tone="text-amber-800 dark:text-amber-300" />
+                <MetricNumber value={branch.kpis.rejected} tone="text-rose-700 dark:text-rose-300" />
                 <MetricNumber
                   value={`${branch.kpis.installationRate.toFixed(1)}%`}
-                  tone="text-white"
+                  tone="text-foreground"
                 />
               </div>
             ))}
@@ -553,12 +553,12 @@ function BranchPerformance({
             {branches.map((branch) => (
               <article
                 key={branch.id}
-                className="rounded-lg border border-white/[0.07] bg-white/[0.025] p-4"
+                className="rounded-lg border border-border bg-card p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="truncate font-semibold text-white">{branch.name}</h3>
-                    <p className="mt-1 truncate text-xs text-slate-500">
+                    <h3 className="truncate font-semibold text-foreground">{branch.name}</h3>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
                       {branch.city}{branch.isActive ? "" : " · Inactiva"}
                     </p>
                   </div>
@@ -580,7 +580,7 @@ function AdvisorPerformance({
   advisors: SalesDashboardData["advisorPerformance"];
 }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-[#0D1525]/75 p-4 sm:p-5">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
       <SectionHeading
         eyebrow="Equipo"
         title="Rendimiento por asesor"
@@ -592,8 +592,8 @@ function AdvisorPerformance({
         <EmptyState message="No hay asesores ni ventas para este alcance." />
       ) : (
         <>
-          <div className="mt-5 hidden overflow-hidden rounded-lg border border-white/[0.07] lg:block">
-            <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_repeat(5,minmax(4.25rem,.5fr))] gap-3 bg-white/[0.04] px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+          <div className="mt-5 hidden overflow-hidden rounded-lg border border-border lg:block">
+            <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_repeat(5,minmax(4.25rem,.5fr))] gap-3 bg-card px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
               <span>Asesor</span>
               <span>Sede histórica</span>
               <span className="text-right">Instaladas</span>
@@ -605,24 +605,24 @@ function AdvisorPerformance({
             {advisors.map((advisor) => (
               <div
                 key={advisor.id}
-                className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_repeat(5,minmax(4.25rem,.5fr))] items-center gap-3 border-t border-white/[0.07] px-4 py-3 text-sm"
+                className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_repeat(5,minmax(4.25rem,.5fr))] items-center gap-3 border-t border-border px-4 py-3 text-sm"
               >
                 <div className="min-w-0">
-                  <p className="truncate font-semibold text-white">
+                  <p className="truncate font-semibold text-foreground">
                     {advisor.fullName}
                   </p>
                   {!advisor.isActive ? (
-                    <p className="text-xs text-slate-500">Usuario inactivo</p>
+                    <p className="text-xs text-muted-foreground">Usuario inactivo</p>
                   ) : null}
                 </div>
-                <p className="truncate text-slate-400">{advisor.branchLabel}</p>
-                <MetricNumber value={advisor.kpis.installed} tone="text-emerald-300" />
-                <MetricNumber value={advisor.kpis.pending} tone="text-amber-300" />
-                <MetricNumber value={advisor.kpis.rejected} tone="text-rose-300" />
-                <MetricNumber value={advisor.kpis.total} tone="text-slate-200" />
+                <p className="truncate text-muted-foreground">{advisor.branchLabel}</p>
+                <MetricNumber value={advisor.kpis.installed} tone="text-emerald-700 dark:text-emerald-300" />
+                <MetricNumber value={advisor.kpis.pending} tone="text-amber-800 dark:text-amber-300" />
+                <MetricNumber value={advisor.kpis.rejected} tone="text-rose-700 dark:text-rose-300" />
+                <MetricNumber value={advisor.kpis.total} tone="text-muted-foreground" />
                 <MetricNumber
                   value={`${advisor.kpis.installationRate.toFixed(1)}%`}
-                  tone="text-white"
+                  tone="text-foreground"
                 />
               </div>
             ))}
@@ -632,17 +632,17 @@ function AdvisorPerformance({
             {advisors.map((advisor, index) => (
               <article
                 key={advisor.id}
-                className="rounded-lg border border-white/[0.07] bg-white/[0.025] p-4"
+                className="rounded-lg border border-border bg-card p-4"
               >
                 <div className="flex items-start gap-3">
-                  <span className="grid size-8 shrink-0 place-items-center rounded-md bg-white/[0.06] text-xs font-semibold text-slate-300">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-md bg-card text-xs font-semibold text-muted-foreground">
                     {index + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate font-semibold text-white">
+                    <h3 className="truncate font-semibold text-foreground">
                       {advisor.fullName}
                     </h3>
-                    <p className="mt-1 truncate text-xs text-slate-500">
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
                       {advisor.branchLabel}{advisor.isActive ? "" : " · Inactivo"}
                     </p>
                   </div>
@@ -664,7 +664,7 @@ function PendingByAdvisor({
   rows: SalesDashboardData["pendingByAdvisor"];
 }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-[#0D1525]/75 p-4 sm:p-5">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
       <SectionHeading
         eyebrow="Seguimiento"
         title="Pendientes por asesor"
@@ -674,21 +674,21 @@ function PendingByAdvisor({
       {rows.length === 0 ? (
         <EmptyState message="No hay ventas pendientes en este período." compact />
       ) : (
-        <div className="mt-4 divide-y divide-white/[0.07]">
+        <div className="mt-4 divide-y divide-border">
           {rows.map((row) => (
             <div
               key={row.advisorId}
               className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white">
+                <p className="truncate text-sm font-semibold text-foreground">
                   {row.fullName}
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Más antigua: {formatDisplayDate(row.oldestSaleDate)} · {row.ageDays} {row.ageDays === 1 ? "día" : "días"}
                 </p>
               </div>
-              <span className="inline-flex min-w-9 justify-center rounded-md bg-amber-400/10 px-2.5 py-1.5 text-sm font-semibold text-amber-200">
+              <span className="inline-flex min-w-9 justify-center rounded-md bg-amber-400/10 px-2.5 py-1.5 text-sm font-semibold text-amber-800 dark:text-amber-200">
                 {row.count}
               </span>
             </div>
@@ -705,7 +705,7 @@ function RejectionReasons({
   rows: SalesDashboardData["rejectionReasons"];
 }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-[#0D1525]/75 p-4 sm:p-5">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
       <SectionHeading
         eyebrow="Diagnóstico"
         title="Motivos de rechazo"
@@ -719,18 +719,18 @@ function RejectionReasons({
           {rows.map((row) => (
             <div key={row.reason}>
               <div className="flex items-start justify-between gap-4 text-sm">
-                <p className="min-w-0 break-words font-medium text-slate-200">
+                <p className="min-w-0 break-words font-medium text-muted-foreground">
                   {row.reason}
                 </p>
-                <span className="shrink-0 font-semibold text-white">{row.count}</span>
+                <span className="shrink-0 font-semibold text-foreground">{row.count}</span>
               </div>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-card">
                 <div
                   className="h-full rounded-full bg-rose-400"
                   style={{ width: `${Math.max(3, row.percentage)}%` }}
                 />
               </div>
-              <p className="mt-1 text-right text-xs text-slate-500">
+              <p className="mt-1 text-right text-xs text-muted-foreground">
                 {row.percentage.toFixed(1)}%
               </p>
             </div>
@@ -754,17 +754,17 @@ function SectionHeading({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#DA291C]/12 text-[#FFB4AC]">
+      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/12 text-brand-emphasis">
         <Icon className="size-4" aria-hidden="true" />
       </span>
       <div className="min-w-0">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#FFB4AC]">
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-emphasis">
           {eyebrow}
         </p>
-        <h2 className="mt-1 text-xl font-semibold tracking-tight text-white">
+        <h2 className="mt-1 text-xl font-semibold tracking-tight text-foreground">
           {title}
         </h2>
-        <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
+        <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p>
       </div>
     </div>
   );
@@ -772,11 +772,11 @@ function SectionHeading({
 
 function CompactMetrics({ kpis }: { kpis: SalesDashboardKpis }) {
   return (
-    <dl className="mt-4 grid grid-cols-4 gap-2 border-t border-white/[0.07] pt-3 text-center">
-      <CompactMetric label="Inst." value={kpis.installed} tone="text-emerald-300" />
-      <CompactMetric label="Pend." value={kpis.pending} tone="text-amber-300" />
-      <CompactMetric label="Rech." value={kpis.rejected} tone="text-rose-300" />
-      <CompactMetric label="Total" value={kpis.total} tone="text-slate-200" />
+    <dl className="mt-4 grid grid-cols-4 gap-2 border-t border-border pt-3 text-center">
+      <CompactMetric label="Inst." value={kpis.installed} tone="text-emerald-700 dark:text-emerald-300" />
+      <CompactMetric label="Pend." value={kpis.pending} tone="text-amber-800 dark:text-amber-300" />
+      <CompactMetric label="Rech." value={kpis.rejected} tone="text-rose-700 dark:text-rose-300" />
+      <CompactMetric label="Total" value={kpis.total} tone="text-muted-foreground" />
     </dl>
   );
 }
@@ -792,7 +792,7 @@ function CompactMetric({
 }) {
   return (
     <div>
-      <dt className="text-[11px] uppercase tracking-wide text-slate-500">{label}</dt>
+      <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd className={`mt-1 text-sm font-semibold ${tone}`}>{value}</dd>
     </div>
   );
@@ -810,7 +810,7 @@ function MetricNumber({
 
 function RateBadge({ rate }: { rate: number }) {
   return (
-    <span className="shrink-0 rounded-md border border-emerald-400/15 bg-emerald-400/10 px-2 py-1 text-xs font-semibold text-emerald-200">
+    <span className="shrink-0 rounded-md border border-emerald-400/15 bg-emerald-400/10 px-2 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-200">
       {rate.toFixed(1)}%
     </span>
   );
@@ -825,12 +825,12 @@ function EmptyState({
 }) {
   return (
     <div
-      className={`mt-4 flex items-center gap-3 rounded-lg border border-dashed border-white/10 bg-white/[0.025] px-4 ${
+      className={`mt-4 flex items-center gap-3 rounded-lg border border-dashed border-border bg-card px-4 ${
         compact ? "py-5" : "min-h-48 justify-center py-8"
       }`}
     >
-      <Minus className="size-4 shrink-0 text-slate-600" aria-hidden="true" />
-      <p className="text-sm text-slate-500">{message}</p>
+      <Minus className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+      <p className="text-sm text-muted-foreground">{message}</p>
     </div>
   );
 }

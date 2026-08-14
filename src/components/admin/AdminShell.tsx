@@ -16,15 +16,15 @@ export default function AdminShell({
 }: AdminShellProps) {
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
-      <section className="mb-5 flex flex-col gap-4 border-b border-white/10 pb-5 lg:flex-row lg:items-end lg:justify-between">
+      <section className="mb-5 flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#FF8D83]">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-emphasis">
             Panel administrador
           </p>
-          <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             {title}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             {description}
           </p>
         </div>
@@ -40,7 +40,7 @@ export default function AdminShell({
 
 export function OperationalBadge() {
   return (
-    <span className="inline-flex h-10 w-fit items-center rounded-lg border border-emerald-400/25 bg-emerald-500/10 px-3 text-sm font-semibold text-emerald-200">
+    <span className="inline-flex h-10 w-fit items-center rounded-lg border border-emerald-400/25 bg-emerald-500/10 px-3 text-sm font-semibold text-emerald-700 dark:text-emerald-200">
       Datos reales
     </span>
   );

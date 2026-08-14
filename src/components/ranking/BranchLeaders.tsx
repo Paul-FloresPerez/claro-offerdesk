@@ -9,14 +9,14 @@ export default function BranchLeaders({
 }) {
   if (leaders.length === 0) {
     return (
-      <p className="px-5 py-8 text-sm leading-6 text-slate-400">
+      <p className="px-5 py-8 text-sm leading-6 text-muted-foreground">
         Las sedes activas todavía no tienen ventas instaladas.
       </p>
     );
   }
 
   return (
-    <ul className="divide-y divide-white/10">
+    <ul className="divide-y divide-border">
       {leaders.map((leader) => (
         <li key={leader.branchId} className="flex items-center gap-3 px-4 py-4 sm:px-5">
           <RankingAvatar
@@ -25,17 +25,17 @@ export default function BranchLeaders({
             size="leader"
           />
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-1.5 truncate text-xs font-bold uppercase tracking-[0.1em] text-slate-400">
+            <p className="flex items-center gap-1.5 truncate text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">
               <Building2 aria-hidden="true" className="size-3.5" />
               {leader.branchName}
             </p>
-            <p className="mt-1 truncate font-bold text-white">{leader.fullName}</p>
+            <p className="mt-1 truncate font-bold text-foreground">{leader.fullName}</p>
           </div>
           <div className="text-right">
-            <p className="text-xl font-black tabular-nums text-white">
+            <p className="text-xl font-black tabular-nums text-foreground">
               {leader.installedSales}
             </p>
-            <p className="text-[0.7rem] font-semibold text-slate-400">
+            <p className="text-[0.7rem] font-semibold text-muted-foreground">
               instaladas
             </p>
           </div>

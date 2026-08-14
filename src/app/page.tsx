@@ -114,19 +114,19 @@ export default async function HomePage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
-      <section className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <section className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Hola, {firstName}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-300">
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Tu espacio de trabajo para vender con claridad.
           </p>
-          <p className="mt-1 text-xs font-semibold text-[#FF8D83]">{scopeLabel}</p>
+          <p className="mt-1 text-xs font-semibold text-brand-emphasis">{scopeLabel}</p>
         </div>
         <Link
           href={primaryAction.href}
-          className="inline-flex h-11 w-fit items-center gap-2 rounded-lg bg-[#DA291C] px-4 text-sm font-semibold text-white transition hover:bg-[#B91F15] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8D83] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111827]"
+          className="inline-flex h-11 w-fit items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           {primaryAction.label}
           <ArrowRight className="size-4" />
@@ -147,23 +147,23 @@ export default async function HomePage() {
 
       <section className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.8fr)]">
         <div className="space-y-5">
-          <section className="rounded-xl border border-white/10 bg-[#172033] p-4 shadow-[0_16px_36px_rgba(0,0,0,0.14)] sm:p-5">
-            <h2 className="text-lg font-semibold text-white">Accesos rápidos</h2>
+          <section className="rounded-xl border border-border bg-card p-4 shadow-[0_16px_36px_rgba(0,0,0,0.14)] sm:p-5">
+            <h2 className="text-lg font-semibold text-foreground">Accesos rápidos</h2>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               {quickLinksByRole[user.role].map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="group flex min-h-20 items-center gap-3 rounded-lg border border-white/10 bg-[#111827]/45 p-3 transition hover:border-[#DA291C]/35 hover:bg-white/[0.055] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8D83]"
+                  className="group flex min-h-20 items-center gap-3 rounded-lg border border-border bg-background/45 p-3 transition hover:border-primary/35 hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-[#DA291C]/20 bg-[#DA291C]/10 text-[#FF6A5E]">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-primary/20 bg-primary/10 text-brand-emphasis">
                     <item.icon className="size-5" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-white">{item.label}</span>
-                    <span className="mt-0.5 block text-xs leading-5 text-slate-400">{item.description}</span>
+                    <span className="block text-sm font-semibold text-foreground">{item.label}</span>
+                    <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">{item.description}</span>
                   </span>
-                  <ArrowRight className="ml-auto size-4 shrink-0 text-slate-500 transition group-hover:translate-x-0.5 group-hover:text-[#FF8D83]" />
+                  <ArrowRight className="ml-auto size-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-brand-emphasis" />
                 </Link>
               ))}
             </div>
@@ -172,10 +172,10 @@ export default async function HomePage() {
           <FeaturedVideo video={featuredVideo} />
         </div>
 
-        <aside className="h-fit rounded-xl border border-white/10 bg-[#172033] p-4 shadow-[0_16px_36px_rgba(0,0,0,0.14)] sm:p-5">
-          <h2 className="text-lg font-semibold text-white">Referencia operativa</h2>
-          <p className="mt-1 text-sm text-slate-400">Datos disponibles para tu jornada.</p>
-          <dl className="mt-4 divide-y divide-white/10">
+        <aside className="h-fit rounded-xl border border-border bg-card p-4 shadow-[0_16px_36px_rgba(0,0,0,0.14)] sm:p-5">
+          <h2 className="text-lg font-semibold text-foreground">Referencia operativa</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Datos disponibles para tu jornada.</p>
+          <dl className="mt-4 divide-y divide-border">
             <StatusRow label="Promociones activas" value={promotionMetrics.active.toString()} />
             <StatusRow label="Recursos de entrenamiento" value={mediaCount.toString()} />
             <StatusRow
@@ -185,7 +185,7 @@ export default async function HomePage() {
           </dl>
           <Link
             href="/top-ventas"
-            className="mt-4 inline-flex h-10 items-center gap-2 text-sm font-semibold text-[#FF8D83] transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8D83]"
+            className="mt-4 inline-flex h-10 items-center gap-2 text-sm font-semibold text-brand-emphasis transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             Revisar Top ventas
             <ArrowRight className="size-4" />
@@ -208,19 +208,19 @@ function HomeMetric({
   tone: "success" | "warning" | "accent";
 }) {
   const toneClass = {
-    success: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
-    warning: "border-amber-400/20 bg-amber-400/10 text-amber-300",
-    accent: "border-[#DA291C]/25 bg-[#DA291C]/10 text-[#FF8D83]",
+    success: "border-emerald-400/20 bg-emerald-400/10 text-emerald-700 dark:text-emerald-300",
+    warning: "border-amber-400/20 bg-amber-400/10 text-amber-800 dark:text-amber-300",
+    accent: "border-primary/25 bg-primary/10 text-brand-emphasis",
   }[tone];
 
   return (
-    <article className="flex min-h-28 flex-col items-start gap-2 rounded-xl border border-white/10 bg-[#172033] p-3 shadow-[0_12px_30px_rgba(0,0,0,0.12)] sm:min-h-24 sm:flex-row sm:items-center sm:gap-4 sm:p-4">
+    <article className="flex min-h-28 flex-col items-start gap-2 rounded-xl border border-border bg-card p-3 shadow-[0_12px_30px_rgba(0,0,0,0.12)] sm:min-h-24 sm:flex-row sm:items-center sm:gap-4 sm:p-4">
       <span className={`grid size-9 shrink-0 place-items-center rounded-lg border sm:size-11 ${toneClass}`}>
         <Icon className="size-4 sm:size-5" />
       </span>
       <div>
-        <p className="text-xs leading-4 text-slate-300 sm:text-sm">{label}</p>
-        <p className="mt-0.5 text-2xl font-semibold tracking-tight text-white sm:text-3xl">{value}</p>
+        <p className="text-xs leading-4 text-muted-foreground sm:text-sm">{label}</p>
+        <p className="mt-0.5 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{value}</p>
       </div>
     </article>
   );
@@ -228,15 +228,15 @@ function HomeMetric({
 
 function FeaturedVideo({ video }: { video?: TrainingMediaFile }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-[#172033] p-4 shadow-[0_16px_36px_rgba(0,0,0,0.14)] sm:p-5">
+    <section className="rounded-xl border border-border bg-card p-4 shadow-[0_16px_36px_rgba(0,0,0,0.14)] sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-white">Video destacado</h2>
-          <p className="mt-1 text-sm text-slate-400">Referencia seleccionada por administración.</p>
+          <h2 className="text-lg font-semibold text-foreground">Video destacado</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Referencia seleccionada por administración.</p>
         </div>
         <Link
           href="/entrenamiento"
-          className="hidden h-10 items-center gap-2 rounded-lg border border-white/10 px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/[0.06] sm:inline-flex"
+          className="hidden h-10 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold text-muted-foreground transition hover:bg-card sm:inline-flex"
         >
           Ver biblioteca
           <ArrowRight className="size-4" />
@@ -261,13 +261,13 @@ function FeaturedVideo({ video }: { video?: TrainingMediaFile }) {
             />
           )}
           <div>
-            <p className="text-base font-semibold text-white">{video.title}</p>
+            <p className="text-base font-semibold text-foreground">{video.title}</p>
             {video.description ? (
-              <p className="mt-2 text-sm leading-6 text-slate-300">{video.description}</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{video.description}</p>
             ) : null}
             <Link
               href="/entrenamiento"
-              className="mt-4 inline-flex h-10 items-center gap-2 rounded-lg border border-white/10 px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/[0.06] sm:hidden"
+              className="mt-4 inline-flex h-10 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold text-muted-foreground transition hover:bg-card sm:hidden"
             >
               <PlayCircle className="size-4" />
               Ver biblioteca
@@ -275,7 +275,7 @@ function FeaturedVideo({ video }: { video?: TrainingMediaFile }) {
           </div>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-white/15 bg-[#111827]/45 p-5 text-sm text-slate-400">
+        <div className="rounded-lg border border-dashed border-border bg-background/45 p-5 text-sm text-muted-foreground">
           Aún no hay un video destacado activo.
         </div>
       )}
@@ -286,8 +286,8 @@ function FeaturedVideo({ video }: { video?: TrainingMediaFile }) {
 function StatusRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-4 py-3">
-      <dt className="text-sm text-slate-400">{label}</dt>
-      <dd className="max-w-[55%] truncate text-right text-sm font-semibold text-white">{value}</dd>
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className="max-w-[55%] truncate text-right text-sm font-semibold text-foreground">{value}</dd>
     </div>
   );
 }

@@ -21,8 +21,8 @@ export function RecommenderClient({ ofertas }: { ofertas: Oferta[] }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
-      <section className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-4 text-base font-semibold text-neutral-950">
+      <section className="rounded-lg border border-border bg-card p-4 shadow-sm">
+        <h2 className="mb-4 text-base font-semibold text-foreground">
           Necesidad del cliente
         </h2>
         <div className="grid gap-2">
@@ -34,8 +34,8 @@ export function RecommenderClient({ ofertas }: { ofertas: Oferta[] }) {
               className={cn(
                 "rounded-lg border p-3 text-left text-sm transition",
                 selectedId === item.id
-                  ? "border-[#DA291C] bg-red-50 text-[#7F1D1D]"
-                  : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50"
+                  ? "border-primary bg-primary/10 text-brand-emphasis"
+                  : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
               )}
             >
               <span className="block font-semibold">{item.titulo}</span>
@@ -48,16 +48,16 @@ export function RecommenderClient({ ofertas }: { ofertas: Oferta[] }) {
       </section>
 
       <section className="space-y-5">
-        <div className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
+        <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
           <div className="mb-4 flex items-start gap-3">
-            <span className="grid h-9 w-9 place-items-center rounded-md bg-red-50 text-[#DA291C]">
+            <span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary">
               <Sparkles className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-sm font-semibold text-neutral-950">
+              <p className="text-sm font-semibold text-foreground">
                 Oferta sugerida
               </p>
-              <p className="text-sm leading-6 text-neutral-600">{selected.motivo}</p>
+              <p className="text-sm leading-6 text-muted-foreground">{selected.motivo}</p>
             </div>
           </div>
 
@@ -74,9 +74,9 @@ export function RecommenderClient({ ofertas }: { ofertas: Oferta[] }) {
           <div className="grid gap-5 xl:grid-cols-[360px_1fr]">
             <OfferCard oferta={oferta} />
 
-            <div className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
+            <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
               <div className="mb-4 flex flex-wrap gap-2">
-                <span className="inline-flex h-6 items-center rounded-md border border-red-200 bg-red-50 px-2 text-xs font-semibold text-[#B91C1C]">
+                <span className="inline-flex h-6 items-center rounded-md border border-primary/20 bg-primary/10 px-2 text-xs font-semibold text-brand-emphasis">
                   {oferta.categoria}
                 </span>
                 {oferta.tecnologia.map((tecnologia) => (
@@ -84,31 +84,31 @@ export function RecommenderClient({ ofertas }: { ofertas: Oferta[] }) {
                 ))}
               </div>
 
-              <h3 className="text-lg font-semibold text-neutral-950">
+              <h3 className="text-lg font-semibold text-foreground">
                 Validaciones antes de ofrecer
               </h3>
               <ul className="mt-4 space-y-3">
                 {oferta.validaciones.map((item) => (
-                  <li key={item} className="flex gap-3 text-sm leading-6 text-neutral-700">
+                  <li key={item} className="flex gap-3 text-sm leading-6 text-muted-foreground">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
                     {item}
                   </li>
                 ))}
               </ul>
 
-              <div className="mt-5 rounded-lg border border-red-100 bg-red-50 p-4 text-sm leading-6 text-[#7F1D1D]">
+              <div className="mt-5 rounded-lg border border-primary/15 bg-primary/10 p-4 text-sm leading-6 text-brand-emphasis">
                 {oferta.fraseVenta}
               </div>
             </div>
           </div>
         ) : (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <div className="rounded-lg border border-primary/20 bg-primary/10 p-4 text-sm text-red-700">
             Oferta no encontrada o inactiva en el catalogo.
           </div>
         )}
 
         {oferta ? (
-          <Button asChild className="bg-[#DA291C] text-white hover:bg-[#B91C1C]">
+          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
             <Link href={`/ofertas/${oferta.id}`}>Abrir ficha sugerida</Link>
           </Button>
         ) : null}

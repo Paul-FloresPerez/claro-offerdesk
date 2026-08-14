@@ -58,14 +58,14 @@ export function OfferImageDialog({
               preload={preload}
               variant={variant}
             />
-            <p className="pointer-events-none absolute left-3 top-3 z-20 rounded-md border border-white/70 bg-white/95 px-3 py-1.5 text-xs font-semibold text-[#111827] shadow-sm">
+            <p className="pointer-events-none absolute left-3 top-3 z-20 rounded-md border border-border bg-card/95 px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm">
               {hintText}
             </p>
             <DialogTrigger asChild>
               <button
                 type="button"
                 aria-label={`Ampliar imagen oficial de ${title}`}
-                className="absolute inset-0 z-10 cursor-zoom-in rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                className="absolute inset-0 z-10 cursor-zoom-in rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
                 <span className="sr-only">{hintText}</span>
               </button>
@@ -77,7 +77,7 @@ export function OfferImageDialog({
           <DialogTrigger asChild>
             <button
               type="button"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#111827] shadow-sm transition hover:border-[#DA291C]/30 hover:text-[#DA291C]"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/30 hover:text-primary"
             >
               <Maximize2 className="h-4 w-4" />
               {buttonLabel}
@@ -86,10 +86,10 @@ export function OfferImageDialog({
         ) : null}
       </div>
 
-      <DialogContent className="max-w-[min(98vw,1440px)] gap-4 bg-[#0B1220] p-4 text-white shadow-[0_30px_90px_rgba(0,0,0,0.55)] sm:max-w-[min(98vw,1440px)]">
+      <DialogContent className="dark max-w-[min(98vw,1440px)] gap-4 bg-[#0B1220] p-4 text-foreground shadow-[0_30px_90px_rgba(0,0,0,0.55)] sm:max-w-[min(98vw,1440px)]">
         <DialogHeader>
-          <DialogTitle className="text-white">{title}</DialogTitle>
-          <DialogDescription className="text-slate-300">
+          <DialogTitle className="text-foreground">{title}</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             {description}
           </DialogDescription>
         </DialogHeader>

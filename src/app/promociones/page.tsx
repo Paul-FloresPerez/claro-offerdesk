@@ -32,14 +32,14 @@ export default async function PromocionesPage() {
       <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:py-7">
         <nav
           aria-label="Accesos rápidos de promociones"
-          className="mb-6 flex flex-wrap gap-2 border-b border-white/10 pb-4"
+          className="mb-6 flex flex-wrap gap-2 border-b border-border pb-4"
         >
           {promotionQuickAccess.map((access) => (
             <a
               key={access.href}
               href={access.href}
               data-promotion-scroll-target={access.href.slice(1)}
-              className="inline-flex h-10 items-center rounded-lg border border-white/10 bg-white/[0.045] px-3 text-sm font-semibold text-slate-200 transition hover:border-[#DA291C]/40 hover:bg-[#DA291C]/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8D83]"
+              className="inline-flex h-10 items-center rounded-lg border border-border bg-card px-3 text-sm font-semibold text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {access.label}
             </a>

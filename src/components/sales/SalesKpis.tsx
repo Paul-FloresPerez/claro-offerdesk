@@ -14,10 +14,10 @@ export default function SalesKpis({ kpis }: { kpis: SaleKpis }) {
     value: number;
     style: string;
   }> = [
-    { icon: CheckCircle2, label: "Instaladas", value: kpis.installed, style: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300" },
-    { icon: Clock3, label: "Pendientes", value: kpis.pending, style: "border-amber-400/20 bg-amber-400/10 text-amber-300" },
-    { icon: XCircle, label: "Rechazadas", value: kpis.rejected, style: "border-rose-400/20 bg-rose-400/10 text-rose-300" },
-    { icon: ListChecks, label: "Total", value: kpis.total, style: "border-sky-400/20 bg-sky-400/10 text-sky-300" },
+    { icon: CheckCircle2, label: "Instaladas", value: kpis.installed, style: "border-emerald-400/20 bg-emerald-400/10 text-emerald-700 dark:text-emerald-300" },
+    { icon: Clock3, label: "Pendientes", value: kpis.pending, style: "border-amber-400/20 bg-amber-400/10 text-amber-800 dark:text-amber-300" },
+    { icon: XCircle, label: "Rechazadas", value: kpis.rejected, style: "border-rose-400/20 bg-rose-400/10 text-rose-700 dark:text-rose-300" },
+    { icon: ListChecks, label: "Total", value: kpis.total, style: "border-sky-400/20 bg-sky-400/10 text-sky-700 dark:text-sky-300" },
   ];
 
   return (
@@ -25,17 +25,17 @@ export default function SalesKpis({ kpis }: { kpis: SaleKpis }) {
       {items.map((item) => (
         <article
           key={item.label}
-          className="rounded-xl border border-white/10 bg-[#172033] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.12)]"
+          className="rounded-xl border border-border bg-card p-4 shadow-[0_12px_30px_rgba(0,0,0,0.12)]"
         >
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               {item.label}
             </p>
             <span className={`grid size-8 place-items-center rounded-lg border ${item.style}`}>
               <item.icon className="size-4" aria-hidden="true" />
             </span>
           </div>
-          <p className="mt-2 text-3xl font-semibold tracking-tight text-white">
+          <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
             {item.value}
           </p>
         </article>

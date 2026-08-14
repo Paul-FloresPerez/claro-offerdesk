@@ -19,17 +19,17 @@ type OfferComparisonTableProps = {
 
 export function OfferComparisonTable({ ofertas }: OfferComparisonTableProps) {
   return (
-    <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
+    <div className="overflow-hidden rounded-lg border border-border bg-card shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
       <Table>
-        <TableHeader className="bg-neutral-950">
-          <TableRow className="border-neutral-800 hover:bg-neutral-950">
-            <TableHead className="text-white">Oferta</TableHead>
-            <TableHead className="text-white">Categoría</TableHead>
-            <TableHead className="text-white">Precio</TableHead>
-            <TableHead className="text-white">Velocidad</TableHead>
-            <TableHead className="text-white">Tecnología</TableHead>
-            <TableHead className="text-white">Estado</TableHead>
-            <TableHead className="text-right text-white">Ficha</TableHead>
+        <TableHeader className="bg-surface-elevated">
+          <TableRow className="border-border hover:bg-surface-elevated">
+            <TableHead className="text-foreground">Oferta</TableHead>
+            <TableHead className="text-foreground">Categoría</TableHead>
+            <TableHead className="text-foreground">Precio</TableHead>
+            <TableHead className="text-foreground">Velocidad</TableHead>
+            <TableHead className="text-foreground">Tecnología</TableHead>
+            <TableHead className="text-foreground">Estado</TableHead>
+            <TableHead className="text-right text-foreground">Ficha</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -37,24 +37,24 @@ export function OfferComparisonTable({ ofertas }: OfferComparisonTableProps) {
             <TableRow
               key={oferta.id}
               className={cn(
-                oferta.id === "oferta-regular" && "bg-red-50/60 hover:bg-red-50"
+                oferta.id === "oferta-regular" && "bg-primary/5 hover:bg-primary/10"
               )}
             >
-              <TableCell className="min-w-56 whitespace-normal font-medium text-neutral-950">
+              <TableCell className="min-w-56 whitespace-normal font-medium text-foreground">
                 <div className="flex items-start gap-2">
                   {oferta.id === "oferta-regular" ? (
-                    <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-[#DA291C]" />
+                    <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   ) : null}
                   <span>
                     <span className="block">{oferta.nombre}</span>
-                    <span className="mt-1 block text-xs font-normal leading-5 text-neutral-500">
+                    <span className="mt-1 block text-xs font-normal leading-5 text-muted-foreground">
                       {oferta.detallePrecio}
                     </span>
                   </span>
                 </div>
               </TableCell>
               <TableCell>{oferta.categoria}</TableCell>
-              <TableCell className="font-semibold text-[#DA291C]">
+              <TableCell className="font-semibold text-primary">
                 {oferta.precio}
               </TableCell>
               <TableCell>{oferta.velocidad}</TableCell>

@@ -35,16 +35,16 @@ export function FeaturedMediaPanel({
   media: AdminMediaRow | null;
 }) {
   return (
-    <section className="overflow-hidden rounded-lg border border-[#DA291C]/30 bg-white/[0.075] shadow-[0_18px_54px_rgba(0,0,0,0.2)]">
-      <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4">
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-[#DA291C]/18 text-[#FFB4AC] ring-1 ring-[#DA291C]/25">
+    <section className="overflow-hidden rounded-lg border border-primary/30 bg-card shadow-[0_18px_54px_rgba(0,0,0,0.2)]">
+      <div className="flex items-center gap-3 border-b border-border px-5 py-4">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary/18 text-brand-emphasis ring-1 ring-ring/25">
           <House className="h-5 w-5" />
         </span>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#FFB4AC]">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-emphasis">
             Seleccion explicita
           </p>
-          <h2 className="mt-1 text-xl font-semibold tracking-tight text-white">
+          <h2 className="mt-1 text-xl font-semibold tracking-tight text-foreground">
             Video destacado del Inicio
           </h2>
         </div>
@@ -57,20 +57,20 @@ export function FeaturedMediaPanel({
               <StatusPill tone={media.isActive ? "active" : "inactive"}>
                 {media.isActive ? "Activo" : "Inactivo"}
               </StatusPill>
-              <span className="inline-flex h-7 items-center gap-1.5 rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-2.5 text-xs font-semibold text-[#FFB4AC]">
+              <span className="inline-flex h-7 items-center gap-1.5 rounded-md border border-primary/25 bg-primary/12 px-2.5 text-xs font-semibold text-brand-emphasis">
                 <Star className="h-3.5 w-3.5" />
                 Visible solo en Inicio
               </span>
             </div>
-            <h3 className="mt-4 text-2xl font-semibold tracking-tight text-white">
+            <h3 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
               {media.title}
             </h3>
             {media.description ? (
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                 {media.description}
               </p>
             ) : null}
-            <p className="mt-2 break-all text-xs text-slate-500">
+            <p className="mt-2 break-all text-xs text-muted-foreground">
               {media.fileUrl}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -78,35 +78,35 @@ export function FeaturedMediaPanel({
                 href={media.fileUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex h-9 items-center gap-2 rounded-md border border-white/10 bg-white/[0.06] px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/[0.1] hover:text-white"
+                className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-card px-3 text-sm font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground"
               >
                 <MonitorPlay className="h-4 w-4" />
                 Vista previa
               </a>
               <a
                 href="#media-library"
-                className="inline-flex h-9 items-center gap-2 rounded-md bg-[#DA291C] px-3 text-sm font-semibold text-white transition hover:bg-[#B91F15]"
+                className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
               >
                 Cambiar video
               </a>
             </div>
           </div>
-          <div className="overflow-hidden rounded-lg border border-white/10 bg-[#070B13] p-2">
+          <div className="overflow-hidden rounded-lg border border-border bg-[#070B13] p-2">
             <MediaPreview item={media} />
           </div>
         </div>
       ) : (
         <div className="p-5">
-          <p className="text-base font-semibold text-white">
+          <p className="text-base font-semibold text-foreground">
             Aun no hay un video seleccionado explicitamente.
           </p>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Inicio conservara temporalmente el video base. Selecciona un video
             de la biblioteca para administrar esta portada.
           </p>
           <a
             href="#media-library"
-            className="mt-4 inline-flex h-9 items-center rounded-md bg-[#DA291C] px-3 text-sm font-semibold text-white transition hover:bg-[#B91F15]"
+            className="mt-4 inline-flex h-9 items-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
           >
             Seleccionar video
           </a>
@@ -123,24 +123,24 @@ export default function MediaTable({
   return (
     <section
       id="media-library"
-      className="scroll-mt-28 overflow-hidden rounded-lg border border-white/10 bg-white/[0.07]"
+      className="scroll-mt-28 overflow-hidden rounded-lg border border-border bg-card"
     >
-      <div className="flex flex-col gap-2 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-2 border-b border-border px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-white">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
             Biblioteca
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             Materiales guardados en training_media.
           </p>
         </div>
-        <span className="inline-flex w-fit rounded-md border border-white/10 bg-[#111827]/55 px-3 py-2 text-xs font-semibold text-slate-300">
+        <span className="inline-flex w-fit rounded-md border border-border bg-background/55 px-3 py-2 text-xs font-semibold text-muted-foreground">
           {mediaItems.length} material{mediaItems.length === 1 ? "" : "es"}
         </span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[980px] text-left text-sm">
-          <thead className="bg-[#111827]/70 text-xs uppercase tracking-[0.12em] text-slate-400">
+          <thead className="bg-background text-xs uppercase tracking-[0.12em] text-muted-foreground">
             <tr>
               <th className="px-5 py-3">Titulo</th>
               <th className="px-5 py-3">Tipo</th>
@@ -150,7 +150,7 @@ export default function MediaTable({
               <th className="px-5 py-3">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/10">
+          <tbody className="divide-y divide-border">
             {mediaItems.map((item) => (
               <MediaRow
                 key={item.id}
@@ -159,7 +159,7 @@ export default function MediaTable({
               />
             ))}
             {mediaItems.length === 0 ? (
-              <tr className="text-slate-300">
+              <tr className="text-muted-foreground">
                 <td className="px-5 py-6" colSpan={6}>
                   No hay materiales registrados en base de datos.
                 </td>
@@ -183,30 +183,30 @@ function MediaRow({
 
   return (
     <>
-      <tr className="align-top text-slate-200">
+      <tr className="align-top text-muted-foreground">
         <td className="px-5 py-4">
           <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-primary/15 text-brand-emphasis">
               <Icon className="h-5 w-5" />
             </span>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="font-semibold text-white">{item.title}</p>
+                <p className="font-semibold text-foreground">{item.title}</p>
                 {item.mediaType === "video" ? (
                   item.isFeatured ? (
-                    <span className="inline-flex h-6 items-center gap-1 rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-2 text-[11px] font-semibold text-[#FFB4AC]">
+                    <span className="inline-flex h-6 items-center gap-1 rounded-md border border-primary/25 bg-primary/12 px-2 text-[11px] font-semibold text-brand-emphasis">
                       <House className="h-3 w-3" />
                       Video del Inicio
                     </span>
                   ) : (
-                    <span className="inline-flex h-6 items-center rounded-md border border-sky-300/20 bg-sky-400/10 px-2 text-[11px] font-semibold text-sky-100">
+                    <span className="inline-flex h-6 items-center rounded-md border border-sky-300/20 bg-sky-400/10 px-2 text-[11px] font-semibold text-sky-700 dark:text-sky-100">
                       Entrenamiento
                     </span>
                   )
                 ) : null}
               </div>
               {item.description ? (
-                <p className="mt-1 max-w-xs text-xs leading-5 text-slate-500">
+                <p className="mt-1 max-w-xs text-xs leading-5 text-muted-foreground">
                   {item.description}
                 </p>
               ) : null}
@@ -220,7 +220,7 @@ function MediaRow({
             href={item.fileUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex max-w-xs items-center gap-2 truncate text-[#FFB4AC] underline-offset-4 hover:underline"
+            className="inline-flex max-w-xs items-center gap-2 truncate text-brand-emphasis underline-offset-4 hover:underline"
           >
             <ExternalLink className="h-4 w-4 shrink-0" />
             <span className="truncate">{item.fileUrl}</span>
@@ -244,13 +244,13 @@ function MediaRow({
           </div>
         </td>
       </tr>
-      <tr className="bg-[#111827]/35">
+      <tr className="bg-background/35">
         <td colSpan={6} className="px-5 pb-5">
-          <details className="rounded-lg border border-white/10 bg-white/[0.035]">
-            <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-[#FFB4AC] transition hover:text-white">
+          <details className="rounded-lg border border-border bg-card">
+            <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-brand-emphasis transition hover:text-foreground">
               Editar material
             </summary>
-            <div className="border-t border-white/10 p-4">
+            <div className="border-t border-border p-4">
               <MediaForm mode="edit" media={item} compact />
             </div>
           </details>
@@ -290,7 +290,7 @@ function FeaturedAction({
       <Button
         type="submit"
         disabled={isPending}
-        className="h-auto min-h-8 w-fit border border-[#DA291C]/30 bg-[#DA291C]/12 px-2 py-1.5 text-left text-xs leading-4 text-[#FFB4AC] hover:bg-[#DA291C]/20 hover:text-white"
+        className="h-auto min-h-8 w-fit border border-primary/30 bg-primary/12 px-2 py-1.5 text-left text-xs leading-4 text-brand-emphasis hover:bg-primary/20 hover:text-foreground"
       >
         <House className="h-3.5 w-3.5" />
         {isPending ? "Actualizando..." : "Usar como video de Inicio"}
@@ -300,8 +300,8 @@ function FeaturedAction({
           aria-live="polite"
           className={
             state.status === "success"
-              ? "max-w-48 text-xs font-semibold text-emerald-200"
-              : "max-w-48 text-xs font-semibold text-[#FFB4AC]"
+              ? "max-w-48 text-xs font-semibold text-emerald-700 dark:text-emerald-200"
+              : "max-w-48 text-xs font-semibold text-brand-emphasis"
           }
         >
           {state.message}
@@ -403,7 +403,7 @@ function StatusAction({ item }: { item: AdminMediaRow }) {
       <Button
         type="submit"
         disabled={isPending}
-        className="h-8 w-fit border border-white/10 bg-white/[0.06] px-2 text-xs text-slate-200 hover:bg-white/[0.1]"
+        className="h-8 w-fit border border-border bg-card px-2 text-xs text-muted-foreground hover:bg-accent"
       >
         {nextActiveState ? (
           <UserCheck className="h-3.5 w-3.5" />
@@ -417,8 +417,8 @@ function StatusAction({ item }: { item: AdminMediaRow }) {
           aria-live="polite"
           className={
             state.status === "success"
-              ? "text-xs font-semibold text-emerald-200"
-              : "text-xs font-semibold text-[#FFB4AC]"
+              ? "text-xs font-semibold text-emerald-700 dark:text-emerald-200"
+              : "text-xs font-semibold text-brand-emphasis"
           }
         >
           {state.message}
@@ -437,8 +437,8 @@ function StatusPill({
 }) {
   const className =
     tone === "active"
-      ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
-      : "border-slate-500/20 bg-slate-500/10 text-slate-300";
+      ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-700 dark:text-emerald-200"
+      : "border-slate-500/20 bg-muted0/10 text-muted-foreground";
 
   return (
     <span

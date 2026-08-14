@@ -73,8 +73,8 @@ export default function BranchForm({
           aria-live="polite"
           className={
             state.status === "success"
-              ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-200"
-              : "rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 py-2 text-sm font-semibold text-[#FFB4AC]"
+              ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-200"
+              : "rounded-md border border-primary/25 bg-primary/12 px-3 py-2 text-sm font-semibold text-brand-emphasis"
           }
         >
           {state.message}
@@ -84,7 +84,7 @@ export default function BranchForm({
       <Button
         type="submit"
         disabled={isPending}
-        className="h-10 justify-center bg-[#DA291C] text-white hover:bg-[#B91F15]"
+        className="h-10 justify-center bg-primary text-primary-foreground hover:bg-primary/90"
       >
         {branch ? <Save /> : <Building2 />}
         {isPending
@@ -111,7 +111,7 @@ function BranchField({
   placeholder: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-semibold text-slate-200">
+    <label className="grid gap-2 text-sm font-semibold text-muted-foreground">
       {label}
       <Input
         name={name}
@@ -120,10 +120,10 @@ function BranchField({
         defaultValue={defaultValue}
         placeholder={placeholder}
         aria-invalid={Boolean(error)}
-        className="h-10 border-white/10 bg-[#111827]/70 text-white placeholder:text-slate-500"
+        className="h-10 border-border bg-background text-foreground placeholder:text-muted-foreground"
       />
       {error ? (
-        <span className="text-xs font-medium text-[#FFB4AC]">{error}</span>
+        <span className="text-xs font-medium text-brand-emphasis">{error}</span>
       ) : null}
     </label>
   );

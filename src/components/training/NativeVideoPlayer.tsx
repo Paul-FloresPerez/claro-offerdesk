@@ -49,13 +49,13 @@ export function NativeVideoPlayer({
       </video>
 
       {hasPlaybackError ? (
-        <div className="absolute inset-x-3 bottom-3 z-20 rounded-md border border-[#DA291C]/30 bg-[#111827]/95 p-3 text-sm font-medium text-slate-100 shadow-lg">
+        <div className="absolute inset-x-3 bottom-3 z-20 rounded-md border border-primary/30 bg-background/95 p-3 text-sm font-medium text-foreground shadow-lg">
           No se pudo reproducir el video integrado. {" "}
           <a
             href={src}
             target="_blank"
             rel="noreferrer"
-            className="font-semibold text-[#FFB4AC] underline underline-offset-2"
+            className="font-semibold text-brand-emphasis underline underline-offset-2"
           >
             Abrir archivo original
           </a>

@@ -33,12 +33,12 @@ export function CreateSaleDialog({
         Registrar venta
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[92vh] overflow-y-auto border border-white/10 bg-[#0B1120] text-white sm:max-w-3xl">
+        <DialogContent className="max-h-[92vh] overflow-y-auto border border-border bg-header text-foreground sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
               Registrar venta
             </DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogDescription className="text-muted-foreground">
               La sede se obtiene del asesor seleccionado y queda guardada como
               dato histórico.
             </DialogDescription>
@@ -79,12 +79,12 @@ export function EditSaleDialog({
         Editar
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[92vh] overflow-y-auto border border-white/10 bg-[#0B1120] text-white sm:max-w-3xl">
+        <DialogContent className="max-h-[92vh] overflow-y-auto border border-border bg-header text-foreground sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
               Corregir venta
             </DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogDescription className="text-muted-foreground">
               Puedes actualizar datos comerciales y estado. La sede y el usuario
               registrador no se pueden cambiar.
             </DialogDescription>

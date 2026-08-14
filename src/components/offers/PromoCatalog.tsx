@@ -100,17 +100,17 @@ export function PromoCatalog({ ofertas }: PromoCatalogProps) {
 
       {groupedSections.map((section) => (
         <section key={section.id} aria-labelledby={`section-${section.id}`}>
-          <div className="mb-4 flex items-end justify-between gap-4 border-b border-white/10 pb-3">
+          <div className="mb-4 flex items-end justify-between gap-4 border-b border-border pb-3">
             <div>
               <h2
                 id={`section-${section.id}`}
-                className="text-xl font-semibold tracking-tight text-white sm:text-2xl"
+                className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl"
               >
                 {section.title}
               </h2>
             </div>
-            <span className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-semibold text-slate-300 sm:inline-flex">
-              <Images className="h-4 w-4 text-[#FFB4AC]" />
+            <span className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground sm:inline-flex">
+              <Images className="h-4 w-4 text-brand-emphasis" />
               {section.items.length} {section.items.length === 1 ? "opción" : "opciones"}
             </span>
           </div>
@@ -156,26 +156,26 @@ function RegularOfferHighlight({
       aria-labelledby="oferta-regular-principal"
       className="scroll-mt-28"
     >
-      <article className="overflow-hidden rounded-xl border border-[#DA291C]/25 bg-white text-[#111827] shadow-[0_16px_38px_rgba(0,0,0,0.18)]">
+      <article className="overflow-hidden rounded-xl border border-primary/25 bg-card text-foreground shadow-[0_16px_38px_rgba(0,0,0,0.18)]">
         <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
           <div className="flex flex-col justify-center p-5 sm:p-6 lg:p-7">
-            <span className="w-fit rounded-full border border-[#DA291C]/15 bg-[#DA291C]/[0.08] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#B91F15]">
+            <span className="w-fit rounded-full border border-primary/15 bg-primary/[0.08] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-emphasis">
               Consulta base
             </span>
             <h2
               id="oferta-regular-principal"
-              className="mt-3 text-2xl font-semibold tracking-tight text-[#111827] sm:text-3xl"
+              className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
             >
               Oferta Regular
             </h2>
-            <p className="mt-3 max-w-xl text-base leading-7 text-slate-600">
+            <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">
               Planes, velocidades, TV, tecnologías y adicionales.
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <button
                 type="button"
                 onClick={() => onOpen(promotion, 0)}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#DA291C] px-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(218,41,28,0.24)] transition hover:bg-[#B91F15] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-[0_14px_28px_rgba(218,41,28,0.24)] transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 Ver planes regulares
                 <ArrowRight className="h-4 w-4" />
@@ -184,15 +184,15 @@ function RegularOfferHighlight({
                 id="promo-canales"
                 type="button"
                 onClick={() => onOpen(promotion, 1)}
-                className="scroll-mt-28 inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-[#DA291C]/30 hover:bg-red-50 hover:text-[#B91F15] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C] focus-visible:ring-offset-2"
+                className="scroll-mt-28 inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold text-foreground transition hover:border-primary/30 hover:bg-primary/10 hover:text-brand-emphasis focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                <Images className="h-4 w-4 text-[#DA291C]" />
+                <Images className="h-4 w-4 text-primary" />
                 Canales y tecnologías
               </button>
             </div>
           </div>
 
-          <div className="relative min-h-72 border-t border-slate-200 bg-slate-50 p-4 lg:min-h-0 lg:border-l lg:border-t-0">
+          <div className="relative min-h-72 border-t border-border bg-muted p-4 lg:min-h-0 lg:border-l lg:border-t-0">
             <Image
               src={plansImage.src}
               alt={plansImage.alt}
@@ -223,10 +223,10 @@ function PromotionCard({
       id={`promo-${promotion.offerId}`}
       type="button"
       onClick={onOpen}
-      className="group flex h-full min-w-0 scroll-mt-28 flex-col overflow-hidden rounded-xl border border-white/10 bg-white text-left text-[#111827] shadow-[0_12px_30px_rgba(0,0,0,0.15)] transition duration-200 hover:border-[#DA291C]/35 hover:shadow-[0_16px_38px_rgba(0,0,0,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB4AC] focus-visible:ring-offset-4 focus-visible:ring-offset-[#111827]"
+      className="group flex h-full min-w-0 scroll-mt-28 flex-col overflow-hidden rounded-xl border border-border bg-card text-left text-foreground shadow-[0_12px_30px_rgba(0,0,0,0.15)] transition duration-200 hover:border-primary/35 hover:shadow-[0_16px_38px_rgba(0,0,0,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
       aria-label={`Ver promoción ${promotion.name}`}
     >
-      <span className="relative block h-64 w-full overflow-hidden border-b border-slate-200 bg-slate-50 p-3 sm:h-72">
+      <span className="relative block h-64 w-full overflow-hidden border-b border-border bg-muted p-3 sm:h-72">
         <Image
           src={cover.src}
           alt={cover.alt}
@@ -236,8 +236,8 @@ function PromotionCard({
           draggable={false}
         />
         {promotion.images.length > 1 ? (
-          <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/95 px-2.5 py-1 text-xs font-semibold text-slate-600 shadow-sm">
-            <Images className="h-3.5 w-3.5 text-[#DA291C]" />
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-card/95 px-2.5 py-1 text-xs font-semibold text-muted-foreground shadow-sm">
+            <Images className="h-3.5 w-3.5 text-primary" />
             {promotion.images.length} páginas
           </span>
         ) : null}
@@ -245,7 +245,7 @@ function PromotionCard({
 
       <span className="flex flex-1 flex-col p-4">
         <span className="flex flex-wrap items-center gap-2">
-          <span className="w-fit rounded-full border border-[#DA291C]/15 bg-[#DA291C]/[0.07] px-2.5 py-1 text-xs font-semibold text-[#B91F15]">
+          <span className="w-fit rounded-full border border-primary/15 bg-primary/[0.07] px-2.5 py-1 text-xs font-semibold text-brand-emphasis">
             {promotion.category}
           </span>
           {promotion.offerId === "oferta-medio" ? (
@@ -254,10 +254,10 @@ function PromotionCard({
             </span>
           ) : null}
         </span>
-        <span className="mt-3 text-lg font-semibold tracking-tight text-[#111827]">
+        <span className="mt-3 text-lg font-semibold tracking-tight text-foreground">
           {promotion.name}
         </span>
-        <span className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#DA291C] px-4 text-sm font-semibold text-white transition group-hover:bg-[#B91F15]">
+        <span className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition group-hover:bg-primary/90">
           Ver promoción
           <ArrowUpRight className="h-4 w-4" />
         </span>

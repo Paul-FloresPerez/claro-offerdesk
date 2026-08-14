@@ -21,8 +21,8 @@ export function PageHeader({
     <section
       className={
         isDark
-          ? "border-b border-white/10 bg-[#111827]"
-          : "border-b border-neutral-200 bg-white"
+          ? "border-b border-border bg-background"
+          : "border-b border-border bg-card"
       }
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:py-6">
@@ -31,8 +31,8 @@ export function PageHeader({
             <p
               className={
                 isDark
-                  ? "mb-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-[#FF8D83]"
-                  : "mb-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-[#DA291C]"
+                  ? "mb-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-brand-emphasis"
+                  : "mb-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-primary"
               }
             >
               {eyebrow}
@@ -41,8 +41,8 @@ export function PageHeader({
           <h1
             className={
               isDark
-                ? "text-2xl font-semibold tracking-tight text-white sm:text-[2rem]"
-                : "text-2xl font-semibold tracking-tight text-neutral-950 sm:text-[2rem]"
+                ? "text-2xl font-semibold tracking-tight text-foreground sm:text-[2rem]"
+                : "text-2xl font-semibold tracking-tight text-foreground sm:text-[2rem]"
             }
           >
             {title}
@@ -50,8 +50,8 @@ export function PageHeader({
           <p
             className={
               isDark
-                ? "mt-1.5 max-w-2xl text-sm leading-6 text-slate-300"
-                : "mt-2 text-sm leading-6 text-neutral-600"
+                ? "mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground"
+                : "mt-2 text-sm leading-6 text-muted-foreground"
             }
           >
             {description}

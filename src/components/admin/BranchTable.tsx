@@ -36,18 +36,18 @@ export default function BranchTable({ branches }: { branches: AdminBranchRow[] }
   }
 
   return (
-    <section className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.07]">
-      <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <section className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="flex flex-col gap-3 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-white">Sedes</h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">Sedes</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Crea, edita o desactiva sedes. No se eliminan registros.
           </p>
         </div>
         <Button
           type="button"
           onClick={openCreateDialog}
-          className="h-9 bg-[#DA291C] text-white hover:bg-[#B91F15]"
+          className="h-9 bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <Plus />
           Nueva sede
@@ -58,27 +58,27 @@ export default function BranchTable({ branches }: { branches: AdminBranchRow[] }
         {branches.map((branch) => (
           <article
             key={branch.id}
-            className="rounded-lg border border-white/10 bg-[#111827]/55 p-4"
+            className="rounded-lg border border-border bg-background/55 p-4"
           >
             <div className="flex items-start justify-between gap-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-[#DA291C]/15 text-[#FFB4AC]">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-primary/15 text-brand-emphasis">
                 <Building2 className="h-5 w-5" />
               </span>
               <StatusPill active={branch.isActive} />
             </div>
-            <h3 className="mt-4 text-lg font-semibold text-white">{branch.name}</h3>
-            <p className="mt-1 flex items-center gap-2 text-sm text-slate-400">
+            <h3 className="mt-4 text-lg font-semibold text-foreground">{branch.name}</h3>
+            <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
               {branch.city}
             </p>
             <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
-              <div className="rounded-md border border-white/10 bg-white/[0.04] p-3">
-                <dt className="text-xs text-slate-500">Asesores</dt>
-                <dd className="mt-1 font-semibold text-white">{branch.advisorCount}</dd>
+              <div className="rounded-md border border-border bg-card p-3">
+                <dt className="text-xs text-muted-foreground">Asesores</dt>
+                <dd className="mt-1 font-semibold text-foreground">{branch.advisorCount}</dd>
               </div>
-              <div className="rounded-md border border-white/10 bg-white/[0.04] p-3">
-                <dt className="text-xs text-slate-500">Supervisores</dt>
-                <dd className="mt-1 font-semibold text-white">
+              <div className="rounded-md border border-border bg-card p-3">
+                <dt className="text-xs text-muted-foreground">Supervisores</dt>
+                <dd className="mt-1 font-semibold text-foreground">
                   {branch.supervisorCount}
                 </dd>
               </div>
@@ -89,7 +89,7 @@ export default function BranchTable({ branches }: { branches: AdminBranchRow[] }
                 variant="outline"
                 size="sm"
                 onClick={() => openEditDialog(branch)}
-                className="border-white/10 bg-white/[0.06] text-slate-200 hover:bg-white/[0.1] hover:text-white"
+                className="border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
               >
                 <Pencil />
                 Editar
@@ -100,7 +100,7 @@ export default function BranchTable({ branches }: { branches: AdminBranchRow[] }
         ))}
 
         {branches.length === 0 ? (
-          <p className="p-2 text-sm text-slate-300 sm:col-span-2 xl:col-span-3">
+          <p className="p-2 text-sm text-muted-foreground sm:col-span-2 xl:col-span-3">
             Aun no hay sedes registradas.
           </p>
         ) : null}
@@ -109,13 +109,13 @@ export default function BranchTable({ branches }: { branches: AdminBranchRow[] }
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent
           key={selectedBranch?.id ?? "new-branch"}
-          className="border border-white/10 bg-[#0B1120] text-white sm:max-w-lg"
+          className="border border-border bg-header text-foreground sm:max-w-lg"
         >
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
               {selectedBranch ? "Editar sede" : "Nueva sede"}
             </DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogDescription className="text-muted-foreground">
               {selectedBranch
                 ? "Actualiza el nombre o la ciudad de la sede."
                 : "Registra una sede para asignar supervisores y asesores."}
@@ -147,7 +147,7 @@ function BranchStatusAction({ branch }: { branch: AdminBranchRow }) {
         variant="outline"
         size="sm"
         disabled={isPending}
-        className="border-white/10 bg-white/[0.06] text-slate-200 hover:bg-white/[0.1] hover:text-white"
+        className="border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
       >
         {nextActiveState ? <Power /> : <PowerOff />}
         {nextActiveState ? "Activar" : "Desactivar"}
@@ -157,8 +157,8 @@ function BranchStatusAction({ branch }: { branch: AdminBranchRow }) {
           aria-live="polite"
           className={
             state.status === "success"
-              ? "text-xs font-semibold text-emerald-200"
-              : "text-xs font-semibold text-[#FFB4AC]"
+              ? "text-xs font-semibold text-emerald-700 dark:text-emerald-200"
+              : "text-xs font-semibold text-brand-emphasis"
           }
         >
           {state.message}
@@ -173,8 +173,8 @@ function StatusPill({ active }: { active: boolean }) {
     <span
       className={
         active
-          ? "inline-flex h-7 items-center rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2.5 text-xs font-semibold text-emerald-200"
-          : "inline-flex h-7 items-center rounded-md border border-slate-500/20 bg-slate-500/10 px-2.5 text-xs font-semibold text-slate-300"
+          ? "inline-flex h-7 items-center rounded-md border border-emerald-400/20 bg-emerald-400/10 px-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-200"
+          : "inline-flex h-7 items-center rounded-md border border-slate-500/20 bg-muted0/10 px-2.5 text-xs font-semibold text-muted-foreground"
       }
     >
       {active ? "Activa" : "Inactiva"}

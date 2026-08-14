@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const statusClasses: Record<EstadoOferta, string> = {
   "material-oficial": "border-emerald-200 bg-emerald-50 text-emerald-700",
   validar: "border-yellow-200 bg-yellow-50 text-yellow-800",
-  incompleta: "border-red-200 bg-red-50 text-red-700",
+  incompleta: "border-primary/20 bg-primary/10 text-red-700",
 };
 
 const technologyClasses: Record<TecnologiaOferta, string> = {
@@ -22,8 +22,8 @@ const technologyClasses: Record<TecnologiaOferta, string> = {
 };
 
 const categoryClasses: Record<string, string> = {
-  "Oferta base": "border-red-200 bg-red-50 text-[#B91C1C]",
-  Hogar: "border-red-200 bg-red-50 text-[#B91C1C]",
+  "Oferta base": "border-primary/20 bg-primary/10 text-brand-emphasis",
+  Hogar: "border-primary/20 bg-primary/10 text-brand-emphasis",
   "Tecnologia / HFC": "border-orange-200 bg-orange-50 text-orange-700",
   "Promociones especiales": "border-yellow-200 bg-yellow-50 text-yellow-800",
   "Linea Movil": "border-sky-200 bg-sky-50 text-sky-700",
@@ -44,7 +44,7 @@ export function TechnologyBadge({ tecnologia }: { tecnologia: TecnologiaOferta }
       className={cn(
         "h-6 rounded-md",
         technologyClasses[tecnologia] ??
-          "border-slate-200 bg-slate-50 text-slate-700"
+          "border-border bg-muted text-foreground"
       )}
     >
       {tecnologia}
@@ -59,7 +59,7 @@ export function CategoryBadge({ categoria }: { categoria: CategoriaOferta }) {
       className={cn(
         "h-6 rounded-md",
         categoryClasses[categoria] ??
-          "border-slate-200 bg-slate-50 text-slate-700"
+          "border-border bg-muted text-foreground"
       )}
     >
       {categoria}

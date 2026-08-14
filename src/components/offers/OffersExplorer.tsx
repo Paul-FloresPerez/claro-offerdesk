@@ -74,14 +74,14 @@ export function OffersExplorer({ ofertas }: { ofertas: Oferta[] }) {
 
   return (
     <div className="space-y-7">
-      <section className="rounded-lg border border-white/10 bg-white p-4 text-[#111827] shadow-[0_18px_40px_rgba(0,0,0,0.20)]">
+      <section className="rounded-lg border border-border bg-card p-4 text-foreground shadow-[0_18px_40px_rgba(0,0,0,0.20)]">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-xl">
-            <div className="mb-2 inline-flex items-center gap-2 rounded-md bg-red-50 px-2.5 py-1 text-sm font-semibold text-[#B91C1C]">
+            <div className="mb-2 inline-flex items-center gap-2 rounded-md bg-primary/10 px-2.5 py-1 text-sm font-semibold text-brand-emphasis">
               <SlidersHorizontal className="h-4 w-4" />
               Control de búsqueda
             </div>
-            <p className="text-sm leading-6 text-slate-600">
+            <p className="text-sm leading-6 text-muted-foreground">
               Filtra por nombre, categoría, precio, velocidad, tecnología o
               beneficio cargado en las promociones.
             </p>
@@ -94,12 +94,12 @@ export function OffersExplorer({ ofertas }: { ofertas: Oferta[] }) {
 
         <div className="mt-5 grid gap-4">
           <label className="relative block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Buscar oferta, precio, velocidad, tecnología o categoría"
-              className="h-11 rounded-lg border-slate-200 bg-slate-50 pl-9 text-[#111827] shadow-inner placeholder:text-slate-400"
+              className="h-11 rounded-lg border-border bg-muted pl-9 text-foreground shadow-inner placeholder:text-muted-foreground"
             />
           </label>
 
@@ -162,23 +162,23 @@ export function OffersExplorer({ ofertas }: { ofertas: Oferta[] }) {
       <section className="space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-foreground">
               {filtered.length} ofertas encontradas
             </h2>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-muted-foreground">
               Oferta Regular aparece primero como oferta base / condición regular.
             </p>
           </div>
           {category !== allCategory ? (
-            <span className="inline-flex h-7 items-center rounded-md border border-[#DA291C]/30 bg-[#DA291C]/15 px-3 text-xs font-semibold text-[#FFB4AC]">
+            <span className="inline-flex h-7 items-center rounded-md border border-primary/30 bg-primary/15 px-3 text-xs font-semibold text-brand-emphasis">
               {category}
             </span>
           ) : null}
         </div>
 
         {regular ? (
-          <div className="rounded-lg border border-[#DA291C]/25 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(255,245,244,0.95))] p-3 shadow-[0_18px_42px_rgba(0,0,0,0.22)]">
-            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#B91C1C]">
+          <div className="rounded-lg border border-primary/25 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(255,245,244,0.95))] p-3 shadow-[0_18px_42px_rgba(0,0,0,0.22)]">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-brand-emphasis">
               <Database className="h-4 w-4" />
               Oferta base destacada
             </div>
@@ -197,10 +197,10 @@ export function OffersExplorer({ ofertas }: { ofertas: Oferta[] }) {
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="text-xl font-semibold text-foreground">
             Tabla comparativa
           </h2>
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-muted-foreground">
             Vista rápida para comparar precio, velocidad, tecnología y estado.
           </p>
         </div>
@@ -219,7 +219,7 @@ function FilterRow({
 }) {
   return (
     <div className="grid gap-2 lg:grid-cols-[120px_1fr] lg:items-center">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
+      <span className="text-sm font-medium text-foreground">{label}</span>
       <div className="flex flex-wrap gap-2">{children}</div>
     </div>
   );
@@ -241,8 +241,8 @@ function FilterButton({
       className={cn(
         "h-8 rounded-md border px-3 text-sm font-medium transition",
         active
-          ? "border-[#DA291C] bg-red-50 text-[#B91C1C] shadow-sm"
-          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+          ? "border-primary bg-primary/10 text-brand-emphasis shadow-sm"
+          : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
       )}
     >
       {children}

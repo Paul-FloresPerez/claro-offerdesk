@@ -21,7 +21,7 @@ export default async function AdminPage({
       title="Dashboard comercial"
       description="Lectura ejecutiva de ventas, conversión y carga operativa por sede y asesor."
       statusBadge={
-        <span className="inline-flex h-10 w-fit items-center rounded-lg border border-white/10 bg-white/[0.05] px-3 text-sm font-semibold text-slate-200">
+        <span className="inline-flex h-10 w-fit items-center rounded-lg border border-border bg-card px-3 text-sm font-semibold text-muted-foreground">
           {data.scopeLabel}
         </span>
       }

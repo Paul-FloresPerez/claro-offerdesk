@@ -13,11 +13,11 @@ import {
 export default function AdvisorSalesList({ sales }: { sales: AdvisorSaleRow[] }) {
   if (sales.length === 0) {
     return (
-      <div className="grid min-h-52 place-items-center rounded-lg border border-dashed border-white/15 bg-white/[0.035] p-6 text-center">
+      <div className="grid min-h-52 place-items-center rounded-lg border border-dashed border-border bg-card p-6 text-center">
         <div>
-          <FileSearch className="mx-auto size-8 text-slate-500" aria-hidden="true" />
-          <p className="mt-3 font-semibold text-white">Aún no tienes ventas</p>
-          <p className="mt-1 text-sm text-slate-400">
+          <FileSearch className="mx-auto size-8 text-muted-foreground" aria-hidden="true" />
+          <p className="mt-3 font-semibold text-foreground">Aún no tienes ventas</p>
+          <p className="mt-1 text-sm text-muted-foreground">
             Tus ventas aparecerán aquí cuando sean registradas por supervisión.
           </p>
         </div>
@@ -27,22 +27,22 @@ export default function AdvisorSalesList({ sales }: { sales: AdvisorSaleRow[] })
 
   return (
     <section aria-label="Mis ventas">
-      <div className="hidden overflow-hidden rounded-lg border border-white/10 bg-white/[0.05] md:block">
+      <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
         <Table>
-          <TableHeader className="bg-white/[0.05]">
-            <TableRow className="border-white/10 hover:bg-transparent">
-              <TableHead className="text-slate-300">Fecha</TableHead>
-              <TableHead className="text-slate-300">DNI cliente</TableHead>
-              <TableHead className="text-slate-300">Servicio</TableHead>
-              <TableHead className="text-slate-300">Estado</TableHead>
-              <TableHead className="text-slate-300">Motivo de rechazo</TableHead>
+          <TableHeader className="bg-card">
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground">Fecha</TableHead>
+              <TableHead className="text-muted-foreground">DNI cliente</TableHead>
+              <TableHead className="text-muted-foreground">Servicio</TableHead>
+              <TableHead className="text-muted-foreground">Estado</TableHead>
+              <TableHead className="text-muted-foreground">Motivo de rechazo</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {sales.map((sale) => (
               <TableRow
                 key={sale.id}
-                className="border-white/10 text-slate-200 hover:bg-white/[0.04]"
+                className="border-border text-muted-foreground hover:bg-card"
               >
                 <TableCell>{formatSaleDate(sale.saleDate)}</TableCell>
                 <TableCell className="font-mono text-xs">
@@ -51,7 +51,7 @@ export default function AdvisorSalesList({ sales }: { sales: AdvisorSaleRow[] })
                 <TableCell>
                   <span className="block max-w-64 truncate">{sale.service}</span>
                   {sale.planName ? (
-                    <span className="mt-0.5 block max-w-64 truncate text-xs text-slate-500">
+                    <span className="mt-0.5 block max-w-64 truncate text-xs text-muted-foreground">
                       {sale.planName}
                     </span>
                   ) : null}
@@ -60,7 +60,7 @@ export default function AdvisorSalesList({ sales }: { sales: AdvisorSaleRow[] })
                   <SaleStatusBadge status={sale.status} />
                 </TableCell>
                 <TableCell>
-                  <span className="block max-w-72 whitespace-normal text-sm text-slate-400">
+                  <span className="block max-w-72 whitespace-normal text-sm text-muted-foreground">
                     {sale.rejectionReason ?? "—"}
                   </span>
                 </TableCell>
@@ -74,31 +74,31 @@ export default function AdvisorSalesList({ sales }: { sales: AdvisorSaleRow[] })
         {sales.map((sale) => (
           <article
             key={sale.id}
-            className="rounded-lg border border-white/10 bg-white/[0.06] p-4"
+            className="rounded-lg border border-border bg-card p-4"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-mono text-sm font-semibold text-white">
+                <p className="font-mono text-sm font-semibold text-foreground">
                   DNI {sale.customerDni}
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {formatSaleDate(sale.saleDate)}
                 </p>
               </div>
               <SaleStatusBadge status={sale.status} />
             </div>
-            <p className="mt-4 text-sm font-semibold text-slate-200">
+            <p className="mt-4 text-sm font-semibold text-muted-foreground">
               {sale.service}
             </p>
             {sale.planName ? (
-              <p className="mt-1 text-sm text-slate-400">{sale.planName}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{sale.planName}</p>
             ) : null}
             {sale.rejectionReason ? (
               <div className="mt-4 rounded-md border border-red-300/15 bg-red-300/[0.06] p-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-red-100">
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-red-700 dark:text-red-100">
                   Motivo de rechazo
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-300">
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
                   {sale.rejectionReason}
                 </p>
               </div>

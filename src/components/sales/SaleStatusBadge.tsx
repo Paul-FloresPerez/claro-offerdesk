@@ -6,9 +6,9 @@ import {
 import { cn } from "@/lib/utils";
 
 const statusClasses: Record<SaleStatusValue, string> = {
-  PENDIENTE: "border-amber-300/25 bg-amber-300/10 text-amber-100",
-  INSTALADA: "border-emerald-300/25 bg-emerald-300/10 text-emerald-100",
-  RECHAZADA: "border-red-300/25 bg-red-300/10 text-red-100",
+  PENDIENTE: "border-amber-300/25 bg-amber-300/10 text-amber-800 dark:text-amber-100",
+  INSTALADA: "border-emerald-300/25 bg-emerald-300/10 text-emerald-700 dark:text-emerald-100",
+  RECHAZADA: "border-red-300/25 bg-red-300/10 text-red-700 dark:text-red-100",
 };
 
 export default function SaleStatusBadge({

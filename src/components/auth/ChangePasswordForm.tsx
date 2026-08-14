@@ -59,15 +59,15 @@ export function ChangePasswordForm({
   }
 
   return (
-    <section className="mx-auto w-full max-w-lg rounded-xl border border-white/10 bg-white/[0.08] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur sm:p-6">
+    <section className="mx-auto w-full max-w-lg rounded-xl border border-border bg-accent p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur sm:p-6">
       <div className="mb-6">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#FFB4AC]">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-emphasis">
           Seguridad de cuenta
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
           Cambiar contrasena
         </h1>
-        <p className="mt-2 text-sm leading-6 text-slate-300">
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Hola {fullName}. Actualiza tu contrasena temporal para continuar.
         </p>
       </div>
@@ -102,8 +102,8 @@ export function ChangePasswordForm({
             aria-live="polite"
             className={
               state.status === "success"
-                ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-200"
-                : "rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 py-2 text-sm font-semibold text-[#FFB4AC]"
+                ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-200"
+                : "rounded-md border border-primary/25 bg-primary/12 px-3 py-2 text-sm font-semibold text-brand-emphasis"
             }
           >
             {state.message}
@@ -114,7 +114,7 @@ export function ChangePasswordForm({
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="h-10 bg-[#DA291C] text-white hover:bg-[#B91F15]"
+            className="h-10 bg-primary text-primary-foreground hover:bg-primary/90"
           >
             {isSubmitting ? "Actualizando..." : "Actualizar contrasena"}
           </Button>
@@ -143,7 +143,7 @@ function PasswordField({
   value?: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-semibold text-slate-200">
+    <label className="grid gap-2 text-sm font-semibold text-muted-foreground">
       {label}
       <Input
         name={name}
@@ -155,9 +155,9 @@ function PasswordField({
         value={value}
         onChange={onChange ? (event) => onChange(event.target.value) : undefined}
         aria-invalid={Boolean(error)}
-        className="h-11 border-white/10 bg-[#111827]/70 text-white placeholder:text-slate-500"
+        className="h-11 border-border bg-background text-foreground placeholder:text-muted-foreground"
       />
-      {error ? <span className="text-xs font-medium text-[#FFB4AC]">{error}</span> : null}
+      {error ? <span className="text-xs font-medium text-brand-emphasis">{error}</span> : null}
     </label>
   );
 }

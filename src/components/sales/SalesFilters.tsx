@@ -32,31 +32,31 @@ export default function SalesFilters({
   values: SalesFilterValues;
 }) {
   const selectClassName =
-    "h-10 w-full rounded-md border border-white/10 bg-[#111827]/70 px-3 text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C]/60";
+    "h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
 
   return (
     <form
       method="get"
       className={cn(
-        "grid gap-3 rounded-lg border border-white/10 bg-white/[0.05] p-4 sm:grid-cols-2",
+        "grid gap-3 rounded-lg border border-border bg-card p-4 sm:grid-cols-2",
         branches.length > 0
           ? "xl:grid-cols-[1.2fr_1fr_1fr_1fr_auto]"
           : "xl:grid-cols-[1.2fr_1fr_1fr_auto]"
       )}
     >
-      <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-400">
+      <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
         DNI cliente
         <Input
           name="dni"
           defaultValue={values.dni}
           placeholder="Buscar DNI"
           maxLength={20}
-          className="h-10 border-white/10 bg-[#111827]/70 text-white placeholder:text-slate-500"
+          className="h-10 border-border bg-background text-foreground placeholder:text-muted-foreground"
         />
       </label>
 
       {branches.length > 0 ? (
-        <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-400">
+        <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
           Sede
           <select
             name="branchId"
@@ -73,7 +73,7 @@ export default function SalesFilters({
         </label>
       ) : null}
 
-      <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-400">
+      <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
         Asesor
         <select
           name="advisorId"
@@ -90,7 +90,7 @@ export default function SalesFilters({
         </select>
       </label>
 
-      <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-400">
+      <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
         Estado
         <select
           name="status"

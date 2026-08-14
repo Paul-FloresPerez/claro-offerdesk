@@ -61,14 +61,14 @@ export default function SaleForm({
     <form ref={formRef} action={formAction} className="grid gap-4 sm:grid-cols-2">
       {sale ? <input type="hidden" name="id" value={sale.id} /> : null}
 
-      <label className="grid gap-2 text-sm font-semibold text-slate-200 sm:col-span-2">
+      <label className="grid gap-2 text-sm font-semibold text-muted-foreground sm:col-span-2">
         Asesor *
         <select
           name="advisorId"
           defaultValue={sale?.advisorId ?? ""}
           required
           aria-invalid={Boolean(fieldError(state, "advisorId"))}
-          className="h-10 rounded-md border border-white/10 bg-[#111827]/70 px-3 text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C]/60 aria-invalid:border-[#DA291C]"
+          className="h-10 rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/60 aria-invalid:border-primary"
         >
           <option value="">Selecciona un asesor</option>
           {sale && !currentAdvisorIsAvailable ? (
@@ -123,7 +123,7 @@ export default function SaleForm({
         autoComplete="email"
       />
 
-      <label className="grid gap-2 text-sm font-semibold text-slate-200 sm:col-span-2">
+      <label className="grid gap-2 text-sm font-semibold text-muted-foreground sm:col-span-2">
         Dirección
         <textarea
           name="customerAddress"
@@ -132,7 +132,7 @@ export default function SaleForm({
           rows={2}
           autoComplete="street-address"
           aria-invalid={Boolean(fieldError(state, "customerAddress"))}
-          className="min-h-20 resize-y rounded-md border border-white/10 bg-[#111827]/70 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus-visible:ring-2 focus-visible:ring-[#DA291C]/60 aria-invalid:border-[#DA291C]"
+          className="min-h-20 resize-y rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/60 aria-invalid:border-primary"
         />
         <FieldError message={fieldError(state, "customerAddress")} />
       </label>
@@ -163,7 +163,7 @@ export default function SaleForm({
         required
       />
 
-      <label className="grid gap-2 text-sm font-semibold text-slate-200">
+      <label className="grid gap-2 text-sm font-semibold text-muted-foreground">
         Estado *
         <select
           name="status"
@@ -172,7 +172,7 @@ export default function SaleForm({
             setStatus(event.target.value as SaleStatusValue)
           }
           aria-invalid={Boolean(fieldError(state, "status"))}
-          className="h-10 rounded-md border border-white/10 bg-[#111827]/70 px-3 text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-[#DA291C]/60 aria-invalid:border-[#DA291C]"
+          className="h-10 rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/60 aria-invalid:border-primary"
         >
           {SALE_STATUS_VALUES.map((value) => (
             <option key={value} value={value}>
@@ -184,7 +184,7 @@ export default function SaleForm({
       </label>
 
       {status === "RECHAZADA" ? (
-        <label className="grid gap-2 text-sm font-semibold text-slate-200 sm:col-span-2">
+        <label className="grid gap-2 text-sm font-semibold text-muted-foreground sm:col-span-2">
           Motivo de rechazo *
           <textarea
             name="rejectionReason"
@@ -193,7 +193,7 @@ export default function SaleForm({
             rows={3}
             required
             aria-invalid={Boolean(fieldError(state, "rejectionReason"))}
-            className="min-h-24 resize-y rounded-md border border-white/10 bg-[#111827]/70 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus-visible:ring-2 focus-visible:ring-[#DA291C]/60 aria-invalid:border-[#DA291C]"
+            className="min-h-24 resize-y rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/60 aria-invalid:border-primary"
             placeholder="Describe por qué fue rechazada"
           />
           <FieldError message={fieldError(state, "rejectionReason")} />
@@ -205,8 +205,8 @@ export default function SaleForm({
           aria-live="polite"
           className={
             state.status === "success"
-              ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-200 sm:col-span-2"
-              : "rounded-md border border-[#DA291C]/25 bg-[#DA291C]/12 px-3 py-2 text-sm font-semibold text-[#FFB4AC] sm:col-span-2"
+              ? "rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-200 sm:col-span-2"
+              : "rounded-md border border-primary/25 bg-primary/12 px-3 py-2 text-sm font-semibold text-brand-emphasis sm:col-span-2"
           }
         >
           {state.message}
@@ -255,7 +255,7 @@ function SaleField({
   type?: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-semibold text-slate-200">
+    <label className="grid gap-2 text-sm font-semibold text-muted-foreground">
       {label}
       <Input
         name={name}
@@ -267,7 +267,7 @@ function SaleField({
         placeholder={placeholder}
         autoComplete={autoComplete}
         aria-invalid={Boolean(error)}
-        className="h-10 border-white/10 bg-[#111827]/70 text-white placeholder:text-slate-500"
+        className="h-10 border-border bg-background text-foreground placeholder:text-muted-foreground"
       />
       <FieldError message={error} />
     </label>
@@ -276,7 +276,7 @@ function SaleField({
 
 function FieldError({ message }: { message?: string }) {
   return message ? (
-    <span className="text-xs font-medium text-[#FFB4AC]">{message}</span>
+    <span className="text-xs font-medium text-brand-emphasis">{message}</span>
   ) : null;
 }
 

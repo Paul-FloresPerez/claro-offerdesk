@@ -35,8 +35,8 @@ export default async function SupervisionPage({
   const filters = parseSalesFilters(resolvedSearchParams);
   const branchWhere = { branchId: scope.branchId } satisfies Prisma.SaleWhereInput;
   const listWhere = {
-    ...branchWhere,
     ...saleFilterWhere(filters),
+    ...branchWhere,
   } satisfies Prisma.SaleWhereInput;
 
   const [advisors, sales, statusGroups] = await Promise.all([
@@ -69,15 +69,15 @@ export default async function SupervisionPage({
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
-      <section className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <section className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#FF8D83]">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-emphasis">
             Supervisión
           </p>
-          <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             {user.branch.name}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Registra y actualiza las ventas de los asesores de tu sede.
           </p>
         </div>
@@ -86,7 +86,7 @@ export default async function SupervisionPage({
             href="/supervision/dashboard"
             className={cn(
               buttonVariants({ variant: "outline" }),
-              "h-10 border-white/15 bg-white/[0.05] px-3 text-white hover:bg-white/[0.1] hover:text-white"
+              "h-10 border-border bg-card px-3 text-foreground hover:bg-accent hover:text-foreground"
             )}
           >
             <BarChart3 className="size-4" aria-hidden="true" />
@@ -105,10 +105,10 @@ export default async function SupervisionPage({
 
       <section className="mt-8">
         <div className="mb-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#FF8D83]">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-emphasis">
             Operación comercial
           </p>
-          <h2 className="mt-1 text-xl font-semibold text-white sm:text-2xl">
+          <h2 className="mt-1 text-xl font-semibold text-foreground sm:text-2xl">
             Ventas de la sede
           </h2>
         </div>

@@ -8,8 +8,8 @@ type PromoBadgeProps = {
 };
 
 const toneClasses = {
-  red: "border-red-200 bg-red-50 text-[#B91C1C]",
-  slate: "border-slate-200 bg-slate-50 text-slate-700",
+  red: "border-primary/20 bg-primary/10 text-brand-emphasis",
+  slate: "border-border bg-muted text-foreground",
   yellow: "border-yellow-200 bg-yellow-50 text-yellow-800",
   green: "border-emerald-200 bg-emerald-50 text-emerald-700",
   blue: "border-sky-200 bg-sky-50 text-sky-700",
