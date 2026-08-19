@@ -83,8 +83,15 @@ function isStatus(value?: string): value is "DRAFT" | "PUBLISHED" | "ARCHIVED" {
   return value === "DRAFT" || value === "PUBLISHED" || value === "ARCHIVED";
 }
 
-function isCategory(value?: string): value is "Hogar" | "Móvil" | "Negocios" {
-  return value === "Hogar" || value === "Móvil" || value === "Negocios";
+function isCategory(
+  value?: string
+): value is "Hogar" | "Convergencia" | "Móvil" | "Negocios" {
+  return (
+    value === "Hogar" ||
+    value === "Convergencia" ||
+    value === "Móvil" ||
+    value === "Negocios"
+  );
 }
 
 function isKind(value?: string): value is "CAMPAIGN" | "REGULAR_OFFER" {

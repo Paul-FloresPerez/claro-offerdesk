@@ -2,7 +2,12 @@ import { z } from "zod";
 
 export const promotionKinds = ["CAMPAIGN", "REGULAR_OFFER"] as const;
 export const promotionStatuses = ["DRAFT", "PUBLISHED", "ARCHIVED"] as const;
-export const promotionCategories = ["Hogar", "Móvil", "Negocios"] as const;
+export const promotionCategories = [
+  "Hogar",
+  "Convergencia",
+  "Móvil",
+  "Negocios",
+] as const;
 export const promotionTechnologies = ["FTTH", "HFC"] as const;
 export const promotionPlayTypes = [
   "1 Play",

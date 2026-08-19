@@ -175,113 +175,362 @@ export function PromotionEditor({ promotion }: { promotion?: PromotionEditorValu
             <input type="hidden" name="conditions" value={serializeList(conditions)} />
             <input type="hidden" name="validations" value={serializeList(validations)} />
 
-            <FormSection title="Identidad" description="Nombre, URL interna y clasificación comercial.">
-            <div className="grid gap-5 md:grid-cols-2">
-              <Field data-invalid={Boolean(state.fieldErrors?.title)}>
-                <FieldLabel htmlFor="promotion-title">Título *</FieldLabel>
-                <Input id="promotion-title" name="title" value={title} onChange={(event) => updateTitle(event.target.value)} maxLength={160} aria-invalid={Boolean(state.fieldErrors?.title)} required />
-                <FieldError>{state.fieldErrors?.title?.[0]}</FieldError>
-              </Field>
-              <Field data-invalid={Boolean(state.fieldErrors?.slug)}>
-                <FieldLabel htmlFor="promotion-slug">Slug *</FieldLabel>
-                <Input id="promotion-slug" name="slug" value={slug} onChange={(event) => { setSlugTouched(true); setSlug(slugifyPromotionTitle(event.target.value)); }} maxLength={180} aria-invalid={Boolean(state.fieldErrors?.slug)} required />
-                <FieldDescription>Único, en minúsculas y con guiones. No se numerará automáticamente.</FieldDescription>
-                <FieldError>{state.fieldErrors?.slug?.[0]}</FieldError>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="promotion-kind">Tipo</FieldLabel>
-                <Select value={kind} onValueChange={(value) => { setKind(value as typeof kind); markDirty(); }}>
-                  <SelectTrigger id="promotion-kind" className="w-full"><SelectValue /></SelectTrigger>
-                  <SelectContent position="popper"><SelectItem value="CAMPAIGN">Campaña</SelectItem><SelectItem value="REGULAR_OFFER">Oferta regular</SelectItem></SelectContent>
-                </Select>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="promotion-category">Categoría</FieldLabel>
-                <Select value={category} onValueChange={(value) => { setCategory(value); markDirty(); }}>
-                  <SelectTrigger id="promotion-category" className="w-full"><SelectValue /></SelectTrigger>
-                  <SelectContent position="popper"><SelectItem value="NONE">Sin categoría</SelectItem><SelectItem value="Hogar">Hogar</SelectItem><SelectItem value="Móvil">Móvil</SelectItem><SelectItem value="Negocios">Negocios</SelectItem></SelectContent>
-                </Select>
-              </Field>
-              <Field className="md:col-span-2">
-                <FieldLabel htmlFor="promotion-description">Descripción breve</FieldLabel>
-                <Textarea id="promotion-description" name="shortDescription" defaultValue={initial.shortDescription ?? ""} maxLength={500} rows={3} />
-                <FieldDescription>Será obligatoria al publicar.</FieldDescription>
-              </Field>
-              <Field className="md:col-span-2">
-                <FieldLabel>Etiquetas</FieldLabel>
-                <PromotionChipInput value={tags} onChange={(value) => updateArray(setTags, value)} />
-              </Field>
-            </div>
+            <FormSection
+              title="Información principal"
+              description="Completa primero la información que identifica la promoción."
+            >
+              <div className="grid gap-5 md:grid-cols-2">
+                <Field
+                  className="md:col-span-2"
+                  data-invalid={Boolean(state.fieldErrors?.title)}
+                >
+                  <FieldLabel htmlFor="promotion-title">Título *</FieldLabel>
+                  <Input
+                    id="promotion-title"
+                    name="title"
+                    value={title}
+                    onChange={(event) => updateTitle(event.target.value)}
+                    maxLength={160}
+                    aria-invalid={Boolean(state.fieldErrors?.title)}
+                    placeholder="Ej. Promo 1 Sol"
+                    required
+                  />
+                  <FieldError>{state.fieldErrors?.title?.[0]}</FieldError>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="promotion-kind">Tipo</FieldLabel>
+                  <Select
+                    value={kind}
+                    onValueChange={(value) => {
+                      setKind(value as typeof kind);
+                      markDirty();
+                    }}
+                  >
+                    <SelectTrigger id="promotion-kind" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      <SelectItem value="CAMPAIGN">Campaña</SelectItem>
+                      <SelectItem value="REGULAR_OFFER">
+                        Oferta regular
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="promotion-category">Categoría</FieldLabel>
+                  <Select
+                    value={category}
+                    onValueChange={(value) => {
+                      setCategory(value);
+                      markDirty();
+                    }}
+                  >
+                    <SelectTrigger id="promotion-category" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      <SelectItem value="NONE">Sin categoría</SelectItem>
+                      <SelectItem value="Hogar">Hogar</SelectItem>
+                      <SelectItem value="Convergencia">Convergencia</SelectItem>
+                      <SelectItem value="Móvil">Móvil</SelectItem>
+                      <SelectItem value="Negocios">Negocios</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    Convergencia agrupa campañas de servicios fijos y móviles.
+                  </FieldDescription>
+                </Field>
+                <Field className="md:col-span-2">
+                  <FieldLabel htmlFor="promotion-description">
+                    Descripción breve
+                  </FieldLabel>
+                  <Textarea
+                    id="promotion-description"
+                    name="shortDescription"
+                    defaultValue={initial.shortDescription ?? ""}
+                    maxLength={500}
+                    rows={3}
+                    placeholder="Explica brevemente para quién y para qué sirve la promoción."
+                  />
+                  <FieldDescription>Será obligatoria al publicar.</FieldDescription>
+                </Field>
+              </div>
             </FormSection>
 
-            <FormSection title="Visibilidad y orden" description="Define prioridad y vigencia en hora de Lima.">
-            <div className="grid gap-5 md:grid-cols-2">
-              <Field orientation="horizontal" className="rounded-lg border border-border p-4">
-                <div className="flex-1"><FieldLabel htmlFor="promotion-featured">Promoción destacada</FieldLabel><FieldDescription>Prioriza la promoción en listados futuros.</FieldDescription></div>
-                <Switch id="promotion-featured" checked={featured} onCheckedChange={(checked) => { setFeatured(checked); markDirty(); }} />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="promotion-sort-order">Orden</FieldLabel>
-                <Input id="promotion-sort-order" name="sortOrder" type="number" min={0} max={10000} defaultValue={initial.sortOrder} />
-              </Field>
-              <Field data-invalid={Boolean(state.fieldErrors?.validFrom)}>
-                <FieldLabel htmlFor="promotion-valid-from">Válida desde</FieldLabel>
-                <Input id="promotion-valid-from" name="validFrom" type="datetime-local" defaultValue={initial.validFrom} aria-invalid={Boolean(state.fieldErrors?.validFrom)} />
-                <FieldError>{state.fieldErrors?.validFrom?.[0]}</FieldError>
-              </Field>
-              <Field data-invalid={Boolean(state.fieldErrors?.validUntil)}>
-                <FieldLabel htmlFor="promotion-valid-until">Válida hasta</FieldLabel>
-                <Input id="promotion-valid-until" name="validUntil" type="datetime-local" defaultValue={initial.validUntil} aria-invalid={Boolean(state.fieldErrors?.validUntil)} />
-                <FieldDescription>Si no defines fecha final, permanecerá vigente hasta que sea despublicada o archivada.</FieldDescription>
-                <FieldError>{state.fieldErrors?.validUntil?.[0]}</FieldError>
-              </Field>
-            </div>
+            <FormSection
+              title="Vigencia"
+              description="Define el periodo de disponibilidad usando hora de Lima."
+            >
+              <div className="grid gap-5 md:grid-cols-2">
+                <Field data-invalid={Boolean(state.fieldErrors?.validFrom)}>
+                  <FieldLabel htmlFor="promotion-valid-from">
+                    Válida desde
+                  </FieldLabel>
+                  <Input
+                    id="promotion-valid-from"
+                    name="validFrom"
+                    type="datetime-local"
+                    defaultValue={initial.validFrom}
+                    aria-invalid={Boolean(state.fieldErrors?.validFrom)}
+                  />
+                  <FieldError>{state.fieldErrors?.validFrom?.[0]}</FieldError>
+                </Field>
+                <Field data-invalid={Boolean(state.fieldErrors?.validUntil)}>
+                  <FieldLabel htmlFor="promotion-valid-until">
+                    Válida hasta
+                  </FieldLabel>
+                  <Input
+                    id="promotion-valid-until"
+                    name="validUntil"
+                    type="datetime-local"
+                    defaultValue={initial.validUntil}
+                    aria-invalid={Boolean(state.fieldErrors?.validUntil)}
+                  />
+                  <FieldDescription>
+                    Si no defines fecha final, permanecerá vigente hasta que sea
+                    despublicada o archivada.
+                  </FieldDescription>
+                  <FieldError>{state.fieldErrors?.validUntil?.[0]}</FieldError>
+                </Field>
+              </div>
             </FormSection>
 
-            <FormSection title="Segmentación" description="Ayuda a encontrar la promoción según tecnología y jugada comercial.">
-            <div className="grid gap-5 md:grid-cols-2">
-              <Field>
-                <FieldLabel>Tecnologías</FieldLabel>
-                <ToggleGroup type="multiple" variant="outline" value={technologies} onValueChange={(value) => updateArray(setTechnologies, value)} className="flex-wrap">
-                  <ToggleGroupItem value="FTTH" aria-label="FTTH">FTTH</ToggleGroupItem><ToggleGroupItem value="HFC" aria-label="HFC">HFC</ToggleGroupItem>
-                </ToggleGroup>
-              </Field>
-              <Field>
-                <FieldLabel>Tipo de jugada</FieldLabel>
-                <ToggleGroup type="multiple" variant="outline" value={playTypes} onValueChange={(value) => updateArray(setPlayTypes, value)} className="flex-wrap">
-                  {['1 Play', '2 Play', '3 Play'].map((item) => <ToggleGroupItem key={item} value={item}>{item}</ToggleGroupItem>)}
-                </ToggleGroup>
-              </Field>
-              <Field className="md:col-span-2">
-                <FieldLabel htmlFor="promotion-zone">Resumen de cobertura o zona</FieldLabel>
-                <Textarea id="promotion-zone" name="zoneSummary" defaultValue={initial.zoneSummary ?? ""} maxLength={2000} rows={3} />
-              </Field>
-            </div>
+            <FormSection
+              title="Clasificación"
+              description="Selecciona todas las opciones que correspondan a la campaña."
+            >
+              <div className="grid gap-5 md:grid-cols-2">
+                <Field>
+                  <FieldLabel>Tecnologías</FieldLabel>
+                  <ToggleGroup
+                    type="multiple"
+                    variant="outline"
+                    value={technologies}
+                    onValueChange={(value) =>
+                      updateArray(setTechnologies, value)
+                    }
+                    className="w-full flex-wrap justify-start"
+                    aria-label="Tecnologías de la promoción"
+                  >
+                    <ToggleGroupItem value="FTTH">FTTH</ToggleGroupItem>
+                    <ToggleGroupItem value="HFC">HFC</ToggleGroupItem>
+                  </ToggleGroup>
+                  <FieldDescription>
+                    Puedes seleccionar una o ambas tecnologías.
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>Tipo de Play</FieldLabel>
+                  <ToggleGroup
+                    type="multiple"
+                    variant="outline"
+                    value={playTypes}
+                    onValueChange={(value) => updateArray(setPlayTypes, value)}
+                    className="w-full flex-wrap justify-start"
+                    aria-label="Tipos de Play de la promoción"
+                  >
+                    {["1 Play", "2 Play", "3 Play"].map((item) => (
+                      <ToggleGroupItem key={item} value={item}>
+                        {item}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                  <FieldDescription>
+                    La selección es múltiple y opcional.
+                  </FieldDescription>
+                </Field>
+                <Field className="md:col-span-2">
+                  <FieldLabel>Clasificación adicional</FieldLabel>
+                  <PromotionChipInput
+                    value={tags}
+                    onChange={(value) => updateArray(setTags, value)}
+                    placeholder="Ej. Full Claro, Focalizada, Universitario, Postpago, Prepago"
+                  />
+                  <FieldDescription>
+                    Opcional. Sirven para organizar y buscar promociones.
+                  </FieldDescription>
+                </Field>
+              </div>
             </FormSection>
 
-            <FormSection title="Contenido comercial" description="Listas breves, accionables y fáciles de leer.">
-            <div className="grid gap-6 lg:grid-cols-3">
-              <Field><FieldLabel>Beneficios</FieldLabel><PromotionListEditor value={benefits} onChange={(value) => updateArray(setBenefits, value)} emptyLabel="Sin beneficios agregados." /></Field>
-              <Field><FieldLabel>Condiciones</FieldLabel><PromotionListEditor value={conditions} onChange={(value) => updateArray(setConditions, value)} emptyLabel="Sin condiciones agregadas." /></Field>
-              <Field><FieldLabel>Validaciones</FieldLabel><PromotionListEditor value={validations} onChange={(value) => updateArray(setValidations, value)} emptyLabel="Sin validaciones agregadas." /></Field>
-            </div>
-            <Field>
-              <FieldLabel htmlFor="promotion-commercial-text">Texto comercial</FieldLabel>
-              <Textarea id="promotion-commercial-text" name="commercialText" defaultValue={initial.commercialText ?? ""} maxLength={10000} rows={7} placeholder="Guía o discurso comercial para el asesor…" />
-            </Field>
+            <FormSection
+              title="Información comercial"
+              description="Resume la cobertura y el mensaje que utilizará el asesor."
+            >
+              <div className="flex flex-col gap-5">
+                <Field>
+                  <FieldLabel htmlFor="promotion-zone">
+                    Resumen de cobertura
+                  </FieldLabel>
+                  <Textarea
+                    id="promotion-zone"
+                    name="zoneSummary"
+                    defaultValue={initial.zoneSummary ?? ""}
+                    maxLength={2000}
+                    rows={3}
+                    placeholder="Ej. Chiclayo, Lambayeque, Trujillo y Piura."
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="promotion-commercial-text">
+                    Texto sugerido para ofrecer al cliente
+                  </FieldLabel>
+                  <Textarea
+                    id="promotion-commercial-text"
+                    name="commercialText"
+                    defaultValue={initial.commercialText ?? ""}
+                    maxLength={10000}
+                    rows={7}
+                    placeholder="Escribe una guía breve y clara para el asesor…"
+                  />
+                </Field>
+              </div>
+            </FormSection>
+
+            <FormSection
+              title="Beneficios y condiciones"
+              description="Organiza la información que el asesor necesita para ofrecer correctamente."
+            >
+              <div className="grid gap-6 lg:grid-cols-3">
+                <Field>
+                  <FieldLabel>Beneficios para mostrar</FieldLabel>
+                  <FieldDescription>
+                    Agrega los principales beneficios que debe conocer el asesor.
+                  </FieldDescription>
+                  <PromotionListEditor
+                    value={benefits}
+                    onChange={(value) => updateArray(setBenefits, value)}
+                    emptyLabel="Sin beneficios agregados."
+                    addLabel="Agregar beneficio"
+                    placeholder="Ej. 1 Repetidor Mesh gratis"
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel>Condiciones de la promoción</FieldLabel>
+                  <FieldDescription>
+                    Condiciones comerciales importantes para ofrecer correctamente
+                    la campaña.
+                  </FieldDescription>
+                  <PromotionListEditor
+                    value={conditions}
+                    onChange={(value) => updateArray(setConditions, value)}
+                    emptyLabel="Sin condiciones agregadas."
+                    addLabel="Agregar condición"
+                    placeholder="Ej. Sujeto a evaluación crediticia."
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel>Qué debe validar el asesor</FieldLabel>
+                  <FieldDescription>
+                    Indica qué debe comprobar el asesor antes de ofrecer o registrar
+                    la venta.
+                  </FieldDescription>
+                  <PromotionListEditor
+                    value={validations}
+                    onChange={(value) => updateArray(setValidations, value)}
+                    emptyLabel="Sin validaciones agregadas."
+                    addLabel="Agregar validación"
+                    placeholder="Ej. Validar cobertura o confirmar vigencia en Vendamos."
+                  />
+                </Field>
+              </div>
+            </FormSection>
+
+            <FormSection
+              title="Material comercial"
+              description="Administra flyers, coberturas, cuadros y documentos privados."
+            >
+              {promotion ? (
+                <PromotionAssetManager
+                  promotionId={promotion.id}
+                  assets={promotion.assets}
+                />
+              ) : (
+                <Alert>
+                  <Info />
+                  <AlertTitle>Materiales después del primer guardado</AlertTitle>
+                  <AlertDescription>
+                    Guarda el borrador para obtener su identificador y habilitar la
+                    carga privada de archivos.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </FormSection>
+
+            <FormSection
+              title="Opciones avanzadas"
+              description="Ajustes que normalmente no necesitas modificar."
+            >
+              <div className="grid gap-5 md:grid-cols-2">
+                <Field
+                  className="md:col-span-2"
+                  data-invalid={Boolean(state.fieldErrors?.slug)}
+                >
+                  <FieldLabel htmlFor="promotion-slug">
+                    Identificador URL (slug)
+                  </FieldLabel>
+                  <Input
+                    id="promotion-slug"
+                    name="slug"
+                    value={slug}
+                    onChange={(event) => {
+                      setSlugTouched(true);
+                      setSlug(slugifyPromotionTitle(event.target.value));
+                    }}
+                    maxLength={180}
+                    aria-invalid={Boolean(state.fieldErrors?.slug)}
+                    required
+                  />
+                  <FieldDescription>
+                    Se genera automáticamente desde el título. Edítalo solo si
+                    necesitas una URL diferente.
+                  </FieldDescription>
+                  <FieldError>{state.fieldErrors?.slug?.[0]}</FieldError>
+                </Field>
+                <Field
+                  orientation="horizontal"
+                  className="rounded-lg border border-border p-4"
+                >
+                  <div className="flex-1">
+                    <FieldLabel htmlFor="promotion-featured">
+                      Promoción destacada
+                    </FieldLabel>
+                    <FieldDescription>
+                      Prioriza la promoción en listados futuros.
+                    </FieldDescription>
+                  </div>
+                  <Switch
+                    id="promotion-featured"
+                    checked={featured}
+                    onCheckedChange={(checked) => {
+                      setFeatured(checked);
+                      markDirty();
+                    }}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="promotion-sort-order">Orden</FieldLabel>
+                  <Input
+                    id="promotion-sort-order"
+                    name="sortOrder"
+                    type="number"
+                    min={0}
+                    max={10000}
+                    defaultValue={initial.sortOrder}
+                  />
+                  <FieldDescription>
+                    Déjalo en 0 salvo que necesites controlar la prioridad manual.
+                  </FieldDescription>
+                </Field>
+              </div>
             </FormSection>
           </form>
-
-          {promotion ? (
-            <Card><CardContent><PromotionAssetManager promotionId={promotion.id} assets={promotion.assets} /></CardContent></Card>
-          ) : (
-            <Alert><Info /><AlertTitle>Materiales después del primer guardado</AlertTitle><AlertDescription>Guarda el borrador para obtener su identificador y habilitar la carga privada de archivos.</AlertDescription></Alert>
-          )}
         </div>
 
         <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
           <Card>
-            <CardHeader><CardTitle>Guardar</CardTitle><CardDescription>El borrador solo exige título y slug.</CardDescription></CardHeader>
+            <CardHeader><CardTitle>Guardar</CardTitle><CardDescription>El título es obligatorio; el identificador se genera automáticamente.</CardDescription></CardHeader>
             <CardContent className="space-y-3">
               <Button type="submit" form="promotion-editor-form" className="w-full" disabled={pending}><Save /> {pending ? "Guardando…" : mode === "create" ? "Guardar borrador" : "Guardar cambios"}</Button>
               {dirty ? <p className="text-xs font-medium text-amber-700 dark:text-amber-300">Hay cambios sin guardar.</p> : null}

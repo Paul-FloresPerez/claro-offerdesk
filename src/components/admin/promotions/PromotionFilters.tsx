@@ -85,6 +85,7 @@ export function PromotionFilters({ initial }: PromotionFiltersProps) {
         options={[
           ["ALL", "Todas las categorías"],
           ["Hogar", "Hogar"],
+          ["Convergencia", "Convergencia"],
           ["Móvil", "Móvil"],
           ["Negocios", "Negocios"],
         ]}

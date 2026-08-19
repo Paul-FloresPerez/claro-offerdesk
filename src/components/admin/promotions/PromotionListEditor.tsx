@@ -8,10 +8,14 @@ export function PromotionListEditor({
   value,
   onChange,
   emptyLabel,
+  addLabel,
+  placeholder,
 }: {
   value: string[];
   onChange: (value: string[]) => void;
   emptyLabel: string;
+  addLabel: string;
+  placeholder: string;
 }) {
   function addItem() {
     onChange([...value, ""]);
@@ -35,6 +39,7 @@ export function PromotionListEditor({
               value={item}
               onChange={(event) => updateItem(index, event.target.value)}
               rows={2}
+              placeholder={placeholder}
               aria-label={`Elemento ${index + 1}`}
             />
             <Button
@@ -54,7 +59,7 @@ export function PromotionListEditor({
         </p>
       )}
       <Button type="button" variant="outline" size="sm" onClick={addItem}>
-        <Plus /> Agregar elemento
+        <Plus /> {addLabel}
       </Button>
     </div>
   );
