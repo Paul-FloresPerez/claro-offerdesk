@@ -17,19 +17,7 @@ import {
   promotionDraftSchema,
   promotionIdSchema,
 } from "@/lib/validations/promotions";
-
-export type PromotionActionState = {
-  status: "idle" | "success" | "error";
-  message: string;
-  fieldErrors?: Record<string, string[]>;
-  details?: string[];
-  promotionId?: string;
-};
-
-export const initialPromotionActionState: PromotionActionState = {
-  status: "idle",
-  message: "",
-};
+import type { PromotionActionState } from "@/lib/promotions/action-state";
 
 export async function createPromotionDraftAction(
   _previousState: PromotionActionState,

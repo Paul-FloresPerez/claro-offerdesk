@@ -5,12 +5,10 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import {
   archivePromotionAction,
-  initialPromotionActionState,
   publishPromotionAction,
   restorePromotionAction,
   setPromotionFeaturedAction,
   unpublishPromotionAction,
-  type PromotionActionState,
 } from "@/actions/promotions";
 import {
   AlertDialog,
@@ -24,6 +22,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  initialPromotionActionState,
+  type PromotionActionState,
+} from "@/lib/promotions/action-state";
 import { cn } from "@/lib/utils";
 
 type Transition = "archive" | "publish" | "restore" | "unpublish";

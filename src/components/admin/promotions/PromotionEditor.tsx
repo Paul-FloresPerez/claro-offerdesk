@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import {
   createPromotionDraftAction,
-  initialPromotionActionState,
   updatePromotionAction,
 } from "@/actions/promotions";
 import { PromotionAssetManager } from "@/components/admin/promotions/PromotionAssetManager";
@@ -30,6 +29,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { initialPromotionActionState } from "@/lib/promotions/action-state";
 import { slugifyPromotionTitle } from "@/lib/validations/promotions";
 
 const emptyPromotion: Omit<PromotionEditorValue, "id"> = {
