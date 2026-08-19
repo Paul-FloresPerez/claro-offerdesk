@@ -20,6 +20,31 @@ enum SaleStatus {
   RECHAZADA
 }
 
+enum PromotionKind {
+  CAMPAIGN
+  REGULAR_OFFER
+}
+
+enum PromotionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PromotionAssetKind {
+  FLYER
+  COVERAGE
+  OFFICIAL_TABLE
+  OFFICIAL_DOCUMENT
+  INTERNAL
+}
+
+enum PromotionAssetVisibility {
+  SHAREABLE
+  AUTHENTICATED
+  ADMIN_ONLY
+}
+
 model Branch {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
@@ -52,6 +77,64 @@ model PromotionCompatibility {
   updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
 
   @@map("promotions")
+}
+
+/// PostgreSQL also checks slug format and valid_from/valid_until coherence.
+model Promotion {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId         String?          @unique @map("legacy_id")
+  slug             String           @unique
+  title            String
+  shortDescription String?          @map("short_description") @db.Text
+  kind             PromotionKind    @default(CAMPAIGN)
+  status           PromotionStatus  @default(DRAFT)
+  category         String?
+  tags             Json?
+  featured         Boolean          @default(false)
+  sortOrder        Int              @default(0) @map("sort_order")
+  validFrom        DateTime?        @map("valid_from") @db.Timestamptz(6)
+  validUntil       DateTime?        @map("valid_until") @db.Timestamptz(6)
+  technologies     Json?
+  playTypes        Json?            @map("play_types")
+  zoneSummary      String?          @map("zone_summary") @db.Text
+  benefits         Json?
+  conditions       Json?
+  validations      Json?
+  commercialText   String?          @map("commercial_text") @db.Text
+  publishedAt      DateTime?        @map("published_at") @db.Timestamptz(6)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  assets           PromotionAsset[]
+
+  @@index([status, sortOrder])
+  @@index([category, status])
+  @@index([featured, status])
+  @@map("promotion_catalog")
+}
+
+/// PostgreSQL also checks MIME, public URL/visibility, internal visibility,
+/// display names, and positive file dimensions.
+model PromotionAsset {
+  id          String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  promotionId String                   @map("promotion_id") @db.Uuid
+  kind        PromotionAssetKind
+  visibility  PromotionAssetVisibility
+  displayName String                   @map("display_name")
+  fileKey     String                   @unique @map("file_key")
+  fileUrl     String?                  @map("file_url")
+  mimeType    String                   @map("mime_type")
+  altText     String?                  @map("alt_text")
+  sortOrder   Int                      @default(0) @map("sort_order")
+  sizeBytes   Int?                     @map("size_bytes")
+  width       Int?
+  height      Int?
+  checksum    String?
+  createdAt   DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime                 @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  promotion   Promotion                @relation(fields: [promotionId], references: [id], onDelete: Restrict)
+
+  @@index([promotionId, sortOrder])
+  @@map("promotion_assets")
 }
 
 model User {
