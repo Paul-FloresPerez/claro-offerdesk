@@ -29,6 +29,7 @@ export async function GET(
       mimeType: asset.mimeType,
       etag: blob.blob.etag,
       uploadedAt: blob.blob.uploadedAt,
+      download: new URL(request.url).searchParams.get("download") === "1",
     });
 
     if (blob.statusCode === 304) {
@@ -47,6 +48,7 @@ function privateAssetHeaders(input: {
   mimeType: string;
   etag: string;
   uploadedAt: Date;
+  download: boolean;
 }) {
   const fileName = contentDispositionFileName(
     input.displayName,
@@ -55,7 +57,7 @@ function privateAssetHeaders(input: {
 
   return new Headers({
     "Cache-Control": "private, no-store, max-age=0",
-    "Content-Disposition": `inline; filename="${fileName}"`,
+    "Content-Disposition": `${input.download ? "attachment" : "inline"}; filename="${fileName}"`,
     "Content-Type": input.mimeType,
     ETag: input.etag,
     "Last-Modified": input.uploadedAt.toUTCString(),
