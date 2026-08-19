@@ -1,6 +1,6 @@
 import "server-only";
 
-import { PromotionAssetVisibility, type Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { requireAdmin } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { getPublishedPromotionWhere } from "@/lib/promotions/publication";
@@ -30,9 +30,7 @@ const publishedPromotionSelect = {
 const publishedAssetSelect = {
   id: true,
   kind: true,
-  visibility: true,
   displayName: true,
-  fileUrl: true,
   mimeType: true,
   altText: true,
   sortOrder: true,
@@ -69,14 +67,6 @@ export async function getPublishedPromotionBySlug(
     select: {
       ...publishedPromotionSelect,
       assets: {
-        where: {
-          visibility: {
-            in: [
-              PromotionAssetVisibility.SHAREABLE,
-              PromotionAssetVisibility.AUTHENTICATED,
-            ],
-          },
-        },
         select: publishedAssetSelect,
         orderBy: [{ sortOrder: "asc" }, { displayName: "asc" }],
       },

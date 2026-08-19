@@ -39,12 +39,6 @@ enum PromotionAssetKind {
   INTERNAL
 }
 
-enum PromotionAssetVisibility {
-  SHAREABLE
-  AUTHENTICATED
-  ADMIN_ONLY
-}
-
 model Branch {
   id        String   @id @default(uuid()) @db.Uuid
   name      String   @unique
@@ -112,26 +106,23 @@ model Promotion {
   @@map("promotion_catalog")
 }
 
-/// PostgreSQL also checks MIME, public URL/visibility, internal visibility,
-/// display names, and positive file dimensions.
+/// PostgreSQL also checks MIME, display names, and positive file dimensions.
 model PromotionAsset {
-  id          String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  promotionId String                   @map("promotion_id") @db.Uuid
+  id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  promotionId String             @map("promotion_id") @db.Uuid
   kind        PromotionAssetKind
-  visibility  PromotionAssetVisibility
-  displayName String                   @map("display_name")
-  fileKey     String                   @unique @map("file_key")
-  fileUrl     String?                  @map("file_url")
-  mimeType    String                   @map("mime_type")
-  altText     String?                  @map("alt_text")
-  sortOrder   Int                      @default(0) @map("sort_order")
-  sizeBytes   Int?                     @map("size_bytes")
+  displayName String             @map("display_name")
+  fileKey     String             @unique @map("file_key")
+  mimeType    String             @map("mime_type")
+  altText     String?            @map("alt_text")
+  sortOrder   Int                @default(0) @map("sort_order")
+  sizeBytes   Int?               @map("size_bytes")
   width       Int?
   height      Int?
   checksum    String?
-  createdAt   DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime                 @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  promotion   Promotion                @relation(fields: [promotionId], references: [id], onDelete: Restrict)
+  createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  promotion   Promotion          @relation(fields: [promotionId], references: [id], onDelete: Restrict)
 
   @@index([promotionId, sortOrder])
   @@map("promotion_assets")

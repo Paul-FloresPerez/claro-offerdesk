@@ -2,7 +2,6 @@ import "server-only";
 
 import {
   PromotionAssetKind,
-  PromotionAssetVisibility,
   PromotionStatus,
 } from "@prisma/client";
 import { requireAdmin, requireUser } from "@/lib/authorization";
@@ -14,18 +13,17 @@ import {
   PromotionStorageError,
   uploadPromotionAsset,
 } from "@/lib/promotions/storage";
+import { isPromotionCurrentlyPublished } from "@/lib/promotions/publication";
 import { validatePromotionForPublishing } from "@/lib/promotions/validation";
 
 export type PromotionAssetServiceErrorCode =
   | "ASSET_NOT_FOUND"
   | "FORBIDDEN"
-  | "INVALID_VISIBILITY"
   | "METADATA_CREATE_FAILED"
   | "METADATA_DELETE_FAILED"
   | "PASSWORD_CHANGE_REQUIRED"
   | "PUBLISHED_PROMOTION_INVALID"
   | "PROMOTION_NOT_FOUND"
-  | "PUBLIC_ASSET"
   | "UPLOAD_COMPENSATION_FAILED";
 
 export class PromotionAssetServiceError extends Error {
@@ -41,23 +39,12 @@ export class PromotionAssetServiceError extends Error {
 export async function createPromotionAssetForAdmin(input: {
   promotionId: string;
   kind: PromotionAssetKind;
-  visibility: PromotionAssetVisibility;
   displayName: string;
   altText: string | null;
   sortOrder: number;
   file: File;
 }) {
   await requireAdmin();
-
-  if (
-    input.kind === PromotionAssetKind.INTERNAL &&
-    input.visibility === PromotionAssetVisibility.SHAREABLE
-  ) {
-    throw new PromotionAssetServiceError(
-      "INVALID_VISIBILITY",
-      "El material interno no puede almacenarse como compartible."
-    );
-  }
 
   const promotion = await prisma.promotion.findUnique({
     where: { id: input.promotionId },
@@ -78,10 +65,8 @@ export async function createPromotionAssetForAdmin(input: {
       data: {
         promotionId: promotion.id,
         kind: input.kind,
-        visibility: input.visibility,
         displayName: input.displayName,
         fileKey: stored.fileKey,
-        fileUrl: stored.fileUrl,
         mimeType: stored.mimeType,
         altText: input.altText,
         sortOrder: input.sortOrder,
@@ -92,9 +77,7 @@ export async function createPromotionAssetForAdmin(input: {
         id: true,
         promotionId: true,
         kind: true,
-        visibility: true,
         displayName: true,
-        fileUrl: true,
         mimeType: true,
         altText: true,
         sortOrder: true,
@@ -108,7 +91,6 @@ export async function createPromotionAssetForAdmin(input: {
     try {
       await deletePromotionAssetBlob({
         fileKey: stored.fileKey,
-        visibility: input.visibility,
       });
     } catch {
       console.error(
@@ -135,7 +117,6 @@ export async function deletePromotionAssetForAdmin(assetId: string) {
     select: {
       id: true,
       fileKey: true,
-      visibility: true,
       promotion: {
         select: {
           title: true,
@@ -177,7 +158,7 @@ export async function deletePromotionAssetForAdmin(assetId: string) {
     }
   }
 
-  await deletePromotionAssetBlob(asset);
+  await deletePromotionAssetBlob({ fileKey: asset.fileKey });
 
   try {
     await prisma.promotionAsset.delete({ where: { id: asset.id } });
@@ -206,11 +187,17 @@ export async function readAuthorizedPrivatePromotionAsset(input: {
     where: { id: input.assetId },
     select: {
       id: true,
-      visibility: true,
       displayName: true,
       fileKey: true,
       mimeType: true,
       sizeBytes: true,
+      promotion: {
+        select: {
+          status: true,
+          validFrom: true,
+          validUntil: true,
+        },
+      },
     },
   });
 
@@ -228,26 +215,18 @@ export async function readAuthorizedPrivatePromotionAsset(input: {
     );
   }
 
-  if (asset.visibility === PromotionAssetVisibility.SHAREABLE) {
-    throw new PromotionAssetServiceError(
-      "PUBLIC_ASSET",
-      "El material compartible debe abrirse desde su URL pública."
-    );
-  }
-
   if (
-    asset.visibility === PromotionAssetVisibility.ADMIN_ONLY &&
-    user.role !== "ADMIN"
+    user.role !== "ADMIN" &&
+    !isPromotionCurrentlyPublished(asset.promotion)
   ) {
     throw new PromotionAssetServiceError(
       "FORBIDDEN",
-      "No tienes permiso para abrir este material."
+      "El material no pertenece a una promoción publicada y vigente."
     );
   }
 
   const blob = await getPrivatePromotionAsset({
     fileKey: asset.fileKey,
-    visibility: asset.visibility,
     ifNoneMatch: input.ifNoneMatch,
   });
 

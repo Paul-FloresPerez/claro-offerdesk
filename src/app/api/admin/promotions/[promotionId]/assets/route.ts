@@ -1,7 +1,4 @@
-import type {
-  PromotionAssetKind,
-  PromotionAssetVisibility,
-} from "@prisma/client";
+import type { PromotionAssetKind } from "@prisma/client";
 import { requireAdmin } from "@/lib/authorization";
 import { PROMOTION_ASSET_MAX_SIZE_BYTES } from "@/lib/promotions/asset-policy";
 import { createPromotionAssetForAdmin } from "@/lib/promotions/assets";
@@ -71,7 +68,6 @@ export async function POST(
     const parsed = promotionAssetUploadSchema.safeParse({
       promotionId: (await params).promotionId,
       kind: formData.get("kind"),
-      visibility: formData.get("visibility"),
       displayName,
       altText: formData.get("altText"),
       sortOrder: formData.get("sortOrder"),
@@ -91,7 +87,6 @@ export async function POST(
     const asset = await createPromotionAssetForAdmin({
       ...parsed.data,
       kind: parsed.data.kind as PromotionAssetKind,
-      visibility: parsed.data.visibility as PromotionAssetVisibility,
       file,
     });
 

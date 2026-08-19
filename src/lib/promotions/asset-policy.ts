@@ -1,9 +1,6 @@
 import "server-only";
 
-import {
-  PromotionAssetKind,
-  PromotionAssetVisibility,
-} from "@prisma/client";
+import { PromotionAssetKind } from "@prisma/client";
 
 export const PROMOTION_ASSET_MAX_SIZE_BYTES = 4 * 1024 * 1024;
 
@@ -17,12 +14,7 @@ export const PROMOTION_ASSET_MIME_TYPES = [
 export type PromotionAssetMimeType =
   (typeof PROMOTION_ASSET_MIME_TYPES)[number];
 
-export type PromotionStorageAccess = "public" | "private";
-
-export const PROMOTION_STORAGE_ENV = {
-  public: "PROMOTIONS_PUBLIC_BLOB_READ_WRITE_TOKEN",
-  private: "PROMOTIONS_PRIVATE_BLOB_READ_WRITE_TOKEN",
-} as const;
+export const PROMOTION_STORE_ID_ENV = "PROMOTIONS_STORE_ID";
 
 const kindFolders: Record<PromotionAssetKind, string> = {
   FLYER: "flyer",
@@ -38,14 +30,6 @@ const mimeExtensions: Record<PromotionAssetMimeType, string> = {
   "image/webp": "webp",
   "application/pdf": "pdf",
 };
-
-export function getPromotionStorageAccess(
-  visibility: PromotionAssetVisibility
-): PromotionStorageAccess {
-  return visibility === PromotionAssetVisibility.SHAREABLE
-    ? "public"
-    : "private";
-}
 
 export function getPromotionAssetFolder(kind: PromotionAssetKind) {
   return kindFolders[kind];

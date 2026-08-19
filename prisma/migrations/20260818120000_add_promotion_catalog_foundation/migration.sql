@@ -13,13 +13,6 @@ CREATE TYPE "PromotionAssetKind" AS ENUM (
     'INTERNAL'
 );
 
--- CreateEnum
-CREATE TYPE "PromotionAssetVisibility" AS ENUM (
-    'SHAREABLE',
-    'AUTHENTICATED',
-    'ADMIN_ONLY'
-);
-
 -- CreateTable
 CREATE TABLE "promotion_catalog" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -62,10 +55,8 @@ CREATE TABLE "promotion_assets" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "promotion_id" UUID NOT NULL,
     "kind" "PromotionAssetKind" NOT NULL,
-    "visibility" "PromotionAssetVisibility" NOT NULL,
     "display_name" TEXT NOT NULL,
     "file_key" TEXT NOT NULL,
-    "file_url" TEXT,
     "mime_type" TEXT NOT NULL,
     "alt_text" TEXT,
     "sort_order" INTEGER NOT NULL DEFAULT 0,
@@ -106,26 +97,10 @@ CREATE TABLE "promotion_assets" (
             'INTERNAL'::"PromotionAssetKind"
         )
     ),
-    CONSTRAINT "promotion_assets_file_url_visibility_check" CHECK (
-        (
-            "visibility" = 'SHAREABLE'::"PromotionAssetVisibility"
-            AND "file_url" IS NOT NULL
-            AND "file_url" ~ '^https://'
-        )
-        OR
-        (
-            "visibility" <> 'SHAREABLE'::"PromotionAssetVisibility"
-            AND "file_url" IS NULL
-        )
-    ),
     CONSTRAINT "promotion_assets_dimensions_check" CHECK (
         ("size_bytes" IS NULL OR "size_bytes" >= 0)
         AND ("width" IS NULL OR "width" > 0)
         AND ("height" IS NULL OR "height" > 0)
-    ),
-    CONSTRAINT "promotion_assets_internal_visibility_check" CHECK (
-        "kind" <> 'INTERNAL'::"PromotionAssetKind"
-        OR "visibility" <> 'SHAREABLE'::"PromotionAssetVisibility"
     )
 );
 

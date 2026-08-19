@@ -8,18 +8,15 @@ import {
   put,
   type GetBlobResult,
 } from "@vercel/blob";
-import {
-  PromotionAssetKind,
-  PromotionAssetVisibility,
-} from "@prisma/client";
+import { getVercelOidcToken } from "@vercel/oidc";
+import { PromotionAssetKind } from "@prisma/client";
 import {
   getPromotionAssetExtension,
   getPromotionAssetFolder,
-  getPromotionStorageAccess,
   isMimeAllowedForPromotionAssetKind,
   isPromotionAssetMimeType,
   PROMOTION_ASSET_MAX_SIZE_BYTES,
-  PROMOTION_STORAGE_ENV,
+  PROMOTION_STORE_ID_ENV,
   type PromotionAssetMimeType,
 } from "@/lib/promotions/asset-policy";
 
@@ -29,7 +26,7 @@ export type PromotionStorageErrorCode =
   | "INVALID_FILE_CONTENT"
   | "INVALID_FILE_KEY"
   | "MIME_KIND_MISMATCH"
-  | "PRIVATE_ASSET_REQUIRED"
+  | "STORAGE_AUTH_UNAVAILABLE"
   | "STORAGE_NOT_CONFIGURED"
   | "STORAGE_NOT_FOUND"
   | "UNSUPPORTED_MIME";
@@ -61,13 +58,11 @@ export type PromotionAssetFileValidation =
 type UploadPromotionAssetInput = {
   promotionId: string;
   kind: PromotionAssetKind;
-  visibility: PromotionAssetVisibility;
   file: File;
 };
 
 type StoredPromotionAsset = {
   fileKey: string;
-  fileUrl: string | null;
   mimeType: PromotionAssetMimeType;
   sizeBytes: number;
   checksum: string;
@@ -123,7 +118,7 @@ export async function uploadPromotionAsset(
     throw new PromotionStorageError(firstError.code, firstError.message);
   }
 
-  const storage = getStorageConfig(input.visibility);
+  const auth = await getPromotionStorageAuth();
   const pathname = buildPromotionAssetPathname({
     promotionId: input.promotionId,
     kind: input.kind,
@@ -132,22 +127,18 @@ export async function uploadPromotionAsset(
   });
   const checksum = await getFileChecksum(input.file);
   const blob = await put(pathname, input.file, {
-    access: storage.access,
-    token: storage.token,
+    access: "private",
+    ...auth,
     addRandomSuffix: false,
     allowOverwrite: false,
     contentType: validation.mimeType,
-    cacheControlMaxAge: storage.access === "public" ? 3600 : 60,
+    cacheControlMaxAge: 60,
   });
 
   assertSafeFileKey(blob.pathname);
 
   return {
     fileKey: blob.pathname,
-    fileUrl:
-      input.visibility === PromotionAssetVisibility.SHAREABLE
-        ? blob.url
-        : null,
     mimeType: validation.mimeType,
     sizeBytes: input.file.size,
     checksum,
@@ -156,13 +147,12 @@ export async function uploadPromotionAsset(
 
 export async function deletePromotionAssetBlob(input: {
   fileKey: string;
-  visibility: PromotionAssetVisibility;
 }) {
   assertSafeFileKey(input.fileKey);
-  const storage = getStorageConfig(input.visibility);
+  const auth = await getPromotionStorageAuth();
 
   try {
-    await del(input.fileKey, { token: storage.token });
+    await del(input.fileKey, auth);
   } catch (error) {
     if (!(error instanceof BlobNotFoundError)) throw error;
   }
@@ -170,21 +160,13 @@ export async function deletePromotionAssetBlob(input: {
 
 export async function getPrivatePromotionAsset(input: {
   fileKey: string;
-  visibility: PromotionAssetVisibility;
   ifNoneMatch?: string;
 }): Promise<GetBlobResult> {
-  if (input.visibility === PromotionAssetVisibility.SHAREABLE) {
-    throw new PromotionStorageError(
-      "PRIVATE_ASSET_REQUIRED",
-      "El material compartible debe leerse desde su URL pública."
-    );
-  }
-
   assertSafeFileKey(input.fileKey);
-  const storage = getStorageConfig(input.visibility);
+  const auth = await getPromotionStorageAuth();
   const result = await get(input.fileKey, {
     access: "private",
-    token: storage.token,
+    ...auth,
     ifNoneMatch: input.ifNoneMatch,
   });
 
@@ -198,19 +180,35 @@ export async function getPrivatePromotionAsset(input: {
   return result;
 }
 
-function getStorageConfig(visibility: PromotionAssetVisibility) {
-  const access = getPromotionStorageAccess(visibility);
-  const envName = PROMOTION_STORAGE_ENV[access];
-  const token = process.env[envName];
+async function getPromotionStorageAuth() {
+  const storeId = process.env[PROMOTION_STORE_ID_ENV]?.trim();
 
-  if (!token) {
+  if (!storeId) {
     throw new PromotionStorageError(
       "STORAGE_NOT_CONFIGURED",
-      `El almacenamiento ${access} de promociones no está configurado.`
+      "El identificador del almacenamiento privado de promociones no está configurado."
     );
   }
 
-  return { access, token };
+  let oidcToken: string;
+
+  try {
+    oidcToken = (await getVercelOidcToken()).trim();
+  } catch {
+    throw new PromotionStorageError(
+      "STORAGE_AUTH_UNAVAILABLE",
+      "La autenticación OIDC del almacenamiento de promociones no está disponible."
+    );
+  }
+
+  if (!oidcToken) {
+    throw new PromotionStorageError(
+      "STORAGE_AUTH_UNAVAILABLE",
+      "La autenticación OIDC del almacenamiento de promociones no está disponible."
+    );
+  }
+
+  return { storeId, oidcToken };
 }
 
 function buildPromotionAssetPathname(input: {
