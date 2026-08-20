@@ -5,8 +5,21 @@ import { requireAdmin } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { getPublishedPromotionWhere } from "@/lib/promotions/publication";
 
+const publishedAssetSelect = {
+  id: true,
+  kind: true,
+  displayName: true,
+  mimeType: true,
+  altText: true,
+  sortOrder: true,
+  sizeBytes: true,
+  width: true,
+  height: true,
+} satisfies Prisma.PromotionAssetSelect;
+
 const publishedPromotionSelect = {
   id: true,
+  legacyId: true,
   slug: true,
   title: true,
   shortDescription: true,
@@ -25,19 +38,11 @@ const publishedPromotionSelect = {
   validations: true,
   commercialText: true,
   publishedAt: true,
+  assets: {
+    select: publishedAssetSelect,
+    orderBy: [{ sortOrder: "asc" }, { displayName: "asc" }],
+  },
 } satisfies Prisma.PromotionSelect;
-
-const publishedAssetSelect = {
-  id: true,
-  kind: true,
-  displayName: true,
-  mimeType: true,
-  altText: true,
-  sortOrder: true,
-  sizeBytes: true,
-  width: true,
-  height: true,
-} satisfies Prisma.PromotionAssetSelect;
 
 export async function getPublishedPromotions(now = new Date()) {
   return prisma.promotion.findMany({
@@ -64,13 +69,7 @@ export async function getPublishedPromotionBySlug(
       ...getPublishedPromotionWhere(now),
       slug: normalizedSlug,
     },
-    select: {
-      ...publishedPromotionSelect,
-      assets: {
-        select: publishedAssetSelect,
-        orderBy: [{ sortOrder: "asc" }, { displayName: "asc" }],
-      },
-    },
+    select: publishedPromotionSelect,
   });
 }
 

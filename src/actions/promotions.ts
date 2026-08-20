@@ -18,6 +18,7 @@ import {
   promotionIdSchema,
 } from "@/lib/validations/promotions";
 import type { PromotionActionState } from "@/lib/promotions/action-state";
+import { revalidatePublicPromotionPaths } from "@/lib/promotions/revalidation";
 
 export async function createPromotionDraftAction(
   _previousState: PromotionActionState,
@@ -30,7 +31,7 @@ export async function createPromotionDraftAction(
 
   try {
     const promotion = await createPromotionDraft(parsed.data);
-    revalidatePromotionAdminPaths(promotion.id);
+    revalidatePromotionPaths(promotion.id, parsed.data.slug);
     return {
       status: "success",
       message: "Borrador creado. Ya puedes agregar materiales.",
@@ -53,8 +54,15 @@ export async function updatePromotionAction(
   if (!parsed.success) return invalidFormState(parsed.error.flatten().fieldErrors);
 
   try {
-    await updatePromotionForAdmin(promotionId.value, parsed.data);
-    revalidatePromotionAdminPaths(promotionId.value);
+    const promotion = await updatePromotionForAdmin(
+      promotionId.value,
+      parsed.data
+    );
+    revalidatePromotionPaths(
+      promotion.id,
+      promotion.slug,
+      promotion.previousSlug
+    );
     return { status: "success", message: "Cambios guardados correctamente." };
   } catch (error) {
     return promotionErrorState(error);
@@ -116,15 +124,15 @@ export async function setPromotionFeaturedAction(
 
 async function runTransition(
   formData: FormData,
-  transition: (promotionId: string) => Promise<unknown>,
+  transition: (promotionId: string) => Promise<{ id: string; slug: string }>,
   successMessage: string
 ): Promise<PromotionActionState> {
   const promotionId = parsePromotionId(formData);
   if (!promotionId.ok) return promotionId.state;
 
   try {
-    await transition(promotionId.value);
-    revalidatePromotionAdminPaths(promotionId.value);
+    const promotion = await transition(promotionId.value);
+    revalidatePromotionPaths(promotion.id, promotion.slug);
     return { status: "success", message: successMessage };
   } catch (error) {
     return promotionErrorState(error);
@@ -182,8 +190,17 @@ function promotionErrorState(error: unknown): PromotionActionState {
   };
 }
 
-function revalidatePromotionAdminPaths(promotionId: string) {
+function revalidatePromotionPaths(
+  promotionId: string,
+  slug: string,
+  previousSlug?: string
+) {
   revalidatePath("/admin/promociones");
   revalidatePath(`/admin/promociones/${promotionId}/editar`);
   revalidatePath(`/admin/promociones/${promotionId}/preview`);
+  revalidatePublicPromotionPaths(slug);
+
+  if (previousSlug && previousSlug !== slug) {
+    revalidatePublicPromotionPaths(previousSlug);
+  }
 }

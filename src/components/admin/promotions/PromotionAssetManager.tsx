@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, Eye, FileImage, FileText, Plus, Trash2, Upload } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import {
@@ -31,19 +32,15 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import type { PromotionEditorAsset } from "@/components/admin/promotions/types";
+import { promotionAssetKindLabels } from "@/lib/promotions/asset-presentation";
 
-const assetLabels = {
-  FLYER: "Flyer principal",
-  COVERAGE: "Cobertura",
-  OFFICIAL_TABLE: "Cuadro oficial",
-  OFFICIAL_DOCUMENT: "Documento oficial",
-  INTERNAL: "Material interno",
-} as const;
+const assetLabels = promotionAssetKindLabels;
 
 export function PromotionAssetManager({
   promotionId,
@@ -55,7 +52,7 @@ export function PromotionAssetManager({
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState(false);
-  const [kind, setKind] = useState<keyof typeof assetLabels>("FLYER");
+  const [kind, setKind] = useState<PromotionEditorAsset["kind"]>("FLYER");
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
@@ -116,10 +113,7 @@ export function PromotionAssetManager({
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Materiales privados</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            PNG, JPEG, WebP o PDF. Máximo 4 MB por archivo.
-          </p>
+          <p className="text-sm text-muted-foreground">PNG, JPEG, WebP o PDF. Máximo 4 MB por archivo.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -135,12 +129,14 @@ export function PromotionAssetManager({
             <form ref={formRef} onSubmit={uploadAsset} className="space-y-4">
               <Field>
                 <FieldLabel htmlFor="asset-kind">Tipo de material</FieldLabel>
-                <Select value={kind} onValueChange={(value) => setKind(value as keyof typeof assetLabels)}>
+                <Select value={kind} onValueChange={(value) => setKind(value as PromotionEditorAsset["kind"])}>
                   <SelectTrigger id="asset-kind" className="w-full"><SelectValue /></SelectTrigger>
                   <SelectContent position="popper">
-                    {Object.entries(assetLabels).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>{label}</SelectItem>
-                    ))}
+                    <SelectGroup>
+                      {Object.entries(assetLabels).map(([value, label]) => (
+                        <SelectItem key={value} value={value}>{label}</SelectItem>
+                      ))}
+                    </SelectGroup>
                   </SelectContent>
                 </Select>
               </Field>
@@ -187,14 +183,18 @@ export function PromotionAssetManager({
             const assetUrl = `/api/promotions/assets/${asset.id}`;
             return (
               <article key={asset.id} className="flex flex-col gap-3 rounded-lg border border-border bg-background/50 p-4 md:flex-row md:items-center">
-                <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground"><AssetIcon className="size-5" /></span>
+                <span className="relative grid size-14 shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-muted text-muted-foreground">
+                  {asset.mimeType.startsWith("image/") ? (
+                    <Image src={assetUrl} alt="" fill sizes="56px" unoptimized className="object-contain p-1" />
+                  ) : <AssetIcon className="size-5" />}
+                </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-semibold text-foreground">{asset.displayName}</p>
                     <Badge variant="outline">{assetLabels[asset.kind]}</Badge>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {asset.mimeType} · {formatBytes(asset.sizeBytes)} · Orden {asset.sortOrder}
+                    {formatBytes(asset.sizeBytes)}
                   </p>
                   {asset.altText ? <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">{asset.altText}</p> : null}
                 </div>

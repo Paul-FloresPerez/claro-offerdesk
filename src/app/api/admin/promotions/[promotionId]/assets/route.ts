@@ -1,4 +1,5 @@
 import type { PromotionAssetKind } from "@prisma/client";
+import { revalidatePublicPromotionPaths } from "@/lib/promotions/revalidation";
 import { requireAdmin } from "@/lib/authorization";
 import { PROMOTION_ASSET_MAX_SIZE_BYTES } from "@/lib/promotions/asset-policy";
 import { createPromotionAssetForAdmin } from "@/lib/promotions/assets";
@@ -84,13 +85,14 @@ export async function POST(
       );
     }
 
-    const asset = await createPromotionAssetForAdmin({
+    const created = await createPromotionAssetForAdmin({
       ...parsed.data,
       kind: parsed.data.kind as PromotionAssetKind,
       file,
     });
 
-    return Response.json({ asset }, { status: 201 });
+    revalidatePublicPromotionPaths(created.promotionSlug);
+    return Response.json({ asset: created.asset }, { status: 201 });
   } catch (error) {
     return promotionAssetErrorResponse(error);
   }

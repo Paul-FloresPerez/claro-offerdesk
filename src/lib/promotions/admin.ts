@@ -106,6 +106,7 @@ export async function updatePromotionForAdmin(
     where: { id: promotionId },
     select: {
       id: true,
+      slug: true,
       status: true,
       assets: {
         select: { kind: true, fileKey: true, mimeType: true },
@@ -138,11 +139,13 @@ export async function updatePromotionForAdmin(
     }
   }
 
-  return prisma.promotion.update({
+  const updated = await prisma.promotion.update({
     where: { id: current.id },
     data: promotionData(input),
-    select: { id: true },
+    select: { id: true, slug: true },
   });
+
+  return { ...updated, previousSlug: current.slug };
 }
 
 export async function publishPromotion(promotionId: string) {
@@ -174,7 +177,7 @@ export async function publishPromotion(promotionId: string) {
         status: PromotionStatus.PUBLISHED,
         publishedAt: promotion.publishedAt ?? new Date(),
       },
-      select: { id: true },
+      select: { id: true, slug: true },
     });
   });
 }
@@ -227,7 +230,7 @@ export async function setPromotionFeatured(promotionId: string, featured: boolea
     return await prisma.promotion.update({
       where: { id: promotionId },
       data: { featured },
-      select: { id: true },
+      select: { id: true, slug: true },
     });
   } catch (error) {
     if (isPrismaNotFound(error)) {
@@ -278,35 +281,29 @@ async function transitionPromotionStatus(
   allowedStatuses: PromotionStatus[],
   status: PromotionStatus
 ) {
-  try {
-    // publishedAt se conserva al despublicar o archivar para mantener trazabilidad.
-    const result = await prisma.promotion.updateMany({
-      where: { id: promotionId, status: { in: allowedStatuses } },
-      data: { status },
-    });
+  const current = await prisma.promotion.findUnique({
+    where: { id: promotionId },
+    select: { id: true, slug: true },
+  });
 
-    if (result.count === 0) {
-      const exists = await prisma.promotion.findUnique({
-        where: { id: promotionId },
-        select: { id: true },
-      });
-      if (!exists) {
-        throw new PromotionAdminError("NOT_FOUND", "La promoción no existe.");
-      }
-      throw new PromotionAdminError(
-        "INVALID_TRANSITION",
-        "El estado actual de la promoción no permite esa transición."
-      );
-    }
-
-    return { id: promotionId };
-  } catch (error) {
-    if (error instanceof PromotionAdminError) throw error;
-    if (isPrismaNotFound(error)) {
-      throw new PromotionAdminError("NOT_FOUND", "La promoción no existe.");
-    }
-    throw error;
+  if (!current) {
+    throw new PromotionAdminError("NOT_FOUND", "La promoción no existe.");
   }
+
+  // publishedAt se conserva al despublicar o archivar para mantener trazabilidad.
+  const result = await prisma.promotion.updateMany({
+    where: { id: promotionId, status: { in: allowedStatuses } },
+    data: { status },
+  });
+
+  if (result.count === 0) {
+    throw new PromotionAdminError(
+      "INVALID_TRANSITION",
+      "El estado actual de la promoción no permite esa transición."
+    );
+  }
+
+  return current;
 }
 
 function isPrismaNotFound(error: unknown) {

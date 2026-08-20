@@ -14,9 +14,6 @@ export type PromotionPublishingErrorCode =
   | "ARCHIVED_PROMOTION"
   | "CAMPAIGN_ASSET_REQUIRED"
   | "CATEGORY_REQUIRED"
-  | "DESCRIPTION_REQUIRED"
-  | "INVALID_ASSET"
-  | "INVALID_DATE_RANGE"
   | "INVALID_SLUG"
   | "REGULAR_OFFER_ASSET_REQUIRED"
   | "SLUG_REQUIRED"
@@ -60,13 +57,6 @@ export function validatePromotionForPublishing(
   addRequiredTextError(errors, promotion.slug, "slug", "SLUG_REQUIRED", "El slug es obligatorio.");
   addRequiredTextError(
     errors,
-    promotion.shortDescription,
-    "shortDescription",
-    "DESCRIPTION_REQUIRED",
-    "La descripción breve es obligatoria para publicar."
-  );
-  addRequiredTextError(
-    errors,
     promotion.category,
     "category",
     "CATEGORY_REQUIRED",
@@ -89,18 +79,6 @@ export function validatePromotionForPublishing(
     });
   }
 
-  if (
-    promotion.validFrom &&
-    promotion.validUntil &&
-    promotion.validUntil < promotion.validFrom
-  ) {
-    errors.push({
-      code: "INVALID_DATE_RANGE",
-      field: "validUntil",
-      message: "La fecha final no puede ser anterior a la fecha inicial.",
-    });
-  }
-
   const validAssets = promotion.assets.filter((asset) => {
     if (!asset.fileKey.trim() || !isPromotionAssetMimeType(asset.mimeType)) {
       return false;
@@ -109,19 +87,11 @@ export function validatePromotionForPublishing(
     return isMimeAllowedForPromotionAssetKind(asset.kind, asset.mimeType);
   });
 
-  if (validAssets.length !== promotion.assets.length) {
-    errors.push({
-      code: "INVALID_ASSET",
-      field: "assets",
-      message: "Uno o más materiales tienen un archivo o MIME inválido.",
-    });
-  }
-
   if (promotion.kind === PromotionKind.REGULAR_OFFER) {
     const hasOfficialMaterial = validAssets.some(
       (asset) =>
         asset.kind === PromotionAssetKind.OFFICIAL_TABLE ||
-        asset.kind === PromotionAssetKind.OFFICIAL_DOCUMENT
+        asset.kind === PromotionAssetKind.FLYER
     );
 
     if (!hasOfficialMaterial) {
@@ -129,24 +99,21 @@ export function validatePromotionForPublishing(
         code: "REGULAR_OFFER_ASSET_REQUIRED",
         field: "assets",
         message:
-          "Oferta Regular requiere un cuadro o documento oficial para publicarse.",
+          "Oferta Regular requiere un cuadro oficial o flyer para publicarse.",
       });
     }
   }
 
   if (promotion.kind === PromotionKind.CAMPAIGN) {
     const hasCampaignMaterial = validAssets.some(
-      (asset) =>
-        asset.kind === PromotionAssetKind.FLYER ||
-        asset.kind === PromotionAssetKind.OFFICIAL_DOCUMENT
+      (asset) => asset.kind === PromotionAssetKind.FLYER
     );
 
     if (!hasCampaignMaterial) {
       errors.push({
         code: "CAMPAIGN_ASSET_REQUIRED",
         field: "assets",
-        message:
-          "La campaña requiere un flyer o documento oficial para publicarse.",
+        message: "La campaña requiere al menos un flyer para publicarse.",
       });
     }
   }

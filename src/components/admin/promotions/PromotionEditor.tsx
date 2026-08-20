@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, ArrowLeft, Eye, Info, Save } from "lucide-react";
+import { AlertCircle, ArrowLeft, ChevronDown, Eye, Info, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -17,6 +17,11 @@ import type { PromotionEditorValue } from "@/components/admin/promotions/types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -150,7 +155,7 @@ export function PromotionEditor({ promotion }: { promotion?: PromotionEditorValu
         <Alert><Info /><AlertTitle>Edición protegida</AlertTitle><AlertDescription>Los cambios se guardarán solo si la promoción continúa cumpliendo las reglas de publicación.</AlertDescription></Alert>
       ) : null}
       {kind === "REGULAR_OFFER" ? (
-        <Alert><Info /><AlertTitle>Oferta Regular</AlertTitle><AlertDescription>Oferta Regular se administra como una única entrada del catálogo. No crees una promoción por cada plan o velocidad. Para publicarla necesitarás al menos un Cuadro oficial o Documento oficial; el borrador puede guardarse incompleto.</AlertDescription></Alert>
+        <Alert><Info /><AlertTitle>Oferta Regular</AlertTitle><AlertDescription>Oferta Regular se administra como una única entrada del catálogo. No crees una promoción por cada plan o velocidad. Para publicarla necesitarás al menos un Cuadro oficial o flyer; el borrador puede guardarse incompleto.</AlertDescription></Alert>
       ) : null}
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_18rem]">
@@ -180,288 +185,127 @@ export function PromotionEditor({ promotion }: { promotion?: PromotionEditorValu
               description="Completa primero la información que identifica la promoción."
             >
               <div className="grid gap-5 md:grid-cols-2">
-                <Field
-                  className="md:col-span-2"
-                  data-invalid={Boolean(state.fieldErrors?.title)}
-                >
+                <Field className="md:col-span-2" data-invalid={Boolean(state.fieldErrors?.title)}>
                   <FieldLabel htmlFor="promotion-title">Título *</FieldLabel>
-                  <Input
-                    id="promotion-title"
-                    name="title"
-                    value={title}
-                    onChange={(event) => updateTitle(event.target.value)}
-                    maxLength={160}
-                    aria-invalid={Boolean(state.fieldErrors?.title)}
-                    placeholder="Ej. Promo 1 Sol"
-                    required
-                  />
+                  <Input id="promotion-title" name="title" value={title} onChange={(event) => updateTitle(event.target.value)} maxLength={160} aria-invalid={Boolean(state.fieldErrors?.title)} placeholder="Ej. Promo 1 Sol" required />
                   <FieldError>{state.fieldErrors?.title?.[0]}</FieldError>
                 </Field>
-                <Field>
-                  <FieldLabel htmlFor="promotion-kind">Tipo</FieldLabel>
-                  <Select
-                    value={kind}
-                    onValueChange={(value) => {
-                      setKind(value as typeof kind);
-                      markDirty();
-                    }}
-                  >
-                    <SelectTrigger id="promotion-kind" className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
+                <Field data-invalid={Boolean(state.fieldErrors?.category)}>
+                  <FieldLabel htmlFor="promotion-category">Categoría *</FieldLabel>
+                  <Select value={category} onValueChange={(value) => { setCategory(value); markDirty(); }}>
+                    <SelectTrigger id="promotion-category" className="w-full" aria-invalid={Boolean(state.fieldErrors?.category)}><SelectValue /></SelectTrigger>
                     <SelectContent position="popper">
-                      <SelectItem value="CAMPAIGN">Campaña</SelectItem>
-                      <SelectItem value="REGULAR_OFFER">
-                        Oferta regular
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="promotion-category">Categoría</FieldLabel>
-                  <Select
-                    value={category}
-                    onValueChange={(value) => {
-                      setCategory(value);
-                      markDirty();
-                    }}
-                  >
-                    <SelectTrigger id="promotion-category" className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                      <SelectItem value="NONE">Sin categoría</SelectItem>
+                      <SelectItem value="NONE">Selecciona una categoría</SelectItem>
                       <SelectItem value="Hogar">Hogar</SelectItem>
                       <SelectItem value="Convergencia">Convergencia</SelectItem>
                       <SelectItem value="Móvil">Móvil</SelectItem>
                       <SelectItem value="Negocios">Negocios</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FieldDescription>
-                    Convergencia agrupa campañas de servicios fijos y móviles.
-                  </FieldDescription>
+                  <FieldError>{state.fieldErrors?.category?.[0]}</FieldError>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="promotion-kind">Tipo</FieldLabel>
+                  <Select value={kind} onValueChange={(value) => { setKind(value as typeof kind); markDirty(); }}>
+                    <SelectTrigger id="promotion-kind" className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent position="popper">
+                      <SelectItem value="CAMPAIGN">Campaña</SelectItem>
+                      <SelectItem value="REGULAR_OFFER">Oferta regular</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field className="md:col-span-2">
-                  <FieldLabel htmlFor="promotion-description">
-                    Descripción breve
-                  </FieldLabel>
-                  <Textarea
-                    id="promotion-description"
-                    name="shortDescription"
-                    defaultValue={initial.shortDescription ?? ""}
-                    maxLength={500}
-                    rows={3}
-                    placeholder="Explica brevemente para quién y para qué sirve la promoción."
-                  />
-                  <FieldDescription>Será obligatoria al publicar.</FieldDescription>
+                  <FieldLabel htmlFor="promotion-description">Descripción breve</FieldLabel>
+                  <Textarea id="promotion-description" name="shortDescription" defaultValue={initial.shortDescription ?? ""} maxLength={500} rows={3} placeholder="Explica brevemente para quién y para qué sirve la promoción." />
+                  <FieldDescription>Opcional. Se muestra como resumen de la promoción.</FieldDescription>
                 </Field>
               </div>
             </FormSection>
 
-            <FormSection
-              title="Vigencia"
-              description="Define el periodo de disponibilidad usando hora de Lima."
-            >
+            <FormSection title="Clasificación" description="Selecciona tecnología y tipo de Play solo si aplican.">
+              <div className="grid gap-5 md:grid-cols-2">
+                <Field>
+                  <FieldLabel>Tecnologías</FieldLabel>
+                  <ToggleGroup type="multiple" variant="outline" value={technologies} onValueChange={(value) => updateArray(setTechnologies, value)} className="w-full flex-wrap justify-start" aria-label="Tecnologías de la promoción">
+                    <ToggleGroupItem value="FTTH">FTTH</ToggleGroupItem>
+                    <ToggleGroupItem value="HFC">HFC</ToggleGroupItem>
+                  </ToggleGroup>
+                  <FieldDescription>Opcional.</FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>Tipo de Play</FieldLabel>
+                  <ToggleGroup type="multiple" variant="outline" value={playTypes} onValueChange={(value) => updateArray(setPlayTypes, value)} className="w-full flex-wrap justify-start" aria-label="Tipos de Play de la promoción">
+                    {["1 Play", "2 Play", "3 Play"].map((item) => <ToggleGroupItem key={item} value={item}>{item}</ToggleGroupItem>)}
+                  </ToggleGroup>
+                  <FieldDescription>Opcional.</FieldDescription>
+                </Field>
+              </div>
+            </FormSection>
+
+            <FormSection title="Vigencia" description="Ambas fechas son opcionales y usan hora de Lima.">
               <div className="grid gap-5 md:grid-cols-2">
                 <Field data-invalid={Boolean(state.fieldErrors?.validFrom)}>
-                  <FieldLabel htmlFor="promotion-valid-from">
-                    Válida desde
-                  </FieldLabel>
-                  <Input
-                    id="promotion-valid-from"
-                    name="validFrom"
-                    type="datetime-local"
-                    defaultValue={initial.validFrom}
-                    aria-invalid={Boolean(state.fieldErrors?.validFrom)}
-                  />
+                  <FieldLabel htmlFor="promotion-valid-from">Válida desde</FieldLabel>
+                  <Input id="promotion-valid-from" name="validFrom" type="datetime-local" defaultValue={initial.validFrom} aria-invalid={Boolean(state.fieldErrors?.validFrom)} />
                   <FieldError>{state.fieldErrors?.validFrom?.[0]}</FieldError>
                 </Field>
                 <Field data-invalid={Boolean(state.fieldErrors?.validUntil)}>
-                  <FieldLabel htmlFor="promotion-valid-until">
-                    Válida hasta
-                  </FieldLabel>
-                  <Input
-                    id="promotion-valid-until"
-                    name="validUntil"
-                    type="datetime-local"
-                    defaultValue={initial.validUntil}
-                    aria-invalid={Boolean(state.fieldErrors?.validUntil)}
-                  />
-                  <FieldDescription>
-                    Si no defines fecha final, permanecerá vigente hasta que sea
-                    despublicada o archivada.
-                  </FieldDescription>
+                  <FieldLabel htmlFor="promotion-valid-until">Válida hasta</FieldLabel>
+                  <Input id="promotion-valid-until" name="validUntil" type="datetime-local" defaultValue={initial.validUntil} aria-invalid={Boolean(state.fieldErrors?.validUntil)} />
+                  <FieldDescription>Si no defines fecha final, permanecerá vigente hasta que sea despublicada o archivada.</FieldDescription>
                   <FieldError>{state.fieldErrors?.validUntil?.[0]}</FieldError>
                 </Field>
               </div>
             </FormSection>
 
-            <FormSection
-              title="Clasificación"
-              description="Selecciona todas las opciones que correspondan a la campaña."
-            >
-              <div className="grid gap-5 md:grid-cols-2">
-                <Field>
-                  <FieldLabel>Tecnologías</FieldLabel>
-                  <ToggleGroup
-                    type="multiple"
-                    variant="outline"
-                    value={technologies}
-                    onValueChange={(value) =>
-                      updateArray(setTechnologies, value)
-                    }
-                    className="w-full flex-wrap justify-start"
-                    aria-label="Tecnologías de la promoción"
-                  >
-                    <ToggleGroupItem value="FTTH">FTTH</ToggleGroupItem>
-                    <ToggleGroupItem value="HFC">HFC</ToggleGroupItem>
-                  </ToggleGroup>
-                  <FieldDescription>
-                    Puedes seleccionar una o ambas tecnologías.
-                  </FieldDescription>
-                </Field>
-                <Field>
-                  <FieldLabel>Tipo de Play</FieldLabel>
-                  <ToggleGroup
-                    type="multiple"
-                    variant="outline"
-                    value={playTypes}
-                    onValueChange={(value) => updateArray(setPlayTypes, value)}
-                    className="w-full flex-wrap justify-start"
-                    aria-label="Tipos de Play de la promoción"
-                  >
-                    {["1 Play", "2 Play", "3 Play"].map((item) => (
-                      <ToggleGroupItem key={item} value={item}>
-                        {item}
-                      </ToggleGroupItem>
-                    ))}
-                  </ToggleGroup>
-                  <FieldDescription>
-                    La selección es múltiple y opcional.
-                  </FieldDescription>
-                </Field>
-                <Field className="md:col-span-2">
-                  <FieldLabel>Clasificación adicional</FieldLabel>
-                  <PromotionChipInput
-                    value={tags}
-                    onChange={(value) => updateArray(setTags, value)}
-                    placeholder="Ej. Full Claro, Focalizada, Universitario, Postpago, Prepago"
-                  />
-                  <FieldDescription>
-                    Opcional. Sirven para organizar y buscar promociones.
-                  </FieldDescription>
-                </Field>
-              </div>
-            </FormSection>
-
-            <FormSection
-              title="Información comercial"
-              description="Resume la cobertura y el mensaje que utilizará el asesor."
-            >
-              <div className="flex flex-col gap-5">
-                <Field>
-                  <FieldLabel htmlFor="promotion-zone">
-                    Resumen de cobertura
-                  </FieldLabel>
-                  <Textarea
-                    id="promotion-zone"
-                    name="zoneSummary"
-                    defaultValue={initial.zoneSummary ?? ""}
-                    maxLength={2000}
-                    rows={3}
-                    placeholder="Ej. Chiclayo, Lambayeque, Trujillo y Piura."
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="promotion-commercial-text">
-                    Texto sugerido para ofrecer al cliente
-                  </FieldLabel>
-                  <Textarea
-                    id="promotion-commercial-text"
-                    name="commercialText"
-                    defaultValue={initial.commercialText ?? ""}
-                    maxLength={10000}
-                    rows={7}
-                    placeholder="Escribe una guía breve y clara para el asesor…"
-                  />
-                </Field>
-              </div>
-            </FormSection>
-
-            <FormSection
-              title="Beneficios y condiciones"
-              description="Organiza la información que el asesor necesita para ofrecer correctamente."
-            >
-              <div className="grid gap-6 lg:grid-cols-3">
-                <Field>
-                  <FieldLabel>Beneficios para mostrar</FieldLabel>
-                  <FieldDescription>
-                    Agrega los principales beneficios que debe conocer el asesor.
-                  </FieldDescription>
-                  <PromotionListEditor
-                    value={benefits}
-                    onChange={(value) => updateArray(setBenefits, value)}
-                    emptyLabel="Sin beneficios agregados."
-                    addLabel="Agregar beneficio"
-                    placeholder="Ej. 1 Repetidor Mesh gratis"
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel>Condiciones de la promoción</FieldLabel>
-                  <FieldDescription>
-                    Condiciones comerciales importantes para ofrecer correctamente
-                    la campaña.
-                  </FieldDescription>
-                  <PromotionListEditor
-                    value={conditions}
-                    onChange={(value) => updateArray(setConditions, value)}
-                    emptyLabel="Sin condiciones agregadas."
-                    addLabel="Agregar condición"
-                    placeholder="Ej. Sujeto a evaluación crediticia."
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel>Qué debe validar el asesor</FieldLabel>
-                  <FieldDescription>
-                    Indica qué debe comprobar el asesor antes de ofrecer o registrar
-                    la venta.
-                  </FieldDescription>
-                  <PromotionListEditor
-                    value={validations}
-                    onChange={(value) => updateArray(setValidations, value)}
-                    emptyLabel="Sin validaciones agregadas."
-                    addLabel="Agregar validación"
-                    placeholder="Ej. Validar cobertura o confirmar vigencia en Vendamos."
-                  />
-                </Field>
-              </div>
-            </FormSection>
-
-            <FormSection
-              title="Material comercial"
-              description="Administra flyers, coberturas, cuadros y documentos privados."
-            >
+            <FormSection title="Material de la promoción" description="Sube los flyers, cuadros o documentos que utilizará el equipo comercial.">
               {promotion ? (
-                <PromotionAssetManager
-                  promotionId={promotion.id}
-                  assets={promotion.assets}
-                />
+                <PromotionAssetManager promotionId={promotion.id} assets={promotion.assets} />
               ) : (
                 <Alert>
                   <Info />
                   <AlertTitle>Materiales después del primer guardado</AlertTitle>
-                  <AlertDescription>
-                    Guarda el borrador para obtener su identificador y habilitar la
-                    carga privada de archivos.
-                  </AlertDescription>
+                  <AlertDescription>Guarda el borrador para obtener su identificador y habilitar la carga privada de archivos.</AlertDescription>
                 </Alert>
               )}
             </FormSection>
 
-            <FormSection
-              title="Opciones avanzadas"
-              description="Ajustes que normalmente no necesitas modificar."
-            >
+            <CollapsibleFormSection title="Información adicional" description="Todos estos campos son opcionales.">
+              <div className="flex flex-col gap-5">
+                <Field>
+                  <FieldLabel>Etiquetas</FieldLabel>
+                  <PromotionChipInput value={tags} onChange={(value) => updateArray(setTags, value)} placeholder="Ej. Full Claro, Focalizada, Universitario" />
+                  <FieldDescription>Opcional. Sirven para organizar y buscar promociones.</FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="promotion-zone">Resumen de cobertura</FieldLabel>
+                  <Textarea id="promotion-zone" name="zoneSummary" defaultValue={initial.zoneSummary ?? ""} maxLength={2000} rows={3} placeholder="Ej. Chiclayo, Lambayeque, Trujillo y Piura." />
+                </Field>
+                <div className="grid gap-6 lg:grid-cols-3">
+                  <Field>
+                    <FieldLabel>Beneficios</FieldLabel>
+                    <FieldDescription>Opcional. Agrega beneficios adicionales si ayudan al asesor.</FieldDescription>
+                    <PromotionListEditor value={benefits} onChange={(value) => updateArray(setBenefits, value)} emptyLabel="Sin beneficios agregados." addLabel="Agregar beneficio" placeholder="Ej. 1 Repetidor Mesh gratis" />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Condiciones</FieldLabel>
+                    <FieldDescription>Opcional. Agrega condiciones comerciales relevantes.</FieldDescription>
+                    <PromotionListEditor value={conditions} onChange={(value) => updateArray(setConditions, value)} emptyLabel="Sin condiciones agregadas." addLabel="Agregar condición" placeholder="Ej. Sujeto a evaluación crediticia." />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Validaciones para el asesor</FieldLabel>
+                    <FieldDescription>Opcional. Indica comprobaciones que el asesor debe realizar.</FieldDescription>
+                    <PromotionListEditor value={validations} onChange={(value) => updateArray(setValidations, value)} emptyLabel="Sin validaciones agregadas." addLabel="Agregar validación" placeholder="Ej. Validar cobertura." />
+                  </Field>
+                </div>
+                <Field>
+                  <FieldLabel htmlFor="promotion-commercial-text">Texto comercial</FieldLabel>
+                  <Textarea id="promotion-commercial-text" name="commercialText" defaultValue={initial.commercialText ?? ""} maxLength={10000} rows={7} placeholder="Escribe una guía breve y clara para el asesor…" />
+                </Field>
+              </div>
+            </CollapsibleFormSection>
+
+            <CollapsibleFormSection title="Opciones avanzadas" description="Ajustes que normalmente no necesitas modificar.">
               <div className="grid gap-5 md:grid-cols-2">
                 <Field
                   className="md:col-span-2"
@@ -524,7 +368,7 @@ export function PromotionEditor({ promotion }: { promotion?: PromotionEditorValu
                   </FieldDescription>
                 </Field>
               </div>
-            </FormSection>
+            </CollapsibleFormSection>
           </form>
         </div>
 
@@ -565,8 +409,39 @@ function FormSection({ title, description, children }: { title: string; descript
   return (
     <Card>
       <CardHeader><CardTitle>{title}</CardTitle><CardDescription>{description}</CardDescription></CardHeader>
-      <CardContent className="space-y-5">{children}</CardContent>
+      <CardContent className="flex flex-col gap-5">{children}</CardContent>
     </Card>
+  );
+}
+
+function CollapsibleFormSection({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Collapsible asChild>
+      <Card>
+        <CardHeader className="flex-row items-center justify-between gap-4">
+          <div>
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </div>
+          <CollapsibleTrigger asChild>
+            <Button type="button" variant="ghost" size="icon" aria-label={`Mostrar ${title}`} className="[&[data-state=open]_svg]:rotate-180">
+              <ChevronDown className="transition-transform" />
+            </Button>
+          </CollapsibleTrigger>
+        </CardHeader>
+        <CollapsibleContent>
+          <CardContent className="flex flex-col gap-5">{children}</CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
   );
 }
 

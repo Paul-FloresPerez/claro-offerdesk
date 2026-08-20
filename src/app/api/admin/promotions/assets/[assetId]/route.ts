@@ -1,5 +1,6 @@
 import { deletePromotionAssetForAdmin } from "@/lib/promotions/assets";
 import { requireAdmin } from "@/lib/authorization";
+import { revalidatePublicPromotionPaths } from "@/lib/promotions/revalidation";
 import {
   isSameOriginMutation,
   promotionAssetErrorResponse,
@@ -32,7 +33,8 @@ export async function DELETE(
 
   try {
     await requireAdmin();
-    await deletePromotionAssetForAdmin(parsedAssetId.data);
+    const deleted = await deletePromotionAssetForAdmin(parsedAssetId.data);
+    revalidatePublicPromotionPaths(deleted.promotionSlug);
     return new Response(null, { status: 204 });
   } catch (error) {
     return promotionAssetErrorResponse(error);

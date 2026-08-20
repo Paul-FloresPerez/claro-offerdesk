@@ -48,7 +48,7 @@ export async function createPromotionAssetForAdmin(input: {
 
   const promotion = await prisma.promotion.findUnique({
     where: { id: input.promotionId },
-    select: { id: true },
+    select: { id: true, slug: true },
   });
 
   if (!promotion) {
@@ -61,7 +61,7 @@ export async function createPromotionAssetForAdmin(input: {
   const stored = await uploadPromotionAsset(input);
 
   try {
-    return await prisma.promotionAsset.create({
+    const asset = await prisma.promotionAsset.create({
       data: {
         promotionId: promotion.id,
         kind: input.kind,
@@ -87,6 +87,8 @@ export async function createPromotionAssetForAdmin(input: {
         createdAt: true,
       },
     });
+
+    return { asset, promotionSlug: promotion.slug };
   } catch {
     try {
       await deletePromotionAssetBlob({
@@ -168,6 +170,8 @@ export async function deletePromotionAssetForAdmin(assetId: string) {
       "El archivo fue eliminado, pero su metadata requiere reintento."
     );
   }
+
+  return { promotionSlug: asset.promotion.slug };
 }
 
 export async function readAuthorizedPrivatePromotionAsset(input: {
