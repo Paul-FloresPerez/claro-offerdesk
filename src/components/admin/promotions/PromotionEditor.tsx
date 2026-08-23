@@ -170,6 +170,7 @@ export function PromotionEditor({ promotion }: { promotion?: PromotionEditorValu
             className="space-y-5"
           >
             {promotion ? <input type="hidden" name="promotionId" value={promotion.id} /> : null}
+            <input type="hidden" name="slug" value={slug} />
             <input type="hidden" name="kind" value={kind} />
             <input type="hidden" name="category" value={category === "NONE" ? "" : category} />
             <input type="hidden" name="featured" value={String(featured)} />
@@ -316,7 +317,6 @@ export function PromotionEditor({ promotion }: { promotion?: PromotionEditorValu
                   </FieldLabel>
                   <Input
                     id="promotion-slug"
-                    name="slug"
                     value={slug}
                     onChange={(event) => {
                       setSlugTouched(true);
